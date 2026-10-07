@@ -1,0 +1,343 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Delivery System</title>
+
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+
+    <aside class="sidebar">
+
+        <div class="logo">
+            <div class="logo-icon">D</div>
+
+            <div class="logo-text">
+                <h2>Delivery</h2>
+                <span>מערכת ניהול משלוחים</span>
+            </div>
+        </div>
+
+
+        <nav class="menu">
+
+            <a href="#" class="menu-item active">
+                <span class="menu-icon">🏠</span>
+                <span>לוח בקרה</span>
+            </a>
+
+            <a href="#" class="menu-item">
+                <span class="menu-icon">📦</span>
+                <span>משלוחים</span>
+            </a>
+
+            <a href="#" class="menu-item">
+                <span class="menu-icon">🚚</span>
+                <span>שליחים</span>
+            </a>
+
+            <a href="#" class="menu-item">
+                <span class="menu-icon">📍</span>
+                <span>ערים ואזורים</span>
+            </a>
+
+            <a href="#" class="menu-item">
+                <span class="menu-icon">🗺️</span>
+                <span>מפת פעילות</span>
+            </a>
+
+            <a href="#" class="menu-item">
+                <span class="menu-icon">📊</span>
+                <span>דוחות</span>
+            </a>
+
+            <a href="#" class="menu-item">
+                <span class="menu-icon">⚙️</span>
+                <span>הגדרות</span>
+            </a>
+
+        </nav>
+
+
+        <div class="sidebar-user">
+
+            <div class="user-avatar">
+                ש
+            </div>
+
+            <div class="user-details">
+                <strong>מנהל עבודה</strong>
+                <span>Administrator</span>
+            </div>
+
+        </div>
+
+    </aside>
+
+
+
+    <main class="main-content">
+
+        <header class="topbar">
+
+            <div class="page-title">
+                <h1>לוח בקרה</h1>
+                <p>תמונת מצב של מערך המשלוחים</p>
+            </div>
+
+
+            <div class="topbar-actions">
+
+                <input
+                    type="text"
+                    placeholder="חיפוש משלוח / לקוח / עיר"
+                >
+
+                <button class="new-delivery-btn">
+                    + משלוח חדש
+                </button>
+
+            </div>
+
+        </header>
+
+
+
+        <section class="stats-grid">
+
+            <div class="stat-card">
+
+                <div class="stat-header">
+                    <span>סה"כ משלוחים</span>
+                    <span class="stat-icon">📦</span>
+                </div>
+
+                <div class="stat-number">
+                    326
+                </div>
+
+                <div class="stat-footer">
+                    משלוחים להיום
+                </div>
+
+            </div>
+
+
+
+            <div class="stat-card">
+
+                <div class="stat-header">
+                    <span>נמסרו</span>
+                    <span class="stat-icon">✅</span>
+                </div>
+
+                <div class="stat-number">
+                    271
+                </div>
+
+                <div class="stat-footer success">
+                    83% מהמשלוחים
+                </div>
+
+            </div>
+
+
+
+            <div class="stat-card">
+
+                <div class="stat-header">
+                    <span>בדרך</span>
+                    <span class="stat-icon">🚚</span>
+                </div>
+
+                <div class="stat-number">
+                    31
+                </div>
+
+                <div class="stat-footer warning">
+                    משלוחים פעילים
+                </div>
+
+            </div>
+
+
+
+            <div class="stat-card">
+
+                <div class="stat-header">
+                    <span>ללא שיוך</span>
+                    <span class="stat-icon">⚠️</span>
+                </div>
+
+                <div class="stat-number">
+                    24
+                </div>
+
+                <div class="stat-footer danger">
+                    ממתינים לשליח
+                </div>
+
+            </div>
+
+        </section>
+
+
+
+        <section class="dashboard-grid">
+
+            <div class="panel">
+
+                <div class="panel-header">
+
+                    <div>
+                        <h2>מצב שליחים</h2>
+                        <p>סטטוס פעילות בזמן אמת</p>
+                    </div>
+
+                    <button>
+                        הצג הכל
+                    </button>
+
+                </div>
+
+
+                <div class="table-wrapper">
+
+                    <table>
+
+                        <thead>
+
+                            <tr>
+                                <th>שליח</th>
+                                <th>סה"כ</th>
+                                <th>נמסרו</th>
+                                <th>נשארו</th>
+                                <th>סטטוס</th>
+                            </tr>
+
+                        </thead>
+
+
+                        <tbody>
+
+                            <tr>
+                                <td>שון</td>
+                                <td>34</td>
+                                <td>12</td>
+                                <td>22</td>
+                                <td>
+                                    <span class="status active">
+                                        במסלול
+                                    </span>
+                                </td>
+                            </tr>
+
+
+                            <tr>
+                                <td>דניאל</td>
+                                <td>27</td>
+                                <td>27</td>
+                                <td>0</td>
+                                <td>
+                                    <span class="status completed">
+                                        סיים
+                                    </span>
+                                </td>
+                            </tr>
+
+
+                            <tr>
+                                <td>אבי</td>
+                                <td>41</td>
+                                <td>18</td>
+                                <td>23</td>
+                                <td>
+                                    <span class="status active">
+                                        במסלול
+                                    </span>
+                                </td>
+                            </tr>
+
+
+                            <tr>
+                                <td>רועי</td>
+                                <td>0</td>
+                                <td>0</td>
+                                <td>0</td>
+                                <td>
+                                    <span class="status waiting">
+                                        לא התחיל
+                                    </span>
+                                </td>
+                            </tr>
+
+                        </tbody>
+
+                    </table>
+
+                </div>
+
+            </div>
+
+
+
+            <div class="panel">
+
+                <div class="panel-header">
+
+                    <div>
+                        <h2>משלוחים לפי עיר</h2>
+                        <p>כמות משלוחים פעילים</p>
+                    </div>
+
+                    <button>
+                        הצג הכל
+                    </button>
+
+                </div>
+
+
+                <div class="city-list">
+
+                    <div class="city-row">
+                        <span>ראשון לציון</span>
+                        <strong>54</strong>
+                    </div>
+
+                    <div class="city-row">
+                        <span>תל אביב</span>
+                        <strong>48</strong>
+                    </div>
+
+                    <div class="city-row">
+                        <span>חולון</span>
+                        <strong>37</strong>
+                    </div>
+
+                    <div class="city-row">
+                        <span>פתח תקווה</span>
+                        <strong>31</strong>
+                    </div>
+
+                    <div class="city-row">
+                        <span>רמת גן</span>
+                        <strong>29</strong>
+                    </div>
+
+                </div>
+
+            </div>
+
+        </section>
+
+    </main>
+
+
+    <script src="app.js"></script>
+
+</body>
+</html>
