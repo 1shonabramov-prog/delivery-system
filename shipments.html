@@ -1,0 +1,798 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>ניהול משלוחים | Delivery</title>
+
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+
+    <!-- =====================================
+         SIDEBAR
+    ====================================== -->
+
+    <aside class="sidebar">
+
+        <div class="logo">
+
+            <div class="logo-icon">
+                D
+            </div>
+
+            <div class="logo-text">
+                <h2>Delivery</h2>
+                <span>מערכת ניהול משלוחים</span>
+            </div>
+
+        </div>
+
+
+        <nav class="menu">
+
+            <a href="index.html" class="menu-item">
+                <span class="menu-icon">🏠</span>
+                <span>לוח בקרה</span>
+            </a>
+
+            <a href="warehouse.html" class="menu-item">
+                <span class="menu-icon">📥</span>
+                <span>קליטת משלוחים</span>
+            </a>
+
+            <a href="shipments.html" class="menu-item active">
+                <span class="menu-icon">📦</span>
+                <span>משלוחים</span>
+            </a>
+
+            <a href="drivers.html" class="menu-item">
+                <span class="menu-icon">🚚</span>
+                <span>שליחים</span>
+            </a>
+
+            <a href="cities.html" class="menu-item">
+                <span class="menu-icon">📍</span>
+                <span>ערים ואזורים</span>
+            </a>
+
+            <a href="#" class="menu-item">
+                <span class="menu-icon">🗺️</span>
+                <span>מפת פעילות</span>
+            </a>
+
+            <a href="reports.html" class="menu-item">
+                <span class="menu-icon">📊</span>
+                <span>דוחות</span>
+            </a>
+
+            <a href="settings.html" class="menu-item">
+                <span class="menu-icon">⚙️</span>
+                <span>הגדרות</span>
+            </a>
+
+        </nav>
+
+
+        <div class="sidebar-user">
+
+            <div class="user-avatar">
+                ש
+            </div>
+
+            <div class="user-details">
+                <strong>מנהל עבודה</strong>
+                <span>Administrator</span>
+            </div>
+
+        </div>
+
+    </aside>
+
+
+    <!-- =====================================
+         MAIN CONTENT
+    ====================================== -->
+
+    <main class="main-content">
+
+
+        <!-- HEADER -->
+
+        <header class="topbar">
+
+            <div class="page-title">
+
+                <h1>
+                    ניהול משלוחים
+                </h1>
+
+                <p>
+                    צפייה, חיפוש, עריכה ושיוך משלוחים לשליחים
+                </p>
+
+            </div>
+
+
+            <div class="topbar-actions">
+
+                <button
+                    class="primary-btn"
+                    id="newShipmentButton"
+                >
+                    + משלוח חדש
+                </button>
+
+            </div>
+
+        </header>
+
+
+        <!-- =====================================
+             STATS
+        ====================================== -->
+
+        <section class="stats-grid">
+
+            <div class="stat-card">
+
+                <div class="stat-header">
+
+                    <span>
+                        סה"כ משלוחים
+                    </span>
+
+                    <span class="stat-icon">
+                        📦
+                    </span>
+
+                </div>
+
+                <div
+                    class="stat-number"
+                    id="shipmentsTotalCount"
+                >
+                    0
+                </div>
+
+                <div class="stat-footer">
+                    כל המשלוחים במערכת
+                </div>
+
+            </div>
+
+
+            <div class="stat-card">
+
+                <div class="stat-header">
+
+                    <span>
+                        ללא שיוך
+                    </span>
+
+                    <span class="stat-icon">
+                        ⏳
+                    </span>
+
+                </div>
+
+                <div
+                    class="stat-number"
+                    id="shipmentsUnassignedCount"
+                >
+                    0
+                </div>
+
+                <div class="stat-footer warning">
+                    ממתינים לשליח
+                </div>
+
+            </div>
+
+
+            <div class="stat-card">
+
+                <div class="stat-header">
+
+                    <span>
+                        משויכים
+                    </span>
+
+                    <span class="stat-icon">
+                        🚚
+                    </span>
+
+                </div>
+
+                <div
+                    class="stat-number"
+                    id="shipmentsAssignedCount"
+                >
+                    0
+                </div>
+
+                <div class="stat-footer success">
+                    משויכים לשליחים
+                </div>
+
+            </div>
+
+
+            <div class="stat-card">
+
+                <div class="stat-header">
+
+                    <span>
+                        נמסרו
+                    </span>
+
+                    <span class="stat-icon">
+                        ✅
+                    </span>
+
+                </div>
+
+                <div
+                    class="stat-number"
+                    id="shipmentsDeliveredCount"
+                >
+                    0
+                </div>
+
+                <div class="stat-footer success">
+                    משלוחים שהושלמו
+                </div>
+
+            </div>
+
+        </section>
+
+
+        <!-- =====================================
+             SHIPMENTS PANEL
+        ====================================== -->
+
+        <section class="panel">
+
+            <div class="panel-header">
+
+                <div>
+
+                    <h2>
+                        כל המשלוחים
+                    </h2>
+
+                    <p>
+                        ניתן לחפש ולסנן לפי עיר, שליח וסטטוס
+                    </p>
+
+                </div>
+
+            </div>
+
+
+            <!-- FILTERS -->
+
+            <div class="shipments-toolbar">
+
+                <input
+                    type="text"
+                    id="shipmentSearchInput"
+                    placeholder="חיפוש לקוח / טלפון / ברקוד / כתובת"
+                >
+
+
+                <select id="cityFilter">
+
+                    <option value="">
+                        כל הערים
+                    </option>
+
+                </select>
+
+
+                <select id="driverFilter">
+
+                    <option value="">
+                        כל השליחים
+                    </option>
+
+                    <option value="ללא שיוך">
+                        ללא שיוך
+                    </option>
+
+                    <option value="שון">
+                        שון
+                    </option>
+
+                    <option value="דניאל">
+                        דניאל
+                    </option>
+
+                    <option value="אבי">
+                        אבי
+                    </option>
+
+                    <option value="רועי">
+                        רועי
+                    </option>
+
+                </select>
+
+
+                <select id="statusFilter">
+
+                    <option value="">
+                        כל הסטטוסים
+                    </option>
+
+                    <option value="ממתין לשיוך">
+                        ממתין לשיוך
+                    </option>
+
+                    <option value="משויך">
+                        משויך
+                    </option>
+
+                    <option value="בדרך">
+                        בדרך
+                    </option>
+
+                    <option value="נמסר">
+                        נמסר
+                    </option>
+
+                    <option value="לא נמסר">
+                        לא נמסר
+                    </option>
+
+                </select>
+
+            </div>
+
+
+            <!-- TABLE -->
+
+            <div class="table-wrapper">
+
+                <table>
+
+                    <thead>
+
+                        <tr>
+
+                            <th>
+                                מספר משלוח
+                            </th>
+
+                            <th>
+                                ברקוד
+                            </th>
+
+                            <th>
+                                לקוח
+                            </th>
+
+                            <th>
+                                טלפון
+                            </th>
+
+                            <th>
+                                עיר
+                            </th>
+
+                            <th>
+                                כתובת
+                            </th>
+
+                            <th>
+                                פרטי בניין
+                            </th>
+
+                            <th>
+                                שליח
+                            </th>
+
+                            <th>
+                                סטטוס
+                            </th>
+
+                            <th>
+                                פעולות
+                            </th>
+
+                        </tr>
+
+                    </thead>
+
+
+                    <tbody id="shipmentsTableBody">
+
+                    </tbody>
+
+                </table>
+
+            </div>
+
+        </section>
+
+    </main>
+
+
+    <!-- =====================================
+         SHIPMENT MODAL
+    ====================================== -->
+
+    <div
+        class="modal-overlay hidden"
+        id="shipmentModal"
+    >
+
+        <div class="modal-box">
+
+            <div class="modal-header">
+
+                <div>
+
+                    <h2 id="shipmentModalTitle">
+                        משלוח חדש
+                    </h2>
+
+                    <p>
+                        הזנת פרטי המשלוח
+                    </p>
+
+                </div>
+
+
+                <button
+                    class="modal-close"
+                    id="closeShipmentModal"
+                >
+                    ×
+                </button>
+
+            </div>
+
+
+            <form id="shipmentForm">
+
+                <input
+                    type="hidden"
+                    id="editingShipmentId"
+                >
+
+
+                <div class="form-grid">
+
+
+                    <!-- BARCODE -->
+
+                    <div class="form-group">
+
+                        <label>
+                            ברקוד
+                        </label>
+
+                        <input
+                            type="text"
+                            id="shipmentBarcode"
+                            required
+                        >
+
+                    </div>
+
+
+                    <!-- SHIPMENT NUMBER -->
+
+                    <div class="form-group">
+
+                        <label>
+                            מספר משלוח
+                        </label>
+
+                        <input
+                            type="text"
+                            id="shipmentNumber"
+                            required
+                        >
+
+                    </div>
+
+
+                    <!-- CUSTOMER -->
+
+                    <div class="form-group">
+
+                        <label>
+                            שם לקוח
+                        </label>
+
+                        <input
+                            type="text"
+                            id="shipmentCustomer"
+                            required
+                        >
+
+                    </div>
+
+
+                    <!-- PHONE -->
+
+                    <div class="form-group">
+
+                        <label>
+                            טלפון
+                        </label>
+
+                        <input
+                            type="text"
+                            id="shipmentPhone"
+                            required
+                        >
+
+                    </div>
+
+
+                    <!-- ADDRESS TYPE -->
+
+                    <div class="form-group">
+
+                        <label>
+                            סוג כתובת
+                        </label>
+
+                        <select id="shipmentAddressType">
+
+                            <option value="בניין">
+                                בניין
+                            </option>
+
+                            <option value="בית פרטי">
+                                בית פרטי
+                            </option>
+
+                            <option value="עסק">
+                                עסק
+                            </option>
+
+                            <option value="משרד">
+                                משרד
+                            </option>
+
+                            <option value="אחר">
+                                אחר
+                            </option>
+
+                        </select>
+
+                    </div>
+
+
+                    <!-- CITY -->
+
+                    <div class="form-group">
+
+                        <label>
+                            עיר
+                        </label>
+
+                        <input
+                            type="text"
+                            id="shipmentCity"
+                            required
+                        >
+
+                    </div>
+
+
+                    <!-- STREET -->
+
+                    <div class="form-group">
+
+                        <label>
+                            רחוב
+                        </label>
+
+                        <input
+                            type="text"
+                            id="shipmentStreet"
+                            required
+                        >
+
+                    </div>
+
+
+                    <!-- HOUSE NUMBER -->
+
+                    <div class="form-group">
+
+                        <label>
+                            מספר בית
+                        </label>
+
+                        <input
+                            type="text"
+                            id="shipmentHouseNumber"
+                            required
+                        >
+
+                    </div>
+
+
+                    <!-- ENTRANCE -->
+
+                    <div class="form-group">
+
+                        <label>
+                            כניסה
+                        </label>
+
+                        <input
+                            type="text"
+                            id="shipmentEntrance"
+                            placeholder="לדוגמה: ב"
+                        >
+
+                    </div>
+
+
+                    <!-- FLOOR -->
+
+                    <div class="form-group">
+
+                        <label>
+                            קומה
+                        </label>
+
+                        <input
+                            type="text"
+                            id="shipmentFloor"
+                        >
+
+                    </div>
+
+
+                    <!-- APARTMENT -->
+
+                    <div class="form-group">
+
+                        <label>
+                            דירה
+                        </label>
+
+                        <input
+                            type="text"
+                            id="shipmentApartment"
+                        >
+
+                    </div>
+
+
+                    <!-- DRIVER -->
+
+                    <div class="form-group">
+
+                        <label>
+                            שיוך לשליח
+                        </label>
+
+                        <select id="shipmentDriver">
+
+                            <option value="">
+                                ללא שיוך
+                            </option>
+
+                            <option value="שון">
+                                שון
+                            </option>
+
+                            <option value="דניאל">
+                                דניאל
+                            </option>
+
+                            <option value="אבי">
+                                אבי
+                            </option>
+
+                            <option value="רועי">
+                                רועי
+                            </option>
+
+                        </select>
+
+                    </div>
+
+
+                    <!-- STATUS -->
+
+                    <div class="form-group">
+
+                        <label>
+                            סטטוס
+                        </label>
+
+                        <select id="shipmentStatus">
+
+                            <option value="ממתין לשיוך">
+                                ממתין לשיוך
+                            </option>
+
+                            <option value="משויך">
+                                משויך
+                            </option>
+
+                            <option value="בדרך">
+                                בדרך
+                            </option>
+
+                            <option value="נמסר">
+                                נמסר
+                            </option>
+
+                            <option value="לא נמסר">
+                                לא נמסר
+                            </option>
+
+                        </select>
+
+                    </div>
+
+                </div>
+
+
+                <!-- NOTES -->
+
+                <div
+                    class="form-group"
+                    style="margin-top: 17px;"
+                >
+
+                    <label>
+                        הערות לשליח
+                    </label>
+
+                    <input
+                        type="text"
+                        id="shipmentNotes"
+                        placeholder="לדוגמה: קוד כניסה 2580#, להתקשר לפני הגעה"
+                    >
+
+                </div>
+
+
+                <div class="modal-actions">
+
+                    <button
+                        type="button"
+                        class="secondary-btn"
+                        id="cancelShipmentButton"
+                    >
+                        ביטול
+                    </button>
+
+
+                    <button
+                        type="submit"
+                        class="primary-btn"
+                    >
+                        שמור משלוח
+                    </button>
+
+                </div>
+
+            </form>
+
+        </div>
+
+    </div>
+
+
+    <script src="app.js"></script>
+
+</body>
+
+</html>
