@@ -1,0 +1,678 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>קליטת משלוחים | Delivery</title>
+
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+
+    <!-- =========================
+         SIDEBAR
+    ========================== -->
+
+    <aside class="sidebar">
+
+        <div class="logo">
+
+            <div class="logo-icon">
+                D
+            </div>
+
+            <div class="logo-text">
+
+                <h2>Delivery</h2>
+
+                <span>
+                    מערכת ניהול משלוחים
+                </span>
+
+            </div>
+
+        </div>
+
+
+        <nav class="menu">
+
+            <a href="index.html" class="menu-item">
+                <span class="menu-icon">🏠</span>
+                <span>לוח בקרה</span>
+            </a>
+
+            <a href="warehouse.html" class="menu-item active">
+                <span class="menu-icon">📥</span>
+                <span>קליטת משלוחים</span>
+            </a>
+
+            <a href="shipments.html" class="menu-item">
+                <span class="menu-icon">📦</span>
+                <span>משלוחים</span>
+            </a>
+
+            <a href="drivers.html" class="menu-item">
+                <span class="menu-icon">🚚</span>
+                <span>שליחים</span>
+            </a>
+
+            <a href="cities.html" class="menu-item">
+                <span class="menu-icon">📍</span>
+                <span>ערים ואזורים</span>
+            </a>
+
+            <a href="#" class="menu-item">
+                <span class="menu-icon">🗺️</span>
+                <span>מפת פעילות</span>
+            </a>
+
+            <a href="reports.html" class="menu-item">
+                <span class="menu-icon">📊</span>
+                <span>דוחות</span>
+            </a>
+
+            <a href="settings.html" class="menu-item">
+                <span class="menu-icon">⚙️</span>
+                <span>הגדרות</span>
+            </a>
+
+        </nav>
+
+
+        <div class="sidebar-user">
+
+            <div class="user-avatar">
+                ש
+            </div>
+
+            <div class="user-details">
+
+                <strong>
+                    מנהל עבודה
+                </strong>
+
+                <span>
+                    Administrator
+                </span>
+
+            </div>
+
+        </div>
+
+    </aside>
+
+
+    <!-- =========================
+         MAIN CONTENT
+    ========================== -->
+
+    <main class="main-content">
+
+
+        <!-- HEADER -->
+
+        <header class="topbar">
+
+            <div class="page-title">
+
+                <h1>
+                    קליטת משלוחים
+                </h1>
+
+                <p>
+                    סריקת משלוחים חדשים שנכנסו למחסן
+                </p>
+
+            </div>
+
+
+            <div class="topbar-actions">
+
+                <button
+                    class="secondary-btn"
+                    id="manualDeliveryButton"
+                >
+                    + הזנה ידנית
+                </button>
+
+            </div>
+
+        </header>
+
+
+        <!-- =========================
+             STATS
+        ========================== -->
+
+        <section class="stats-grid warehouse-stats">
+
+            <div class="stat-card">
+
+                <div class="stat-header">
+
+                    <span>
+                        נקלטו היום
+                    </span>
+
+                    <span class="stat-icon">
+                        📦
+                    </span>
+
+                </div>
+
+                <div
+                    class="stat-number"
+                    id="receivedTodayCount"
+                >
+                    326
+                </div>
+
+                <div class="stat-footer success">
+                    משלוחים שנקלטו במחסן
+                </div>
+
+            </div>
+
+
+            <div class="stat-card">
+
+                <div class="stat-header">
+
+                    <span>
+                        ממתינים לשיוך
+                    </span>
+
+                    <span class="stat-icon">
+                        ⏳
+                    </span>
+
+                </div>
+
+                <div class="stat-number">
+                    58
+                </div>
+
+                <div class="stat-footer warning">
+                    עדיין לא שויכו לשליח
+                </div>
+
+            </div>
+
+
+            <div class="stat-card">
+
+                <div class="stat-header">
+
+                    <span>
+                        שויכו לשליח
+                    </span>
+
+                    <span class="stat-icon">
+                        🚚
+                    </span>
+
+                </div>
+
+                <div class="stat-number">
+                    268
+                </div>
+
+                <div class="stat-footer success">
+                    מוכנים להפצה
+                </div>
+
+            </div>
+
+
+            <div class="stat-card">
+
+                <div class="stat-header">
+
+                    <span>
+                        סריקות כפולות
+                    </span>
+
+                    <span class="stat-icon">
+                        ⚠️
+                    </span>
+
+                </div>
+
+                <div
+                    class="stat-number"
+                    id="duplicateCount"
+                >
+                    0
+                </div>
+
+                <div class="stat-footer danger">
+                    ברקודים שכבר נקלטו
+                </div>
+
+            </div>
+
+        </section>
+
+
+        <!-- =========================
+             BARCODE SCANNER
+        ========================== -->
+
+        <section class="scanner-card">
+
+            <div class="scanner-header">
+
+                <div>
+
+                    <h2>
+                        📥 סריקת ברקוד
+                    </h2>
+
+                    <p>
+                        העבר את הסורק על הברקוד של המשלוח
+                    </p>
+
+                </div>
+
+
+                <div
+                    class="scanner-status"
+                    id="scannerStatus"
+                >
+
+                    <span class="status-dot"></span>
+
+                    מוכן לסריקה
+
+                </div>
+
+            </div>
+
+
+            <div class="scanner-body">
+
+                <label for="barcodeInput">
+                    ברקוד / מספר משלוח
+                </label>
+
+
+                <div class="scanner-input-wrapper">
+
+                    <input
+                        type="text"
+                        id="barcodeInput"
+                        placeholder="סרוק ברקוד..."
+                        autocomplete="off"
+                        autofocus
+                    >
+
+                    <button
+                        id="scanButton"
+                        class="scan-button"
+                    >
+                        קלוט
+                    </button>
+
+                </div>
+
+
+                <div class="scanner-help">
+
+                    💡 אקדח ברקוד USB עובד כמו מקלדת.
+                    לאחר הסריקה המערכת תקבל את הברקוד ותבצע קליטה אוטומטית.
+
+                </div>
+
+            </div>
+
+        </section>
+
+
+        <!-- =========================
+             RESULT MESSAGE
+        ========================== -->
+
+        <section
+            id="scanResult"
+            class="scan-result hidden"
+        >
+        </section>
+
+
+        <!-- =========================
+             RECENT SHIPMENTS
+        ========================== -->
+
+        <section class="panel">
+
+            <div class="panel-header">
+
+                <div>
+
+                    <h2>
+                        משלוחים שנקלטו לאחרונה
+                    </h2>
+
+                    <p>
+                        הסריקות האחרונות שבוצעו במחסן
+                    </p>
+
+                </div>
+
+
+                <a
+                    href="shipments.html"
+                    class="panel-link"
+                >
+                    הצג את כל המשלוחים
+                </a>
+
+            </div>
+
+
+            <div class="table-wrapper">
+
+                <table>
+
+                    <thead>
+
+                        <tr>
+
+                            <th>
+                                שעה
+                            </th>
+
+                            <th>
+                                מספר משלוח
+                            </th>
+
+                            <th>
+                                ברקוד
+                            </th>
+
+                            <th>
+                                לקוח
+                            </th>
+
+                            <th>
+                                טלפון
+                            </th>
+
+                            <th>
+                                עיר
+                            </th>
+
+                            <th>
+                                כתובת
+                            </th>
+
+                            <th>
+                                סטטוס
+                            </th>
+
+                        </tr>
+
+                    </thead>
+
+
+                    <tbody id="recentShipmentsTable">
+
+                        <tr>
+
+                            <td>
+                                19:31
+                            </td>
+
+                            <td>
+                                #100326
+                            </td>
+
+                            <td>
+                                72900100326
+                            </td>
+
+                            <td>
+                                ישראל ישראלי
+                            </td>
+
+                            <td>
+                                050-1234567
+                            </td>
+
+                            <td>
+                                ראשון לציון
+                            </td>
+
+                            <td>
+                                הרצל 15
+                            </td>
+
+                            <td>
+
+                                <span class="status waiting">
+                                    ממתין לשיוך
+                                </span>
+
+                            </td>
+
+                        </tr>
+
+
+                        <tr>
+
+                            <td>
+                                19:29
+                            </td>
+
+                            <td>
+                                #100325
+                            </td>
+
+                            <td>
+                                72900100325
+                            </td>
+
+                            <td>
+                                דניאל כהן
+                            </td>
+
+                            <td>
+                                052-7654321
+                            </td>
+
+                            <td>
+                                חולון
+                            </td>
+
+                            <td>
+                                סוקולוב 24
+                            </td>
+
+                            <td>
+
+                                <span class="status waiting">
+                                    ממתין לשיוך
+                                </span>
+
+                            </td>
+
+                        </tr>
+
+                    </tbody>
+
+                </table>
+
+            </div>
+
+        </section>
+
+    </main>
+
+
+    <!-- =========================
+         MANUAL DELIVERY MODAL
+    ========================== -->
+
+    <div
+        class="modal-overlay hidden"
+        id="manualDeliveryModal"
+    >
+
+        <div class="modal-box">
+
+            <div class="modal-header">
+
+                <div>
+
+                    <h2>
+                        הזנת משלוח ידנית
+                    </h2>
+
+                    <p>
+                        מיועד למקרה שבו לא ניתן לבצע סריקה
+                    </p>
+
+                </div>
+
+
+                <button
+                    class="modal-close"
+                    id="closeManualModal"
+                >
+                    ×
+                </button>
+
+            </div>
+
+
+            <form id="manualDeliveryForm">
+
+                <div class="form-grid">
+
+                    <div class="form-group">
+
+                        <label>
+                            ברקוד
+                        </label>
+
+                        <input
+                            type="text"
+                            id="manualBarcode"
+                            required
+                        >
+
+                    </div>
+
+
+                    <div class="form-group">
+
+                        <label>
+                            מספר משלוח
+                        </label>
+
+                        <input
+                            type="text"
+                            id="manualShipmentNumber"
+                            required
+                        >
+
+                    </div>
+
+
+                    <div class="form-group">
+
+                        <label>
+                            שם לקוח
+                        </label>
+
+                        <input
+                            type="text"
+                            id="manualCustomer"
+                            required
+                        >
+
+                    </div>
+
+
+                    <div class="form-group">
+
+                        <label>
+                            טלפון
+                        </label>
+
+                        <input
+                            type="text"
+                            id="manualPhone"
+                            required
+                        >
+
+                    </div>
+
+
+                    <div class="form-group">
+
+                        <label>
+                            עיר
+                        </label>
+
+                        <input
+                            type="text"
+                            id="manualCity"
+                            required
+                        >
+
+                    </div>
+
+
+                    <div class="form-group">
+
+                        <label>
+                            כתובת
+                        </label>
+
+                        <input
+                            type="text"
+                            id="manualAddress"
+                            required
+                        >
+
+                    </div>
+
+                </div>
+
+
+                <div class="modal-actions">
+
+                    <button
+                        type="button"
+                        class="secondary-btn"
+                        id="cancelManualDelivery"
+                    >
+                        ביטול
+                    </button>
+
+
+                    <button
+                        type="submit"
+                        class="primary-btn"
+                    >
+                        שמור משלוח
+                    </button>
+
+                </div>
+
+            </form>
+
+        </div>
+
+    </div>
+
+
+    <script src="app.js"></script>
+
+</body>
+
+</html>
