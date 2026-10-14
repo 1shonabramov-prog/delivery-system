@@ -78,7 +78,6 @@
             </a>
 
 
-
             <a
                 href="warehouse.html"
                 class="menu-item"
@@ -93,7 +92,6 @@
                 </span>
 
             </a>
-
 
 
             <a
@@ -112,7 +110,6 @@
             </a>
 
 
-
             <a
                 href="drivers.html"
                 class="menu-item"
@@ -127,7 +124,6 @@
                 </span>
 
             </a>
-
 
 
             <a
@@ -146,7 +142,6 @@
             </a>
 
 
-
             <a
                 href="#"
                 class="menu-item"
@@ -163,7 +158,6 @@
             </a>
 
 
-
             <a
                 href="reports.html"
                 class="menu-item"
@@ -178,7 +172,6 @@
                 </span>
 
             </a>
-
 
 
             <a
@@ -233,8 +226,6 @@
     <main class="main-content">
 
 
-        <!-- HEADER -->
-
         <header class="topbar">
 
             <div class="page-title">
@@ -253,14 +244,12 @@
 
 
 
-        <!-- =================================================
-             SETTINGS LAYOUT
-        ================================================== -->
-
         <section class="settings-layout">
 
 
-            <!-- SETTINGS NAVIGATION -->
+            <!-- =============================================
+                 SETTINGS NAVIGATION
+            ============================================== -->
 
             <aside class="settings-navigation">
 
@@ -289,7 +278,6 @@
                 </button>
 
 
-
                 <button
                     class="settings-nav-item active"
                     data-section="users"
@@ -312,7 +300,6 @@
                     </div>
 
                 </button>
-
 
 
                 <button
@@ -339,7 +326,6 @@
                 </button>
 
 
-
                 <button
                     class="settings-nav-item"
                     data-section="barcode"
@@ -362,7 +348,6 @@
                     </div>
 
                 </button>
-
 
 
                 <button
@@ -389,7 +374,6 @@
                 </button>
 
 
-
                 <button
                     class="settings-nav-item"
                     data-section="notifications"
@@ -412,7 +396,6 @@
                     </div>
 
                 </button>
-
 
 
                 <button
@@ -443,16 +426,12 @@
 
 
 
-            <!-- =================================================
-                 SETTINGS CONTENT
-            ================================================== -->
+            <!-- =============================================
+                 CONTENT
+            ============================================== -->
 
             <div class="settings-content">
 
-
-                <!-- =============================================
-                     USERS SECTION
-                ============================================== -->
 
                 <section
                     id="usersSection"
@@ -479,16 +458,16 @@
                             class="primary-btn"
                             id="newUserButton"
                         >
-
                             + משתמש חדש
-
                         </button>
 
                     </div>
 
 
 
-                    <!-- STATS -->
+                    <!-- =====================================
+                         COUNTERS
+                    ====================================== -->
 
                     <div class="settings-stats">
 
@@ -508,39 +487,6 @@
                         </div>
 
 
-
-                        <div class="settings-stat">
-
-                            <span>
-                                שליחים
-                            </span>
-
-                            <strong
-                                id="driverUsersCount"
-                            >
-                                0
-                            </strong>
-
-                        </div>
-
-
-
-                        <div class="settings-stat">
-
-                            <span>
-                                מנהלים
-                            </span>
-
-                            <strong
-                                id="adminUsersCount"
-                            >
-                                0
-                            </strong>
-
-                        </div>
-
-
-
                         <div class="settings-stat">
 
                             <span>
@@ -556,11 +502,43 @@
                         </div>
 
 
+                        <div class="settings-stat">
+
+                            <span>
+                                שליחים פעילים
+                            </span>
+
+                            <strong
+                                id="activeDriverUsersCount"
+                            >
+                                0
+                            </strong>
+
+                        </div>
+
+
+                        <div class="settings-stat">
+
+                            <span>
+                                משתמשים לא פעילים
+                            </span>
+
+                            <strong
+                                id="inactiveUsersCount"
+                            >
+                                0
+                            </strong>
+
+                        </div>
+
+
                     </div>
 
 
 
-                    <!-- FILTER -->
+                    <!-- =====================================
+                         FILTERS
+                    ====================================== -->
 
                     <div class="users-toolbar">
 
@@ -570,7 +548,6 @@
                             id="userSearchInput"
                             placeholder="חיפוש לפי שם / טלפון / שם משתמש"
                         >
-
 
 
                         <select id="userRoleFilter">
@@ -594,7 +571,6 @@
                         </select>
 
 
-
                         <select id="userStatusFilter">
 
                             <option value="">
@@ -616,7 +592,9 @@
 
 
 
-                    <!-- USERS TABLE -->
+                    <!-- =====================================
+                         USERS TABLE
+                    ====================================== -->
 
                     <div class="table-wrapper">
 
@@ -661,7 +639,6 @@
                             </thead>
 
 
-
                             <tbody id="usersTableBody">
 
                             </tbody>
@@ -676,10 +653,6 @@
                 </section>
 
 
-
-                <!-- =============================================
-                     PLACEHOLDER SECTIONS
-                ============================================== -->
 
                 <section
                     id="placeholderSection"
@@ -744,7 +717,6 @@
                 </div>
 
 
-
                 <button
                     type="button"
                     class="modal-close"
@@ -767,11 +739,8 @@
                 >
 
 
-
                 <div class="form-grid">
 
-
-                    <!-- FULL NAME -->
 
                     <div class="form-group">
 
@@ -788,9 +757,6 @@
                     </div>
 
 
-
-                    <!-- PHONE -->
-
                     <div class="form-group">
 
                         <label>
@@ -806,9 +772,6 @@
                     </div>
 
 
-
-                    <!-- EMAIL -->
-
                     <div class="form-group">
 
                         <label>
@@ -822,9 +785,6 @@
 
                     </div>
 
-
-
-                    <!-- ROLE -->
 
                     <div class="form-group">
 
@@ -854,9 +814,6 @@
                     </div>
 
 
-
-                    <!-- USERNAME -->
-
                     <div class="form-group">
 
                         <label>
@@ -873,9 +830,6 @@
                     </div>
 
 
-
-                    <!-- PASSWORD -->
-
                     <div class="form-group">
 
                         <label>
@@ -891,9 +845,6 @@
 
                     </div>
 
-
-
-                    <!-- RATE -->
 
                     <div
                         class="form-group"
@@ -914,9 +865,6 @@
 
                     </div>
 
-
-
-                    <!-- STATUS -->
 
                     <div class="form-group">
 
@@ -945,8 +893,6 @@
                 </div>
 
 
-
-                <!-- NOTES -->
 
                 <div
                     class="form-group"
@@ -983,7 +929,7 @@
                     <div class="security-note">
 
                         ⚠️ כרגע זו סביבת פיתוח בדפדפן בלבד.
-                        בהמשך נעביר את הסיסמאות לשרת מאובטח ולא נשמור אותן בדפדפן.
+                        בהמשך הסיסמאות יישמרו בצורה מאובטחת בצד השרת.
 
                     </div>
 
@@ -1000,20 +946,15 @@
                         class="secondary-btn"
                         id="cancelUserButton"
                     >
-
                         ביטול
-
                     </button>
-
 
 
                     <button
                         type="submit"
                         class="primary-btn"
                     >
-
                         שמור משתמש
-
                     </button>
 
 

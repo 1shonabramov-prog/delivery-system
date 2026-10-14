@@ -4,9 +4,8 @@
 // =========================================================
 
 
-
 // =========================================================
-// STORAGE
+// STORAGE KEYS
 // =========================================================
 
 const USERS_STORAGE_KEY =
@@ -14,7 +13,6 @@ const USERS_STORAGE_KEY =
 
 const DRIVERS_STORAGE_KEY =
     "delivery_system_drivers";
-
 
 
 // =========================================================
@@ -58,7 +56,6 @@ function getUsers() {
 }
 
 
-
 // =========================================================
 // SAVE USERS
 // =========================================================
@@ -76,7 +73,6 @@ function saveUsers(users) {
     );
 
 }
-
 
 
 // =========================================================
@@ -108,12 +104,16 @@ function getDrivers() {
 
     catch (error) {
 
+        console.error(
+            "Failed loading drivers",
+            error
+        );
+
         return [];
 
     }
 
 }
-
 
 
 // =========================================================
@@ -133,7 +133,6 @@ function saveDrivers(drivers) {
     );
 
 }
-
 
 
 // =========================================================
@@ -157,9 +156,8 @@ function createId(prefix) {
 }
 
 
-
 // =========================================================
-// INITIAL ADMIN USER
+// INITIAL ADMIN
 // =========================================================
 
 function initializeUsers() {
@@ -230,9 +228,8 @@ function initializeUsers() {
 }
 
 
-
 // =========================================================
-// DOM ELEMENTS
+// DOM
 // =========================================================
 
 const usersTableBody =
@@ -301,7 +298,6 @@ const driverRateGroup =
     );
 
 
-
 // =========================================================
 // ROLE NAME
 // =========================================================
@@ -332,7 +328,6 @@ function getRoleName(role) {
     }
 
 }
-
 
 
 // =========================================================
@@ -367,7 +362,6 @@ function getRoleClass(role) {
 }
 
 
-
 // =========================================================
 // FORMAT MONEY
 // =========================================================
@@ -394,9 +388,8 @@ function formatMoney(value) {
 }
 
 
-
 // =========================================================
-// UPDATE COUNTERS
+// COUNTERS
 // =========================================================
 
 function updateUserCounters() {
@@ -405,31 +398,11 @@ function updateUserCounters() {
         getUsers();
 
 
-    const total =
+    const totalUsers =
         users.length;
 
 
-    const drivers =
-        users.filter(
-
-            user =>
-                user.role ===
-                "DRIVER"
-
-        ).length;
-
-
-    const admins =
-        users.filter(
-
-            user =>
-                user.role ===
-                "ADMIN"
-
-        ).length;
-
-
-    const active =
+    const activeUsers =
         users.filter(
 
             user =>
@@ -439,39 +412,88 @@ function updateUserCounters() {
         ).length;
 
 
-    document
-        .getElementById(
+    const activeDrivers =
+        users.filter(
+
+            user =>
+
+                user.role ===
+                    "DRIVER"
+
+                &&
+
+                user.status ===
+                    "פעיל"
+
+        ).length;
+
+
+    const inactiveUsers =
+        users.filter(
+
+            user =>
+                user.status ===
+                "לא פעיל"
+
+        ).length;
+
+
+    const totalUsersCount =
+        document.getElementById(
             "totalUsersCount"
-        )
-        .textContent =
-        total;
+        );
 
 
-    document
-        .getElementById(
-            "driverUsersCount"
-        )
-        .textContent =
-        drivers;
-
-
-    document
-        .getElementById(
-            "adminUsersCount"
-        )
-        .textContent =
-        admins;
-
-
-    document
-        .getElementById(
+    const activeUsersCount =
+        document.getElementById(
             "activeUsersCount"
-        )
-        .textContent =
-        active;
+        );
+
+
+    const activeDriverUsersCount =
+        document.getElementById(
+            "activeDriverUsersCount"
+        );
+
+
+    const inactiveUsersCount =
+        document.getElementById(
+            "inactiveUsersCount"
+        );
+
+
+    if (totalUsersCount) {
+
+        totalUsersCount.textContent =
+            totalUsers;
+
+    }
+
+
+    if (activeUsersCount) {
+
+        activeUsersCount.textContent =
+            activeUsers;
+
+    }
+
+
+    if (activeDriverUsersCount) {
+
+        activeDriverUsersCount.textContent =
+            activeDrivers;
+
+    }
+
+
+    if (inactiveUsersCount) {
+
+        inactiveUsersCount.textContent =
+            inactiveUsers;
+
+    }
 
 }
-
 
 
 // =========================================================
@@ -508,7 +530,6 @@ function renderUsers() {
         userStatusFilter.value;
 
 
-
     const filtered =
         users.filter(
 
@@ -530,22 +551,19 @@ function renderUsers() {
                     .toLowerCase();
 
 
-
                 if (
 
                     search &&
 
-                    !searchable
-                        .includes(
-                            search
-                        )
+                    !searchable.includes(
+                        search
+                    )
 
                 ) {
 
                     return false;
 
                 }
-
 
 
                 if (
@@ -560,7 +578,6 @@ function renderUsers() {
                     return false;
 
                 }
-
 
 
                 if (
@@ -584,10 +601,8 @@ function renderUsers() {
         );
 
 
-
     usersTableBody.innerHTML =
         "";
-
 
 
     if (
@@ -621,18 +636,15 @@ function renderUsers() {
     }
 
 
-
     filtered.forEach(
 
         user => {
 
 
             const row =
-                document
-                    .createElement(
-                        "tr"
-                    );
-
+                document.createElement(
+                    "tr"
+                );
 
 
             const rate =
@@ -649,7 +661,6 @@ function renderUsers() {
                     :
 
                     "-";
-
 
 
             row.innerHTML = `
@@ -684,11 +695,9 @@ function renderUsers() {
                 </td>
 
 
-
                 <td>
                     ${user.phone}
                 </td>
-
 
 
                 <td>
@@ -698,7 +707,6 @@ function renderUsers() {
                     </strong>
 
                 </td>
-
 
 
                 <td>
@@ -721,11 +729,9 @@ function renderUsers() {
                 </td>
 
 
-
                 <td>
                     ${rate}
                 </td>
-
 
 
                 <td>
@@ -755,7 +761,6 @@ function renderUsers() {
                 </td>
 
 
-
                 <td>
 
                     <button
@@ -777,7 +782,6 @@ function renderUsers() {
             `;
 
 
-
             usersTableBody
                 .appendChild(
                     row
@@ -790,9 +794,8 @@ function renderUsers() {
 }
 
 
-
 // =========================================================
-// ROLE CHANGE
+// RATE FIELD VISIBILITY
 // =========================================================
 
 function updateRateVisibility() {
@@ -823,7 +826,6 @@ function updateRateVisibility() {
 }
 
 
-
 userRole
     .addEventListener(
 
@@ -834,9 +836,8 @@ userRole
     );
 
 
-
 // =========================================================
-// OPEN NEW USER
+// NEW USER
 // =========================================================
 
 newUserButton
@@ -900,7 +901,6 @@ newUserButton
     );
 
 
-
 // =========================================================
 // CLOSE MODAL
 // =========================================================
@@ -916,7 +916,6 @@ function closeUserManagementModal() {
 }
 
 
-
 closeUserModal
     .addEventListener(
 
@@ -927,7 +926,6 @@ closeUserModal
     );
 
 
-
 cancelUserButton
     .addEventListener(
 
@@ -936,7 +934,6 @@ cancelUserButton
         closeUserManagementModal
 
     );
-
 
 
 // =========================================================
@@ -959,14 +956,11 @@ function editUser(userId) {
         );
 
 
-    if (
-        !user
-    ) {
+    if (!user) {
 
         return;
 
     }
-
 
 
     document
@@ -977,14 +971,12 @@ function editUser(userId) {
         user.id;
 
 
-
     document
         .getElementById(
             "userFullName"
         )
         .value =
         user.fullName;
-
 
 
     document
@@ -995,14 +987,12 @@ function editUser(userId) {
         user.phone;
 
 
-
     document
         .getElementById(
             "userEmail"
         )
         .value =
         user.email || "";
-
 
 
     document
@@ -1013,14 +1003,12 @@ function editUser(userId) {
         user.role;
 
 
-
     document
         .getElementById(
             "userUsername"
         )
         .value =
         user.username;
-
 
 
     document
@@ -1031,14 +1019,12 @@ function editUser(userId) {
         user.password;
 
 
-
     document
         .getElementById(
             "userDeliveryRate"
         )
         .value =
         user.deliveryRate || 0;
-
 
 
     document
@@ -1049,14 +1035,12 @@ function editUser(userId) {
         user.status;
 
 
-
     document
         .getElementById(
             "userNotes"
         )
         .value =
         user.notes || "";
-
 
 
     document
@@ -1079,7 +1063,6 @@ function editUser(userId) {
 }
 
 
-
 // =========================================================
 // SAVE USER
 // =========================================================
@@ -1095,7 +1078,6 @@ userForm
             event.preventDefault();
 
 
-
             const users =
                 getUsers();
 
@@ -1108,7 +1090,6 @@ userForm
                     .value;
 
 
-
             const fullName =
                 document
                     .getElementById(
@@ -1116,7 +1097,6 @@ userForm
                     )
                     .value
                     .trim();
-
 
 
             const phone =
@@ -1128,7 +1108,6 @@ userForm
                     .trim();
 
 
-
             const email =
                 document
                     .getElementById(
@@ -1138,14 +1117,12 @@ userForm
                     .trim();
 
 
-
             const role =
                 document
                     .getElementById(
                         "userRole"
                     )
                     .value;
-
 
 
             const username =
@@ -1157,14 +1134,12 @@ userForm
                     .trim();
 
 
-
             const password =
                 document
                     .getElementById(
                         "userPassword"
                     )
                     .value;
-
 
 
             const deliveryRate =
@@ -1189,14 +1164,12 @@ userForm
                     0;
 
 
-
             const status =
                 document
                     .getElementById(
                         "userStatus"
                     )
                     .value;
-
 
 
             const notes =
@@ -1208,10 +1181,9 @@ userForm
                     .trim();
 
 
-
-            // =============================================
-            // UNIQUE USERNAME
-            // =============================================
+            // =================================================
+            // USERNAME MUST BE UNIQUE
+            // =================================================
 
             const usernameExists =
                 users.some(
@@ -1234,7 +1206,6 @@ userForm
                 );
 
 
-
             if (
                 usernameExists
             ) {
@@ -1248,10 +1219,9 @@ userForm
             }
 
 
-
-            // =============================================
-            // EDIT USER
-            // =============================================
+            // =================================================
+            // EDIT
+            // =================================================
 
             if (
                 editingId
@@ -1277,19 +1247,16 @@ userForm
                 }
 
 
-
                 const oldRole =
                     users[
                         index
                     ].role;
 
 
-
                 const oldDriverId =
                     users[
                         index
                     ].driverId;
-
 
 
                 users[
@@ -1330,9 +1297,9 @@ userForm
                 };
 
 
-
-                // אם המשתמש הוא שליח
-                // נעדכן גם את רשימת השליחים.
+                // =============================================
+                // DRIVER USER
+                // =============================================
 
                 if (
                     role ===
@@ -1344,10 +1311,8 @@ userForm
                         getDrivers();
 
 
-
                     let driverId =
                         oldDriverId;
-
 
 
                     let driverIndex =
@@ -1358,7 +1323,6 @@ userForm
                                 driverId
 
                         );
-
 
 
                     if (
@@ -1408,14 +1372,12 @@ userForm
                         });
 
 
-
                         users[
                             index
                         ].driverId =
                             driverId;
 
                     }
-
 
                     else {
 
@@ -1454,7 +1416,6 @@ userForm
                     }
 
 
-
                     saveDrivers(
                         drivers
                     );
@@ -1462,8 +1423,6 @@ userForm
                 }
 
 
-
-                // אם הוא היה שליח ושונה לתפקיד אחר
                 else if (
                     oldRole ===
                     "DRIVER"
@@ -1499,10 +1458,9 @@ userForm
             }
 
 
-
-            // =============================================
-            // CREATE NEW USER
-            // =============================================
+            // =================================================
+            // NEW USER
+            // =================================================
 
             else {
 
@@ -1515,7 +1473,6 @@ userForm
 
                 let driverId =
                     null;
-
 
 
                 if (
@@ -1532,7 +1489,6 @@ userForm
 
                     const drivers =
                         getDrivers();
-
 
 
                     drivers.push({
@@ -1571,13 +1527,11 @@ userForm
                     });
 
 
-
                     saveDrivers(
                         drivers
                     );
 
                 }
-
 
 
                 users.push({
@@ -1624,32 +1578,26 @@ userForm
             }
 
 
-
             saveUsers(
                 users
             );
 
 
-
             closeUserManagementModal();
-
 
 
             updateUserCounters();
 
 
-
             renderUsers();
-
 
         }
 
     );
 
 
-
 // =========================================================
-// FILTER EVENTS
+// FILTERS
 // =========================================================
 
 userSearchInput
@@ -1662,7 +1610,6 @@ userSearchInput
     );
 
 
-
 userRoleFilter
     .addEventListener(
 
@@ -1671,7 +1618,6 @@ userRoleFilter
         renderUsers
 
     );
-
 
 
 userStatusFilter
@@ -1684,9 +1630,8 @@ userStatusFilter
     );
 
 
-
 // =========================================================
-// SETTINGS NAVIGATION
+// SETTINGS MENU
 // =========================================================
 
 const navButtons =
@@ -1713,7 +1658,6 @@ const placeholderTitle =
     );
 
 
-
 const sectionTitles = {
 
     business:
@@ -1735,7 +1679,6 @@ const sectionTitles = {
         "אינטגרציות"
 
 };
-
 
 
 navButtons.forEach(
@@ -1768,10 +1711,8 @@ navButtons.forEach(
                     );
 
 
-
                 const section =
                     button.dataset.section;
-
 
 
                 if (
@@ -1794,7 +1735,6 @@ navButtons.forEach(
                         );
 
                 }
-
 
                 else {
 
@@ -1835,18 +1775,14 @@ navButtons.forEach(
 );
 
 
-
 // =========================================================
 // INITIALIZE
 // =========================================================
 
 initializeUsers();
 
-
 updateRateVisibility();
 
-
 updateUserCounters();
-
 
 renderUsers();
