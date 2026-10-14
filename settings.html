@@ -1,0 +1,1038 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
+
+    <title>
+        הגדרות | Delivery
+    </title>
+
+    <link
+        rel="stylesheet"
+        href="style.css"
+    >
+
+    <link
+        rel="stylesheet"
+        href="settings.css"
+    >
+
+</head>
+
+
+<body>
+
+
+    <!-- =====================================================
+         SIDEBAR
+    ====================================================== -->
+
+    <aside class="sidebar">
+
+
+        <div class="logo">
+
+            <div class="logo-icon">
+                D
+            </div>
+
+            <div class="logo-text">
+
+                <h2>
+                    Delivery
+                </h2>
+
+                <span>
+                    מערכת ניהול משלוחים
+                </span>
+
+            </div>
+
+        </div>
+
+
+
+        <nav class="menu">
+
+
+            <a
+                href="index.html"
+                class="menu-item"
+            >
+
+                <span class="menu-icon">
+                    🏠
+                </span>
+
+                <span>
+                    לוח בקרה
+                </span>
+
+            </a>
+
+
+
+            <a
+                href="warehouse.html"
+                class="menu-item"
+            >
+
+                <span class="menu-icon">
+                    📥
+                </span>
+
+                <span>
+                    קליטת משלוחים
+                </span>
+
+            </a>
+
+
+
+            <a
+                href="shipments.html"
+                class="menu-item"
+            >
+
+                <span class="menu-icon">
+                    📦
+                </span>
+
+                <span>
+                    משלוחים
+                </span>
+
+            </a>
+
+
+
+            <a
+                href="drivers.html"
+                class="menu-item"
+            >
+
+                <span class="menu-icon">
+                    🚚
+                </span>
+
+                <span>
+                    שליחים
+                </span>
+
+            </a>
+
+
+
+            <a
+                href="cities.html"
+                class="menu-item"
+            >
+
+                <span class="menu-icon">
+                    📍
+                </span>
+
+                <span>
+                    ערים ואזורים
+                </span>
+
+            </a>
+
+
+
+            <a
+                href="#"
+                class="menu-item"
+            >
+
+                <span class="menu-icon">
+                    🗺️
+                </span>
+
+                <span>
+                    מפת פעילות
+                </span>
+
+            </a>
+
+
+
+            <a
+                href="reports.html"
+                class="menu-item"
+            >
+
+                <span class="menu-icon">
+                    📊
+                </span>
+
+                <span>
+                    דוחות
+                </span>
+
+            </a>
+
+
+
+            <a
+                href="settings.html"
+                class="menu-item active"
+            >
+
+                <span class="menu-icon">
+                    ⚙️
+                </span>
+
+                <span>
+                    הגדרות
+                </span>
+
+            </a>
+
+
+        </nav>
+
+
+
+        <div class="sidebar-user">
+
+            <div class="user-avatar">
+                ש
+            </div>
+
+            <div class="user-details">
+
+                <strong>
+                    מנהל עבודה
+                </strong>
+
+                <span>
+                    Administrator
+                </span>
+
+            </div>
+
+        </div>
+
+
+    </aside>
+
+
+
+    <!-- =====================================================
+         MAIN
+    ====================================================== -->
+
+    <main class="main-content">
+
+
+        <!-- HEADER -->
+
+        <header class="topbar">
+
+            <div class="page-title">
+
+                <h1>
+                    הגדרות
+                </h1>
+
+                <p>
+                    ניהול העסק, משתמשים, הרשאות ותצורת המערכת
+                </p>
+
+            </div>
+
+        </header>
+
+
+
+        <!-- =================================================
+             SETTINGS LAYOUT
+        ================================================== -->
+
+        <section class="settings-layout">
+
+
+            <!-- SETTINGS NAVIGATION -->
+
+            <aside class="settings-navigation">
+
+
+                <button
+                    class="settings-nav-item"
+                    data-section="business"
+                >
+
+                    <span>
+                        🏢
+                    </span>
+
+                    <div>
+
+                        <strong>
+                            פרטי העסק
+                        </strong>
+
+                        <small>
+                            שם, כתובת ופרטי קשר
+                        </small>
+
+                    </div>
+
+                </button>
+
+
+
+                <button
+                    class="settings-nav-item active"
+                    data-section="users"
+                >
+
+                    <span>
+                        👥
+                    </span>
+
+                    <div>
+
+                        <strong>
+                            משתמשים והרשאות
+                        </strong>
+
+                        <small>
+                            מנהלים, מחסן ושליחים
+                        </small>
+
+                    </div>
+
+                </button>
+
+
+
+                <button
+                    class="settings-nav-item"
+                    data-section="salary"
+                >
+
+                    <span>
+                        💰
+                    </span>
+
+                    <div>
+
+                        <strong>
+                            תעריפים ושכר
+                        </strong>
+
+                        <small>
+                            תשלום לשליחים
+                        </small>
+
+                    </div>
+
+                </button>
+
+
+
+                <button
+                    class="settings-nav-item"
+                    data-section="barcode"
+                >
+
+                    <span>
+                        📦
+                    </span>
+
+                    <div>
+
+                        <strong>
+                            ברקודים
+                        </strong>
+
+                        <small>
+                            הגדרות קליטת מחסן
+                        </small>
+
+                    </div>
+
+                </button>
+
+
+
+                <button
+                    class="settings-nav-item"
+                    data-section="routes"
+                >
+
+                    <span>
+                        🗺️
+                    </span>
+
+                    <div>
+
+                        <strong>
+                            מסלולים
+                        </strong>
+
+                        <small>
+                            אופטימיזציה ותמחור
+                        </small>
+
+                    </div>
+
+                </button>
+
+
+
+                <button
+                    class="settings-nav-item"
+                    data-section="notifications"
+                >
+
+                    <span>
+                        🔔
+                    </span>
+
+                    <div>
+
+                        <strong>
+                            התראות
+                        </strong>
+
+                        <small>
+                            הודעות ללקוחות
+                        </small>
+
+                    </div>
+
+                </button>
+
+
+
+                <button
+                    class="settings-nav-item"
+                    data-section="integrations"
+                >
+
+                    <span>
+                        🔌
+                    </span>
+
+                    <div>
+
+                        <strong>
+                            אינטגרציות
+                        </strong>
+
+                        <small>
+                            API ומערכות חיצוניות
+                        </small>
+
+                    </div>
+
+                </button>
+
+
+            </aside>
+
+
+
+            <!-- =================================================
+                 SETTINGS CONTENT
+            ================================================== -->
+
+            <div class="settings-content">
+
+
+                <!-- =============================================
+                     USERS SECTION
+                ============================================== -->
+
+                <section
+                    id="usersSection"
+                    class="settings-section"
+                >
+
+
+                    <div class="settings-section-header">
+
+                        <div>
+
+                            <h2>
+                                משתמשים והרשאות
+                            </h2>
+
+                            <p>
+                                יצירת חשבונות למנהלים, עובדי מחסן ושליחים
+                            </p>
+
+                        </div>
+
+
+                        <button
+                            class="primary-btn"
+                            id="newUserButton"
+                        >
+
+                            + משתמש חדש
+
+                        </button>
+
+                    </div>
+
+
+
+                    <!-- STATS -->
+
+                    <div class="settings-stats">
+
+
+                        <div class="settings-stat">
+
+                            <span>
+                                סה"כ משתמשים
+                            </span>
+
+                            <strong
+                                id="totalUsersCount"
+                            >
+                                0
+                            </strong>
+
+                        </div>
+
+
+
+                        <div class="settings-stat">
+
+                            <span>
+                                שליחים
+                            </span>
+
+                            <strong
+                                id="driverUsersCount"
+                            >
+                                0
+                            </strong>
+
+                        </div>
+
+
+
+                        <div class="settings-stat">
+
+                            <span>
+                                מנהלים
+                            </span>
+
+                            <strong
+                                id="adminUsersCount"
+                            >
+                                0
+                            </strong>
+
+                        </div>
+
+
+
+                        <div class="settings-stat">
+
+                            <span>
+                                משתמשים פעילים
+                            </span>
+
+                            <strong
+                                id="activeUsersCount"
+                            >
+                                0
+                            </strong>
+
+                        </div>
+
+
+                    </div>
+
+
+
+                    <!-- FILTER -->
+
+                    <div class="users-toolbar">
+
+
+                        <input
+                            type="text"
+                            id="userSearchInput"
+                            placeholder="חיפוש לפי שם / טלפון / שם משתמש"
+                        >
+
+
+
+                        <select id="userRoleFilter">
+
+                            <option value="">
+                                כל התפקידים
+                            </option>
+
+                            <option value="ADMIN">
+                                מנהל מערכת
+                            </option>
+
+                            <option value="WAREHOUSE">
+                                עובד מחסן
+                            </option>
+
+                            <option value="DRIVER">
+                                שליח
+                            </option>
+
+                        </select>
+
+
+
+                        <select id="userStatusFilter">
+
+                            <option value="">
+                                כל הסטטוסים
+                            </option>
+
+                            <option value="פעיל">
+                                פעיל
+                            </option>
+
+                            <option value="לא פעיל">
+                                לא פעיל
+                            </option>
+
+                        </select>
+
+
+                    </div>
+
+
+
+                    <!-- USERS TABLE -->
+
+                    <div class="table-wrapper">
+
+
+                        <table>
+
+
+                            <thead>
+
+                                <tr>
+
+                                    <th>
+                                        משתמש
+                                    </th>
+
+                                    <th>
+                                        טלפון
+                                    </th>
+
+                                    <th>
+                                        שם משתמש
+                                    </th>
+
+                                    <th>
+                                        תפקיד
+                                    </th>
+
+                                    <th>
+                                        תעריף משלוח
+                                    </th>
+
+                                    <th>
+                                        סטטוס
+                                    </th>
+
+                                    <th>
+                                        פעולות
+                                    </th>
+
+                                </tr>
+
+                            </thead>
+
+
+
+                            <tbody id="usersTableBody">
+
+                            </tbody>
+
+
+                        </table>
+
+
+                    </div>
+
+
+                </section>
+
+
+
+                <!-- =============================================
+                     PLACEHOLDER SECTIONS
+                ============================================== -->
+
+                <section
+                    id="placeholderSection"
+                    class="settings-section hidden"
+                >
+
+                    <div class="placeholder-settings">
+
+                        <div class="placeholder-icon">
+                            ⚙️
+                        </div>
+
+                        <h2 id="placeholderTitle">
+                            הגדרות
+                        </h2>
+
+                        <p>
+                            את החלק הזה נבנה בהמשך.
+                        </p>
+
+                    </div>
+
+                </section>
+
+
+            </div>
+
+
+        </section>
+
+
+    </main>
+
+
+
+    <!-- =====================================================
+         USER MODAL
+    ====================================================== -->
+
+    <div
+        id="userModal"
+        class="modal-overlay hidden"
+    >
+
+
+        <div class="modal-box">
+
+
+            <div class="modal-header">
+
+
+                <div>
+
+                    <h2 id="userModalTitle">
+                        משתמש חדש
+                    </h2>
+
+                    <p>
+                        יצירת משתמש חדש במערכת
+                    </p>
+
+                </div>
+
+
+
+                <button
+                    type="button"
+                    class="modal-close"
+                    id="closeUserModal"
+                >
+                    ×
+                </button>
+
+
+            </div>
+
+
+
+            <form id="userForm">
+
+
+                <input
+                    type="hidden"
+                    id="editingUserId"
+                >
+
+
+
+                <div class="form-grid">
+
+
+                    <!-- FULL NAME -->
+
+                    <div class="form-group">
+
+                        <label>
+                            שם מלא
+                        </label>
+
+                        <input
+                            type="text"
+                            id="userFullName"
+                            required
+                        >
+
+                    </div>
+
+
+
+                    <!-- PHONE -->
+
+                    <div class="form-group">
+
+                        <label>
+                            טלפון
+                        </label>
+
+                        <input
+                            type="tel"
+                            id="userPhone"
+                            required
+                        >
+
+                    </div>
+
+
+
+                    <!-- EMAIL -->
+
+                    <div class="form-group">
+
+                        <label>
+                            אימייל
+                        </label>
+
+                        <input
+                            type="email"
+                            id="userEmail"
+                        >
+
+                    </div>
+
+
+
+                    <!-- ROLE -->
+
+                    <div class="form-group">
+
+                        <label>
+                            תפקיד
+                        </label>
+
+                        <select
+                            id="userRole"
+                            required
+                        >
+
+                            <option value="DRIVER">
+                                שליח
+                            </option>
+
+                            <option value="WAREHOUSE">
+                                עובד מחסן
+                            </option>
+
+                            <option value="ADMIN">
+                                מנהל מערכת
+                            </option>
+
+                        </select>
+
+                    </div>
+
+
+
+                    <!-- USERNAME -->
+
+                    <div class="form-group">
+
+                        <label>
+                            שם משתמש
+                        </label>
+
+                        <input
+                            type="text"
+                            id="userUsername"
+                            autocomplete="off"
+                            required
+                        >
+
+                    </div>
+
+
+
+                    <!-- PASSWORD -->
+
+                    <div class="form-group">
+
+                        <label>
+                            סיסמה
+                        </label>
+
+                        <input
+                            type="password"
+                            id="userPassword"
+                            autocomplete="new-password"
+                            required
+                        >
+
+                    </div>
+
+
+
+                    <!-- RATE -->
+
+                    <div
+                        class="form-group"
+                        id="driverRateGroup"
+                    >
+
+                        <label>
+                            תעריף למשלוח (₪)
+                        </label>
+
+                        <input
+                            type="number"
+                            id="userDeliveryRate"
+                            min="0"
+                            step="0.01"
+                            value="13"
+                        >
+
+                    </div>
+
+
+
+                    <!-- STATUS -->
+
+                    <div class="form-group">
+
+                        <label>
+                            סטטוס
+                        </label>
+
+                        <select
+                            id="userStatus"
+                            required
+                        >
+
+                            <option value="פעיל">
+                                פעיל
+                            </option>
+
+                            <option value="לא פעיל">
+                                לא פעיל
+                            </option>
+
+                        </select>
+
+                    </div>
+
+
+                </div>
+
+
+
+                <!-- NOTES -->
+
+                <div
+                    class="form-group"
+                    style="margin-top:18px;"
+                >
+
+                    <label>
+                        הערה פנימית
+                    </label>
+
+                    <input
+                        type="text"
+                        id="userNotes"
+                        placeholder="הערה למנהל בלבד"
+                    >
+
+                </div>
+
+
+
+                <div class="login-preview">
+
+
+                    <strong>
+                        פרטי התחברות
+                    </strong>
+
+
+                    <p>
+                        המשתמש יוכל להתחבר באמצעות שם המשתמש והסיסמה שהוגדרו כאן.
+                    </p>
+
+
+                    <div class="security-note">
+
+                        ⚠️ כרגע זו סביבת פיתוח בדפדפן בלבד.
+                        בהמשך נעביר את הסיסמאות לשרת מאובטח ולא נשמור אותן בדפדפן.
+
+                    </div>
+
+
+                </div>
+
+
+
+                <div class="modal-actions">
+
+
+                    <button
+                        type="button"
+                        class="secondary-btn"
+                        id="cancelUserButton"
+                    >
+
+                        ביטול
+
+                    </button>
+
+
+
+                    <button
+                        type="submit"
+                        class="primary-btn"
+                    >
+
+                        שמור משתמש
+
+                    </button>
+
+
+                </div>
+
+
+            </form>
+
+
+        </div>
+
+
+    </div>
+
+
+
+    <script src="settings.js"></script>
+
+
+</body>
+
+</html>
