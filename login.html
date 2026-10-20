@@ -1,0 +1,232 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
+
+    <title>
+        התחברות | Delivery
+    </title>
+
+    <link
+        rel="stylesheet"
+        href="login.css"
+    >
+
+</head>
+
+
+<body>
+
+
+    <main class="login-page">
+
+
+        <!-- =================================================
+             LOGIN CARD
+        ================================================== -->
+
+        <section class="login-card">
+
+
+            <!-- LOGO -->
+
+            <div class="login-brand">
+
+                <div class="login-logo">
+                    D
+                </div>
+
+                <div>
+
+                    <h1>
+                        Delivery
+                    </h1>
+
+                    <p>
+                        מערכת ניהול משלוחים
+                    </p>
+
+                </div>
+
+            </div>
+
+
+
+            <!-- TITLE -->
+
+            <div class="login-title">
+
+                <h2>
+                    כניסה למערכת
+                </h2>
+
+                <p>
+                    הזן שם משתמש וסיסמה
+                </p>
+
+            </div>
+
+
+
+            <!-- LOGIN FORM -->
+
+            <form
+                id="loginForm"
+                class="login-form"
+            >
+
+
+                <!-- USERNAME -->
+
+                <div class="login-form-group">
+
+                    <label for="loginUsername">
+
+                        שם משתמש
+
+                    </label>
+
+
+                    <div class="login-input-wrapper">
+
+                        <span class="login-input-icon">
+                            👤
+                        </span>
+
+
+                        <input
+                            type="text"
+                            id="loginUsername"
+                            placeholder="הזן שם משתמש"
+                            autocomplete="username"
+                            required
+                        >
+
+                    </div>
+
+                </div>
+
+
+
+                <!-- PASSWORD -->
+
+                <div class="login-form-group">
+
+                    <label for="loginPassword">
+
+                        סיסמה
+
+                    </label>
+
+
+                    <div class="login-input-wrapper">
+
+                        <span class="login-input-icon">
+                            🔒
+                        </span>
+
+
+                        <input
+                            type="password"
+                            id="loginPassword"
+                            placeholder="הזן סיסמה"
+                            autocomplete="current-password"
+                            required
+                        >
+
+
+                        <button
+                            type="button"
+                            id="togglePasswordButton"
+                            class="password-toggle"
+                            aria-label="הצג או הסתר סיסמה"
+                        >
+
+                            👁️
+
+                        </button>
+
+                    </div>
+
+                </div>
+
+
+
+                <!-- REMEMBER ME -->
+
+                <label class="remember-row">
+
+                    <input
+                        type="checkbox"
+                        id="rememberUser"
+                    >
+
+                    <span>
+                        זכור אותי במכשיר הזה
+                    </span>
+
+                </label>
+
+
+
+                <!-- ERROR MESSAGE -->
+
+                <div
+                    id="loginMessage"
+                    class="login-message hidden"
+                >
+                </div>
+
+
+
+                <!-- LOGIN BUTTON -->
+
+                <button
+                    type="submit"
+                    class="login-button"
+                >
+
+                    כניסה למערכת
+
+                </button>
+
+
+            </form>
+
+
+
+            <!-- DEVELOPMENT NOTE -->
+
+            <div class="login-footer">
+
+                <span>
+                    מערכת Delivery
+                </span>
+
+                <small>
+                    ניהול משלוחים חכם
+                </small>
+
+            </div>
+
+
+        </section>
+
+
+    </main>
+
+
+
+    <script src="login.js"></script>
+
+
+</body>
+
+</html>
