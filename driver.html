@@ -11,12 +11,12 @@
     >
 
     <title>
-        אזור שליח | Delivery
+        מערכת משלוחים - שליח
     </title>
 
     <link
         rel="stylesheet"
-        href="driver.css"
+        href="driver.css?v=20261020-1"
     >
 
 </head>
@@ -25,128 +25,113 @@
 <body>
 
 
-    <main class="driver-app">
+    <div class="driver-app">
 
 
-        <!-- =================================================
-             HEADER
-        ================================================== -->
+        <!-- ================================================= -->
+        <!-- HEADER -->
+        <!-- ================================================= -->
 
         <header class="driver-header">
 
+            <div>
 
-            <div class="driver-header-top">
+                <p class="header-small">
+                    שלום
+                </p>
 
+                <h1 id="driverName">
+                    שליח
+                </h1>
 
-                <div>
-
-                    <span class="driver-greeting">
-                        שלום,
-                    </span>
-
-                    <h1 id="driverName">
-                        שליח
-                    </h1>
-
-                </div>
-
-
-                <button
-                    type="button"
-                    class="logout-button"
-                    id="logoutButton"
+                <p
+                    id="driverDate"
+                    class="driver-date"
                 >
-                    יציאה
-                </button>
-
+                </p>
 
             </div>
 
 
-
-            <!-- =================================================
-                 TODAY
-            ================================================== -->
-
-            <div class="driver-today">
-
-                <span>
-                    יום עבודה
-                </span>
-
-                <strong id="driverWorkDate">
-                    היום
-                </strong>
-
-            </div>
-
+            <button
+                id="logoutButton"
+                class="logout-button"
+                type="button"
+            >
+                יציאה
+            </button>
 
         </header>
 
 
 
-        <!-- =================================================
-             SUMMARY
-        ================================================== -->
+        <!-- ================================================= -->
+        <!-- DAILY SUMMARY -->
+        <!-- ================================================= -->
 
-        <section class="driver-summary">
+        <section class="summary-grid">
 
 
-            <div class="summary-main-card">
+            <div class="summary-card">
 
-                <span>
-                    משלוחים להיום
+                <span
+                    id="totalShipments"
+                    class="summary-number"
+                >
+                    0
                 </span>
 
-                <strong id="totalDeliveriesCount">
-                    0
-                </strong>
+                <span class="summary-label">
+                    משלוחים
+                </span>
 
             </div>
 
 
+            <div class="summary-card">
 
-            <div class="summary-grid">
+                <span
+                    id="deliveredShipments"
+                    class="summary-number"
+                >
+                    0
+                </span>
 
+                <span class="summary-label">
+                    נמסרו
+                </span>
 
-                <div class="summary-card">
-
-                    <span>
-                        נמסרו
-                    </span>
-
-                    <strong id="deliveredCount">
-                        0
-                    </strong>
-
-                </div>
-
-
-                <div class="summary-card">
-
-                    <span>
-                        נשארו
-                    </span>
-
-                    <strong id="remainingCount">
-                        0
-                    </strong>
-
-                </div>
+            </div>
 
 
-                <div class="summary-card">
+            <div class="summary-card">
 
-                    <span>
-                        לא נמסרו
-                    </span>
+                <span
+                    id="remainingShipments"
+                    class="summary-number"
+                >
+                    0
+                </span>
 
-                    <strong id="failedCount">
-                        0
-                    </strong>
+                <span class="summary-label">
+                    נשארו
+                </span>
 
-                </div>
+            </div>
 
+
+            <div class="summary-card">
+
+                <span
+                    id="failedShipments"
+                    class="summary-number"
+                >
+                    0
+                </span>
+
+                <span class="summary-label">
+                    לא נמסרו
+                </span>
 
             </div>
 
@@ -155,163 +140,158 @@
 
 
 
-        <!-- =================================================
-             ROUTE PLANNER
-        ================================================== -->
+        <!-- ================================================= -->
+        <!-- MAIN ACTIONS -->
+        <!-- ================================================= -->
 
-        <section class="route-section">
+        <section class="main-actions">
 
 
             <button
+                id="addShipmentButton"
+                class="primary-action-button"
                 type="button"
-                class="route-main-button"
-                id="openRoutePlannerButton"
             >
 
-                <span class="route-button-icon">
-                    🧭
+                <span class="action-icon">
+                    ＋
                 </span>
 
-                <span>
-
-                    <strong>
-                        סדר לי מסלול
-                    </strong>
-
-                    <small>
-                        תכנון מסלול לפי נקודת התחלה ושעת יציאה
-                    </small>
-
-                </span>
+                הוסף משלוח
 
             </button>
 
 
-            <div
-                class="route-planner hidden"
-                id="routePlanner"
+            <button
+                id="toggleRoutePlannerButton"
+                class="secondary-action-button"
+                type="button"
             >
 
+                <span class="action-icon">
+                    🧭
+                </span>
 
-                <div class="route-planner-header">
+                תכנון מסלול
 
-                    <div>
-
-                        <h2>
-                            תכנון יום העבודה
-                        </h2>
-
-                        <p>
-                            הגדר מתי ומאיפה אתה מתחיל
-                        </p>
-
-                    </div>
-
-
-                    <button
-                        type="button"
-                        class="close-route-button"
-                        id="closeRoutePlannerButton"
-                    >
-                        ×
-                    </button>
-
-                </div>
-
-
-
-                <div class="route-form-grid">
-
-
-                    <div class="route-form-group">
-
-                        <label for="routeDate">
-                            תאריך
-                        </label>
-
-                        <input
-                            type="date"
-                            id="routeDate"
-                        >
-
-                    </div>
-
-
-                    <div class="route-form-group">
-
-                        <label for="routeStartTime">
-                            שעת התחלה
-                        </label>
-
-                        <input
-                            type="time"
-                            id="routeStartTime"
-                        >
-
-                    </div>
-
-
-                </div>
-
-
-
-                <div class="route-form-group">
-
-                    <label for="routeStartAddress">
-                        כתובת התחלה
-                    </label>
-
-                    <input
-                        type="text"
-                        id="routeStartAddress"
-                        placeholder="לדוגמה: תעשייה אווירית שער מערב"
-                    >
-
-                </div>
-
-
-
-                <div class="route-form-group">
-
-                    <label for="routeEndAddress">
-                        כתובת סיום
-                    </label>
-
-                    <input
-                        type="text"
-                        id="routeEndAddress"
-                        placeholder="לדוגמה: אהרון הכהן 4, ראשון לציון"
-                    >
-
-                </div>
-
-
-
-                <button
-                    type="button"
-                    class="build-route-button"
-                    id="buildRouteButton"
-                >
-                    בנה לי מסלול
-                </button>
-
-
-            </div>
+            </button>
 
 
         </section>
 
 
 
-        <!-- =================================================
-             DELIVERIES TITLE
-        ================================================== -->
+        <!-- ================================================= -->
+        <!-- ROUTE PLANNER -->
+        <!-- ================================================= -->
 
-        <section class="deliveries-section">
+        <section
+            id="routePlannerSection"
+            class="route-planner hidden"
+        >
+
+            <div class="section-heading">
+
+                <div>
+
+                    <h2>
+                        תכנון מסלול
+                    </h2>
+
+                    <p>
+                        בחר נקודת התחלה וסיום
+                    </p>
+
+                </div>
+
+            </div>
 
 
-            <div class="deliveries-header">
+            <div class="form-group">
 
+                <label for="routeDate">
+                    תאריך
+                </label>
+
+                <input
+                    id="routeDate"
+                    type="date"
+                >
+
+            </div>
+
+
+            <div class="form-group">
+
+                <label for="routeStartTime">
+                    שעת התחלה
+                </label>
+
+                <input
+                    id="routeStartTime"
+                    type="time"
+                >
+
+            </div>
+
+
+            <div class="form-group">
+
+                <label for="routeStartAddress">
+                    כתובת התחלה
+                </label>
+
+                <input
+                    id="routeStartAddress"
+                    type="text"
+                    placeholder="לדוגמה: תעשייה אווירית שער מערב"
+                >
+
+            </div>
+
+
+            <div class="form-group">
+
+                <label for="routeEndAddress">
+                    כתובת סיום
+                </label>
+
+                <input
+                    id="routeEndAddress"
+                    type="text"
+                    placeholder="לדוגמה: אהרון הכהן 4, ראשון לציון"
+                >
+
+            </div>
+
+
+            <button
+                id="saveRouteSettingsButton"
+                class="route-save-button"
+                type="button"
+            >
+                שמור הגדרות מסלול
+            </button>
+
+
+            <div
+                id="routePlannerMessage"
+                class="route-message"
+            >
+            </div>
+
+        </section>
+
+
+
+        <!-- ================================================= -->
+        <!-- SHIPMENTS -->
+        <!-- ================================================= -->
+
+        <section class="shipments-section">
+
+
+            <div class="section-heading">
 
                 <div>
 
@@ -319,354 +299,497 @@
                         המשלוחים שלי
                     </h2>
 
-                    <p>
-                        לחץ על משלוח לצפייה בפרטים
+                    <p id="shipmentListSubtitle">
+                        כל המשלוחים המשויכים אליך
                     </p>
 
                 </div>
 
 
                 <span
-                    class="deliveries-counter"
-                    id="deliveriesHeaderCount"
+                    id="shipmentCountBadge"
+                    class="shipment-count-badge"
                 >
                     0
                 </span>
-
 
             </div>
 
 
 
-            <!-- =================================================
-                 DELIVERIES LIST
-            ================================================== -->
-
             <div
-                class="deliveries-list"
-                id="deliveriesList"
+                id="driverShipmentsList"
+                class="driver-shipments-list"
             >
 
+                <!--
+                    המשלוחים ייטענו
+                    באמצעות driver.js
+                -->
 
-                <div class="empty-deliveries">
+            </div>
 
-                    <div class="empty-deliveries-icon">
-                        📦
-                    </div>
 
-                    <h3>
-                        אין משלוחים להצגה
-                    </h3>
+        </section>
+
+
+
+        <!-- ================================================= -->
+        <!-- REPORTS -->
+        <!-- ================================================= -->
+
+        <section class="reports-section">
+
+            <button
+                id="driverReportsButton"
+                class="reports-button"
+                type="button"
+            >
+
+                📊
+
+                דוחות והכנסות
+
+            </button>
+
+        </section>
+
+
+    </div>
+
+
+
+    <!-- ===================================================== -->
+    <!-- ADD SHIPMENT MODAL -->
+    <!-- ===================================================== -->
+
+    <div
+        id="addShipmentModal"
+        class="modal-overlay hidden"
+    >
+
+        <div class="modal-card">
+
+
+            <div class="modal-header">
+
+                <div>
+
+                    <h2>
+                        הוספת משלוח
+                    </h2>
 
                     <p>
-                        משלוחים ששויכו אליך יופיעו כאן.
+                        הזן את פרטי הלקוח והכתובת
                     </p>
 
                 </div>
 
 
+                <button
+                    id="closeAddShipmentModal"
+                    class="modal-close-button"
+                    type="button"
+                >
+                    ✕
+                </button>
+
             </div>
 
 
-        </section>
+
+            <form id="driverAddShipmentForm">
 
 
+                <div class="form-group">
 
-        <!-- =================================================
-             REPORTS BUTTON
-        ================================================== -->
+                    <label for="driverShipmentCustomer">
+                        שם לקוח
+                    </label>
 
-        <section class="driver-bottom-section">
-
-
-            <a
-                href="driver-reports.html"
-                class="reports-button"
-            >
-
-                <span>
-                    📊
-                </span>
-
-                <div>
-
-                    <strong>
-                        דוחות והכנסות
-                    </strong>
-
-                    <small>
-                        יומי, שבועי וחודשי
-                    </small>
+                    <input
+                        id="driverShipmentCustomer"
+                        type="text"
+                        placeholder="לדוגמה: ישראל ישראלי"
+                    >
 
                 </div>
 
-                <span class="reports-arrow">
-                    ‹
-                </span>
 
-            </a>
+                <div class="form-group">
+
+                    <label for="driverShipmentPhone">
+                        מספר טלפון
+                    </label>
+
+                    <input
+                        id="driverShipmentPhone"
+                        type="tel"
+                        inputmode="tel"
+                        placeholder="050-1234567"
+                    >
+
+                </div>
 
 
-        </section>
+                <div class="form-group">
+
+                    <label for="driverShipmentCity">
+                        עיר
+                    </label>
+
+                    <input
+                        id="driverShipmentCity"
+                        type="text"
+                        placeholder="לדוגמה: פתח תקווה"
+                        required
+                    >
+
+                </div>
 
 
-    </main>
+                <div class="address-row">
+
+
+                    <div class="form-group street-field">
+
+                        <label for="driverShipmentStreet">
+                            רחוב
+                        </label>
+
+                        <input
+                            id="driverShipmentStreet"
+                            type="text"
+                            placeholder="שם הרחוב"
+                            required
+                        >
+
+                    </div>
+
+
+                    <div class="form-group house-field">
+
+                        <label for="driverShipmentHouseNumber">
+                            מספר
+                        </label>
+
+                        <input
+                            id="driverShipmentHouseNumber"
+                            type="text"
+                            inputmode="numeric"
+                            placeholder="12"
+                            required
+                        >
+
+                    </div>
+
+
+                </div>
+
+
+                <div class="address-details-row">
+
+
+                    <div class="form-group">
+
+                        <label for="driverShipmentEntrance">
+                            כניסה
+                        </label>
+
+                        <input
+                            id="driverShipmentEntrance"
+                            type="text"
+                            placeholder="א"
+                        >
+
+                    </div>
+
+
+                    <div class="form-group">
+
+                        <label for="driverShipmentFloor">
+                            קומה
+                        </label>
+
+                        <input
+                            id="driverShipmentFloor"
+                            type="text"
+                            inputmode="numeric"
+                            placeholder="2"
+                        >
+
+                    </div>
+
+
+                    <div class="form-group">
+
+                        <label for="driverShipmentApartment">
+                            דירה
+                        </label>
+
+                        <input
+                            id="driverShipmentApartment"
+                            type="text"
+                            inputmode="numeric"
+                            placeholder="6"
+                        >
+
+                    </div>
+
+
+                </div>
+
+
+                <div class="form-group">
+
+                    <label for="driverShipmentNotes">
+                        הערות
+                    </label>
+
+                    <textarea
+                        id="driverShipmentNotes"
+                        rows="3"
+                        placeholder="לדוגמה: להתקשר לפני הגעה"
+                    ></textarea>
+
+                </div>
+
+
+                <div class="modal-actions">
+
+
+                    <button
+                        id="cancelAddShipmentButton"
+                        class="cancel-button"
+                        type="button"
+                    >
+                        ביטול
+                    </button>
+
+
+                    <button
+                        class="save-button"
+                        type="submit"
+                    >
+                        הוסף משלוח
+                    </button>
+
+
+                </div>
+
+
+            </form>
+
+
+        </div>
+
+    </div>
 
 
 
-    <!-- =====================================================
-         DELIVERY DETAILS BOTTOM SHEET
-    ====================================================== -->
+    <!-- ===================================================== -->
+    <!-- DELIVERY DETAILS BOTTOM SHEET -->
+    <!-- ===================================================== -->
 
     <div
-        class="sheet-overlay hidden"
-        id="deliverySheetOverlay"
+        id="deliveryDetailsOverlay"
+        class="bottom-sheet-overlay hidden"
     >
 
+        <div
+            id="deliveryDetailsSheet"
+            class="bottom-sheet"
+        >
 
-        <div class="delivery-sheet">
 
-
-            <div class="sheet-handle">
+            <div class="bottom-sheet-handle">
             </div>
 
 
-            <div class="sheet-header">
-
+            <div class="delivery-sheet-header">
 
                 <div>
 
-                    <span class="sheet-label">
-                        פרטי משלוח
+                    <span
+                        id="deliveryShipmentNumber"
+                        class="delivery-number"
+                    >
                     </span>
 
-                    <h2 id="sheetCustomerName">
-                        שם הלקוח
+                    <h2 id="deliveryCustomerName">
+                        לקוח
                     </h2>
 
                 </div>
 
 
                 <button
+                    id="closeDeliveryDetails"
+                    class="modal-close-button"
                     type="button"
-                    class="sheet-close"
-                    id="closeDeliverySheetButton"
                 >
-                    ×
+                    ✕
                 </button>
-
 
             </div>
 
 
 
-            <div class="sheet-content">
+            <div class="delivery-info-card">
 
 
-                <!-- PHONE -->
+                <div class="delivery-info-row">
 
-                <a
-                    href="#"
-                    class="sheet-action-row"
-                    id="sheetPhoneLink"
-                >
-
-                    <div class="sheet-action-icon">
-                        📞
-                    </div>
-
-                    <div>
-
-                        <span>
-                            טלפון
-                        </span>
-
-                        <strong id="sheetPhone">
-                            -
-                        </strong>
-
-                    </div>
-
-                </a>
-
-
-
-                <!-- ADDRESS -->
-
-                <button
-                    type="button"
-                    class="sheet-action-row"
-                    id="sheetNavigationButton"
-                >
-
-                    <div class="sheet-action-icon">
-                        🧭
-                    </div>
-
-                    <div>
-
-                        <span>
-                            כתובת
-                        </span>
-
-                        <strong id="sheetAddress">
-                            -
-                        </strong>
-
-                        <small id="sheetBuildingDetails">
-                        </small>
-
-                    </div>
-
-                </button>
-
-
-
-                <!-- NOTES -->
-
-                <div class="sheet-info-block">
-
-                    <span>
-                        הערות לשליח
+                    <span class="info-label">
+                        כתובת
                     </span>
 
-                    <p id="sheetNotes">
-                        אין הערות
-                    </p>
-
-                </div>
-
-
-
-                <!-- ETA -->
-
-                <div class="sheet-info-block">
-
-                    <span>
-                        שעת הגעה משוערת
-                    </span>
-
-                    <strong id="sheetEta">
-                        טרם חושב מסלול
+                    <strong id="deliveryAddress">
                     </strong>
 
                 </div>
 
 
-            </div>
+                <div class="delivery-info-row">
 
-
-
-            <!-- =================================================
-                 DELIVERY ACTIONS
-            ================================================== -->
-
-            <div class="sheet-actions">
-
-
-                <button
-                    type="button"
-                    class="delivery-success-button"
-                    id="markDeliveredButton"
-                >
-                    ✅ נמסר
-                </button>
-
-
-                <button
-                    type="button"
-                    class="delivery-failed-button"
-                    id="markFailedButton"
-                >
-                    ❌ לא נמסר
-                </button>
-
-
-            </div>
-
-
-        </div>
-
-
-    </div>
-
-
-
-    <!-- =====================================================
-         NAVIGATION CHOICE
-    ====================================================== -->
-
-    <div
-        class="navigation-overlay hidden"
-        id="navigationOverlay"
-    >
-
-
-        <div class="navigation-modal">
-
-
-            <h2>
-                פתיחת ניווט
-            </h2>
-
-            <p id="navigationAddressText">
-                בחר אפליקציית ניווט
-            </p>
-
-
-            <div class="navigation-buttons">
-
-
-                <button
-                    type="button"
-                    class="navigation-app-button"
-                    id="openWazeButton"
-                >
-
-                    <span>
-                        🚗
+                    <span class="info-label">
+                        פרטי בניין
                     </span>
 
-                    Waze
+                    <span id="deliveryBuildingDetails">
+                    </span>
 
-                </button>
+                </div>
+
+
+                <div class="delivery-info-row">
+
+                    <span class="info-label">
+                        טלפון
+                    </span>
+
+                    <a
+                        id="deliveryPhone"
+                        href="#"
+                    >
+                    </a>
+
+                </div>
+
+
+                <div class="delivery-info-row">
+
+                    <span class="info-label">
+                        הערות
+                    </span>
+
+                    <span id="deliveryNotes">
+                    </span>
+
+                </div>
+
+
+                <div class="delivery-info-row">
+
+                    <span class="info-label">
+                        ETA
+                    </span>
+
+                    <span id="deliveryEta">
+                        עדיין לא חושב
+                    </span>
+
+                </div>
+
+
+            </div>
+
+
+
+            <div class="delivery-actions-grid">
+
+
+                <a
+                    id="callCustomerButton"
+                    class="delivery-action-button"
+                    href="#"
+                >
+                    📞 התקשר
+                </a>
 
 
                 <button
+                    id="openNavigationButton"
+                    class="delivery-action-button"
                     type="button"
-                    class="navigation-app-button"
-                    id="openGoogleMapsButton"
                 >
-
-                    <span>
-                        🗺️
-                    </span>
-
-                    Google Maps
-
+                    🚗 ניווט
                 </button>
 
 
             </div>
 
 
-            <button
-                type="button"
-                class="navigation-cancel-button"
-                id="closeNavigationButton"
+
+            <div
+                id="navigationOptions"
+                class="navigation-options hidden"
             >
-                ביטול
-            </button>
+
+
+                <button
+                    id="openWazeButton"
+                    type="button"
+                >
+                    Waze
+                </button>
+
+
+                <button
+                    id="openGoogleMapsButton"
+                    type="button"
+                >
+                    Google Maps
+                </button>
+
+
+            </div>
+
+
+
+            <div class="delivery-status-actions">
+
+
+                <button
+                    id="markDeliveredButton"
+                    class="delivered-button"
+                    type="button"
+                >
+                    ✓ נמסר
+                </button>
+
+
+                <button
+                    id="markFailedButton"
+                    class="failed-button"
+                    type="button"
+                >
+                    ✕ לא נמסר
+                </button>
+
+
+            </div>
 
 
         </div>
-
 
     </div>
 
 
 
-    <script src="driver.js"></script>
+    <script
+        src="driver.js?v=20261020-1"
+    ></script>
 
 
 </body>
