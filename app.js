@@ -1,173 +1,47 @@
 // =========================================================
+
 // DELIVERY SYSTEM
+
 // Main JavaScript
-// =========================================================
-
-
 
 // =========================================================
+
+
+
+
+
+
+
+// =========================================================
+
 // STORAGE
+
 // =========================================================
+
+
 
 const STORAGE_KEY = "delivery_system_shipments";
 
+const USERS_STORAGE_KEY = "delivery_system_users";
 
 
-// =========================================================
-// MOCK BARCODE DATABASE
-//
-// בעתיד זה יוחלף ב-API אמיתי.
-// =========================================================
 
-const mockShipmentsDatabase = {
 
-    "72900100001": {
-
-        shipmentNumber: "100401",
-
-        customer: "משה לוי",
-
-        phone: "050-1112233",
-
-        city: "ראשון לציון",
-
-        street: "רוטשילד",
-
-        houseNumber: "44",
-
-        entrance: "",
-
-        floor: "",
-
-        apartment: "",
-
-        addressType: "בית פרטי",
-
-        notes: ""
-
-    },
-
-
-    "72900100002": {
-
-        shipmentNumber: "100402",
-
-        customer: "דנה כהן",
-
-        phone: "052-3334455",
-
-        city: "חולון",
-
-        street: "סוקולוב",
-
-        houseNumber: "18",
-
-        entrance: "ב",
-
-        floor: "3",
-
-        apartment: "12",
-
-        addressType: "בניין",
-
-        notes: "להתקשר לפני הגעה"
-
-    },
-
-
-    "72900100003": {
-
-        shipmentNumber: "100403",
-
-        customer: "יוסי ישראלי",
-
-        phone: "054-5556677",
-
-        city: "פתח תקווה",
-
-        street: "חיים עוזר",
-
-        houseNumber: "12",
-
-        entrance: "א",
-
-        floor: "2",
-
-        apartment: "6",
-
-        addressType: "בניין",
-
-        notes: ""
-
-    },
-
-
-    "72900100004": {
-
-        shipmentNumber: "100404",
-
-        customer: "נועה אברהם",
-
-        phone: "053-7778899",
-
-        city: "תל אביב",
-
-        street: "דיזנגוף",
-
-        houseNumber: "91",
-
-        entrance: "",
-
-        floor: "4",
-
-        apartment: "15",
-
-        addressType: "בניין",
-
-        notes: "קוד כניסה 2580#"
-
-    },
-
-
-    "72900100005": {
-
-        shipmentNumber: "100405",
-
-        customer: "אורן לוי",
-
-        phone: "050-9988776",
-
-        city: "רמת גן",
-
-        street: "ביאליק",
-
-        houseNumber: "31",
-
-        entrance: "",
-
-        floor: "",
-
-        apartment: "",
-
-        addressType: "עסק",
-
-        notes: "קבלה בקומת כניסה"
-
-    }
-
-};
 
 
 
 // =========================================================
-// LOCAL STORAGE FUNCTIONS
+
+// USERS / DRIVERS
 // =========================================================
 
-function getShipments() {
+
+
+function getSystemUsers() {
 
     const saved =
         localStorage.getItem(
-            STORAGE_KEY
+            USERS_STORAGE_KEY
         );
 
 
@@ -180,13 +54,16 @@ function getShipments() {
 
     try {
 
-        return JSON.parse(saved);
+        return JSON.parse(
+            saved
+        );
 
     }
+
     catch (error) {
 
         console.error(
-            "Failed loading shipments",
+            "Failed loading system users",
             error
         );
 
@@ -198,142 +75,699 @@ function getShipments() {
 
 
 
+
+
+function getActiveDrivers() {
+
+    return getSystemUsers()
+        .filter(
+
+            user =>
+
+                user.role === "DRIVER"
+
+                &&
+
+                user.status === "פעיל"
+
+        );
+
+}
+
+
+
+
+
+function findActiveDriverById(
+    driverId
+) {
+
+    return getActiveDrivers()
+        .find(
+
+            driver =>
+
+                String(
+                    driver.driverId ||
+                    driver.id
+                )
+
+                ===
+
+                String(
+                    driverId
+                )
+
+        );
+
+}
+
+
+
+
+
+function findActiveDriverByName(
+    driverName
+) {
+
+    return getActiveDrivers()
+        .find(
+
+            driver =>
+
+                driver.fullName ===
+                driverName
+
+        );
+
+}
+
+
+
+
+
+
+
+// =========================================================
+
+// MOCK BARCODE DATABASE
+
+//
+
+// בעתיד זה יוחלף ב-API אמיתי.
+
+// =========================================================
+
+
+
+const mockShipmentsDatabase = {
+
+
+
+    "72900100001": {
+
+
+
+        shipmentNumber: "100401",
+
+
+
+        customer: "משה לוי",
+
+
+
+        phone: "050-1112233",
+
+
+
+        city: "ראשון לציון",
+
+
+
+        street: "רוטשילד",
+
+
+
+        houseNumber: "44",
+
+
+
+        entrance: "",
+
+
+
+        floor: "",
+
+
+
+        apartment: "",
+
+
+
+        addressType: "בית פרטי",
+
+
+
+        notes: ""
+
+
+
+    },
+
+
+
+
+
+    "72900100002": {
+
+
+
+        shipmentNumber: "100402",
+
+
+
+        customer: "דנה כהן",
+
+
+
+        phone: "052-3334455",
+
+
+
+        city: "חולון",
+
+
+
+        street: "סוקולוב",
+
+
+
+        houseNumber: "18",
+
+
+
+        entrance: "ב",
+
+
+
+        floor: "3",
+
+
+
+        apartment: "12",
+
+
+
+        addressType: "בניין",
+
+
+
+        notes: "להתקשר לפני הגעה"
+
+
+
+    },
+
+
+
+
+
+    "72900100003": {
+
+
+
+        shipmentNumber: "100403",
+
+
+
+        customer: "יוסי ישראלי",
+
+
+
+        phone: "054-5556677",
+
+
+
+        city: "פתח תקווה",
+
+
+
+        street: "חיים עוזר",
+
+
+
+        houseNumber: "12",
+
+
+
+        entrance: "א",
+
+
+
+        floor: "2",
+
+
+
+        apartment: "6",
+
+
+
+        addressType: "בניין",
+
+
+
+        notes: ""
+
+
+
+    },
+
+
+
+
+
+    "72900100004": {
+
+
+
+        shipmentNumber: "100404",
+
+
+
+        customer: "נועה אברהם",
+
+
+
+        phone: "053-7778899",
+
+
+
+        city: "תל אביב",
+
+
+
+        street: "דיזנגוף",
+
+
+
+        houseNumber: "91",
+
+
+
+        entrance: "",
+
+
+
+        floor: "4",
+
+
+
+        apartment: "15",
+
+
+
+        addressType: "בניין",
+
+
+
+        notes: "קוד כניסה 2580#"
+
+
+
+    },
+
+
+
+
+
+    "72900100005": {
+
+
+
+        shipmentNumber: "100405",
+
+
+
+        customer: "אורן לוי",
+
+
+
+        phone: "050-9988776",
+
+
+
+        city: "רמת גן",
+
+
+
+        street: "ביאליק",
+
+
+
+        houseNumber: "31",
+
+
+
+        entrance: "",
+
+
+
+        floor: "",
+
+
+
+        apartment: "",
+
+
+
+        addressType: "עסק",
+
+
+
+        notes: "קבלה בקומת כניסה"
+
+
+
+    }
+
+
+
+};
+
+
+
+
+
+
+
+// =========================================================
+
+// LOCAL STORAGE FUNCTIONS
+
+// =========================================================
+
+
+
+function getShipments() {
+
+
+
+    const saved =
+        localStorage.getItem(
+            STORAGE_KEY
+        );
+
+
+
+
+
+    if (!saved) {
+
+
+
+        return [];
+
+
+
+    }
+
+
+
+
+
+    try {
+
+
+
+        return JSON.parse(saved);
+
+
+
+    }
+
+    catch (error) {
+
+
+
+        console.error(
+            "Failed loading shipments",
+            error
+        );
+
+
+
+        return [];
+
+
+
+    }
+
+
+
+}
+
+
+
+
+
+
+
 function saveShipments(shipments) {
+
+
 
     localStorage.setItem(
 
+
+
         STORAGE_KEY,
+
+
 
         JSON.stringify(shipments)
 
+
+
     );
+
+
 
 }
 
 
 
+
+
+
+
 // =========================================================
+
 // CREATE UNIQUE ID
+
 // =========================================================
+
+
 
 function createShipmentId() {
 
+
+
     return (
+
         "shipment_" +
+
         Date.now() +
+
         "_" +
+
         Math.floor(
+
             Math.random() * 100000
+
         )
+
     );
+
+
 
 }
 
 
 
+
+
+
+
 // =========================================================
+
 // ADDRESS HELPERS
+
 // =========================================================
+
+
 
 function getMainAddress(shipment) {
 
+
+
     return (
+
         `${shipment.street || ""} ${shipment.houseNumber || ""}`
+
     ).trim();
 
+
+
 }
+
+
+
+
 
 
 
 function getBuildingDetails(shipment) {
 
+
+
     const parts = [];
 
 
+
+
+
     if (
+
         shipment.addressType
+
     ) {
 
+
+
         parts.push(
+
             shipment.addressType
+
         );
+
+
 
     }
 
 
+
+
+
     if (
+
         shipment.entrance
+
     ) {
 
+
+
         parts.push(
+
             `כניסה ${shipment.entrance}`
+
         );
+
+
 
     }
 
 
+
+
+
     if (
+
         shipment.floor
+
     ) {
 
+
+
         parts.push(
+
             `קומה ${shipment.floor}`
+
         );
 
+
+
     }
+
+
+
 
 
     if (
+
         shipment.apartment
+
     ) {
 
+
+
         parts.push(
+
             `דירה ${shipment.apartment}`
+
         );
 
+
+
     }
+
+
+
 
 
     return (
+
         parts.join(" • ") || "-"
+
     );
+
+
 
 }
 
 
 
+
+
+
+
 // =========================================================
+
 // STATUS CLASS
+
 // =========================================================
+
+
 
 function getStatusClass(status) {
 
+
+
     switch (status) {
 
+
+
         case "נמסר":
+
             return "completed";
 
+
+
         case "בדרך":
+
             return "active";
 
+
+
         case "לא נמסר":
+
             return "failed";
 
+
+
         default:
+
             return "waiting";
 
+
+
     }
-
+    
 }
-
-
-
 // =========================================================
 // =========================================================
 // WAREHOUSE PAGE
 // =========================================================
 // =========================================================
-
 
 
 const barcodeInput =
@@ -378,9 +812,7 @@ const scannerStatus =
     );
 
 
-
 let duplicateScans = 0;
-
 
 
 // =========================================================
@@ -404,7 +836,6 @@ function updateWarehouseCounters() {
         shipments.length;
 
 }
-
 
 
 // =========================================================
@@ -442,7 +873,6 @@ if (barcodeInput) {
 }
 
 
-
 if (scanButton) {
 
     scanButton.addEventListener(
@@ -454,7 +884,6 @@ if (scanButton) {
     );
 
 }
-
 
 
 // =========================================================
@@ -483,6 +912,7 @@ function processBarcode() {
         showScanError(
             "יש לסרוק או להזין ברקוד."
         );
+
 
         barcodeInput.focus();
 
@@ -602,6 +1032,12 @@ function processBarcode() {
         driver:
             "",
 
+        driverId:
+            "",
+
+        driverName:
+            "",
+
         status:
             "ממתין לשיוך",
 
@@ -641,8 +1077,6 @@ function processBarcode() {
     resetScanner();
 
 }
-
-
 
 // =========================================================
 // SCAN SUCCESS
@@ -698,7 +1132,6 @@ function showScanSuccess(
 }
 
 
-
 // =========================================================
 // DUPLICATE
 // =========================================================
@@ -746,7 +1179,6 @@ function showDuplicateBarcode(
     `;
 
 }
-
 
 
 // =========================================================
@@ -798,7 +1230,6 @@ function showUnknownBarcode(
 }
 
 
-
 // =========================================================
 // GENERIC ERROR
 // =========================================================
@@ -824,6 +1255,7 @@ function showScanError(
 
         <div class="scan-result-icon">
             ✕
+
         </div>
 
         <div>
@@ -841,7 +1273,6 @@ function showScanError(
     `;
 
 }
-
 
 
 // =========================================================
@@ -931,7 +1362,6 @@ function addWarehouseShipmentToTable(
 }
 
 
-
 // =========================================================
 // SCANNER STATUS
 // =========================================================
@@ -958,7 +1388,6 @@ function setScannerWorking() {
 }
 
 
-
 function setScannerReady() {
 
     if (
@@ -979,7 +1408,6 @@ function setScannerReady() {
     `;
 
 }
-
 
 
 // =========================================================
@@ -1018,7 +1446,6 @@ function resetScanner() {
 }
 
 
-
 // =========================================================
 // WAREHOUSE MANUAL MODAL
 // =========================================================
@@ -1053,7 +1480,6 @@ const manualDeliveryForm =
     );
 
 
-
 if (
     manualDeliveryButton &&
     manualDeliveryModal
@@ -1079,7 +1505,6 @@ if (
 }
 
 
-
 if (
     closeManualModal
 ) {
@@ -1096,7 +1521,6 @@ if (
 }
 
 
-
 if (
     cancelManualDelivery
 ) {
@@ -1111,7 +1535,6 @@ if (
         );
 
 }
-
 
 
 function closeWarehouseManualModal() {
@@ -1132,7 +1555,6 @@ function closeWarehouseManualModal() {
         );
 
 }
-
 
 
 // =========================================================
@@ -1183,6 +1605,7 @@ if (
                     showDuplicateBarcode(
                         barcode
                     );
+
 
                     closeWarehouseManualModal();
 
@@ -1276,6 +1699,12 @@ if (
                     driver:
                         "",
 
+                    driverId:
+                        "",
+
+                    driverName:
+                        "",
+
                     status:
                         "ממתין לשיוך",
 
@@ -1323,14 +1752,11 @@ if (
 
 }
 
-
-
 // =========================================================
 // =========================================================
 // SHIPMENTS PAGE
 // =========================================================
 // =========================================================
-
 
 
 const shipmentsTableBody =
@@ -1363,6 +1789,163 @@ const statusFilter =
     );
 
 
+const shipmentDriverSelect =
+    document.getElementById(
+        "shipmentDriver"
+    );
+
+
+// =========================================================
+// DRIVER SELECTORS
+// =========================================================
+
+function populateDriverSelectors() {
+
+    const drivers =
+        getActiveDrivers();
+
+
+    // =====================================================
+    // SHIPMENT EDIT / CREATE SELECT
+    // =====================================================
+
+    if (
+        shipmentDriverSelect
+    ) {
+
+        const currentValue =
+            shipmentDriverSelect.value;
+
+
+        shipmentDriverSelect.innerHTML = `
+
+            <option value="">
+                ללא שיוך
+            </option>
+
+        `;
+
+
+        drivers.forEach(
+
+            driver => {
+
+                const option =
+                    document.createElement(
+                        "option"
+                    );
+
+
+                const driverId =
+                    driver.driverId ||
+                    driver.id;
+
+
+                option.value =
+                    driverId;
+
+
+                option.textContent =
+                    driver.fullName;
+
+
+                option.dataset.driverName =
+                    driver.fullName;
+
+
+                shipmentDriverSelect
+                    .appendChild(
+                        option
+                    );
+
+            }
+
+        );
+
+
+        if (
+            currentValue
+        ) {
+
+            shipmentDriverSelect.value =
+                currentValue;
+
+        }
+
+    }
+
+
+    // =====================================================
+    // DRIVER FILTER
+    // =====================================================
+
+    if (
+        driverFilter
+    ) {
+
+        const currentFilter =
+            driverFilter.value;
+
+
+        driverFilter.innerHTML = `
+
+            <option value="">
+                כל השליחים
+            </option>
+
+            <option value="ללא שיוך">
+                ללא שיוך
+            </option>
+
+        `;
+
+
+        drivers.forEach(
+
+            driver => {
+
+                const option =
+                    document.createElement(
+                        "option"
+                    );
+
+
+                const driverId =
+                    driver.driverId ||
+                    driver.id;
+
+
+                option.value =
+                    driverId;
+
+
+                option.textContent =
+                    driver.fullName;
+
+
+                driverFilter
+                    .appendChild(
+                        option
+                    );
+
+            }
+
+        );
+
+
+        if (
+            currentFilter
+        ) {
+
+            driverFilter.value =
+                currentFilter;
+
+        }
+
+    }
+
+}
+
 
 // =========================================================
 // SHIPMENT COUNTERS
@@ -1382,6 +1965,8 @@ function updateShipmentCounters() {
         shipments.filter(
 
             shipment =>
+
+                !shipment.driverId &&
                 !shipment.driver
 
         ).length;
@@ -1391,6 +1976,8 @@ function updateShipmentCounters() {
         shipments.filter(
 
             shipment =>
+
+                shipment.driverId ||
                 shipment.driver
 
         ).length;
@@ -1472,7 +2059,6 @@ function updateShipmentCounters() {
 }
 
 
-
 // =========================================================
 // CITY FILTER
 // =========================================================
@@ -1494,6 +2080,7 @@ function populateCityFilter() {
 
     const cities =
         [
+
             ...new Set(
 
                 shipments
@@ -1506,6 +2093,7 @@ function populateCityFilter() {
                     )
 
             )
+
         ];
 
 
@@ -1550,6 +2138,150 @@ function populateCityFilter() {
 }
 
 
+// =========================================================
+// DRIVER DISPLAY NAME
+// =========================================================
+
+function getShipmentDriverDisplayName(
+    shipment
+) {
+
+    if (
+        shipment.driverName
+    ) {
+
+        return shipment.driverName;
+
+    }
+
+
+    if (
+        shipment.driverId
+    ) {
+
+        const activeDriver =
+            findActiveDriverById(
+                shipment.driverId
+            );
+
+
+        if (
+            activeDriver
+        ) {
+
+            return activeDriver.fullName;
+
+        }
+
+    }
+
+
+    if (
+        shipment.driver
+    ) {
+
+        return shipment.driver;
+
+    }
+
+
+    return "ללא שיוך";
+
+}
+
+
+// =========================================================
+// DRIVER FILTER MATCH
+// =========================================================
+
+function shipmentMatchesDriverFilter(
+    shipment,
+    selectedDriver
+) {
+
+    if (
+        !selectedDriver
+    ) {
+
+        return true;
+
+    }
+
+
+    if (
+        selectedDriver ===
+        "ללא שיוך"
+    ) {
+
+        return (
+
+            !shipment.driverId &&
+            !shipment.driver
+
+        );
+
+    }
+
+
+    if (
+        shipment.driverId
+    ) {
+
+        return (
+
+            String(
+                shipment.driverId
+            )
+
+            ===
+
+            String(
+                selectedDriver
+            )
+
+        );
+
+    }
+
+
+    // =====================================================
+    // LEGACY SHIPMENT:
+    // old shipments saved only the driver name
+    // =====================================================
+
+    if (
+        shipment.driver
+    ) {
+
+        const selectedActiveDriver =
+            findActiveDriverById(
+                selectedDriver
+            );
+
+
+        if (
+            !selectedActiveDriver
+        ) {
+
+            return false;
+
+        }
+
+
+        return (
+
+            shipment.driver ===
+            selectedActiveDriver.fullName
+
+        );
+
+    }
+
+
+    return false;
+
+}
+
 
 // =========================================================
 // RENDER SHIPMENTS
@@ -1572,28 +2304,36 @@ function renderShipments() {
 
     const searchValue =
         shipmentSearchInput
+
             ? shipmentSearchInput
                 .value
                 .trim()
                 .toLowerCase()
+
             : "";
 
 
     const selectedCity =
         cityFilter
+
             ? cityFilter.value
+
             : "";
 
 
     const selectedDriver =
         driverFilter
+
             ? driverFilter.value
+
             : "";
 
 
     const selectedStatus =
         statusFilter
+
             ? statusFilter.value
+
             : "";
 
 
@@ -1601,6 +2341,12 @@ function renderShipments() {
         shipments.filter(
 
             shipment => {
+
+
+                const driverDisplayName =
+                    getShipmentDriverDisplayName(
+                        shipment
+                    );
 
 
                 const searchableText = [
@@ -1619,7 +2365,7 @@ function renderShipments() {
 
                     shipment.houseNumber,
 
-                    shipment.driver,
+                    driverDisplayName,
 
                     shipment.status
 
@@ -1653,32 +2399,13 @@ function renderShipments() {
 
 
                 if (
-                    selectedDriver
+                    !shipmentMatchesDriverFilter(
+                        shipment,
+                        selectedDriver
+                    )
                 ) {
 
-                    if (
-                        selectedDriver ===
-                        "ללא שיוך"
-                    ) {
-
-                        if (
-                            shipment.driver
-                        ) {
-
-                            return false;
-
-                        }
-
-                    }
-
-                    else if (
-                        shipment.driver !==
-                        selectedDriver
-                    ) {
-
-                        return false;
-
-                    }
+                    return false;
 
                 }
 
@@ -1728,6 +2455,7 @@ function renderShipments() {
 
         `;
 
+
         return;
 
     }
@@ -1747,8 +2475,9 @@ function renderShipments() {
 
 
                 const driverText =
-                    shipment.driver ||
-                    "ללא שיוך";
+                    getShipmentDriverDisplayName(
+                        shipment
+                    );
 
 
                 row.innerHTML = `
@@ -1757,11 +2486,9 @@ function renderShipments() {
                         #${shipment.shipmentNumber}
                     </td>
 
-
                     <td>
                         ${shipment.barcode}
                     </td>
-
 
                     <td>
                         <strong>
@@ -1769,31 +2496,25 @@ function renderShipments() {
                         </strong>
                     </td>
 
-
                     <td>
                         ${shipment.phone}
                     </td>
-
 
                     <td>
                         ${shipment.city}
                     </td>
 
-
                     <td>
                         ${getMainAddress(shipment)}
                     </td>
-
 
                     <td>
                         ${getBuildingDetails(shipment)}
                     </td>
 
-
                     <td>
                         ${driverText}
                     </td>
-
 
                     <td>
 
@@ -1811,7 +2532,6 @@ function renderShipments() {
                         </span>
 
                     </td>
-
 
                     <td>
 
@@ -1843,7 +2563,6 @@ function renderShipments() {
 }
 
 
-
 // =========================================================
 // SHIPMENT FILTER EVENTS
 // =========================================================
@@ -1864,7 +2583,6 @@ if (
 }
 
 
-
 if (
     cityFilter
 ) {
@@ -1879,7 +2597,6 @@ if (
         );
 
 }
-
 
 
 if (
@@ -1898,7 +2615,6 @@ if (
 }
 
 
-
 if (
     statusFilter
 ) {
@@ -1913,7 +2629,6 @@ if (
         );
 
 }
-
 
 
 // =========================================================
@@ -1950,7 +2665,6 @@ const shipmentForm =
     );
 
 
-
 if (
     newShipmentButton
 ) {
@@ -1971,7 +2685,6 @@ if (
 }
 
 
-
 if (
     closeShipmentModal
 ) {
@@ -1988,7 +2701,6 @@ if (
 }
 
 
-
 if (
     cancelShipmentButton
 ) {
@@ -2003,7 +2715,6 @@ if (
         );
 
 }
-
 
 
 // =========================================================
@@ -2023,6 +2734,9 @@ function openNewShipmentModal() {
 
 
     shipmentForm.reset();
+
+
+    populateDriverSelectors();
 
 
     document
@@ -2050,7 +2764,6 @@ function openNewShipmentModal() {
 }
 
 
-
 // =========================================================
 // CLOSE SHIPMENT MODAL
 // =========================================================
@@ -2073,9 +2786,6 @@ function closeShipmentManagementModal() {
         );
 
 }
-
-
-
 // =========================================================
 // EDIT SHIPMENT
 // =========================================================
@@ -2106,6 +2816,9 @@ function editShipment(
         return;
 
     }
+
+
+    populateDriverSelectors();
 
 
     document
@@ -2205,12 +2918,77 @@ function editShipment(
         shipment.apartment || "";
 
 
-    document
-        .getElementById(
+    const shipmentDriverElement =
+        document.getElementById(
             "shipmentDriver"
-        )
-        .value =
-        shipment.driver || "";
+        );
+
+
+    if (
+        shipmentDriverElement
+    ) {
+
+        if (
+            shipment.driverId
+        ) {
+
+            shipmentDriverElement.value =
+                shipment.driverId;
+
+        }
+
+        else if (
+            shipment.driverName
+        ) {
+
+            const matchingDriver =
+                findActiveDriverByName(
+                    shipment.driverName
+                );
+
+
+            shipmentDriverElement.value =
+                matchingDriver
+
+                    ? (
+                        matchingDriver.driverId ||
+                        matchingDriver.id
+                    )
+
+                    : "";
+
+        }
+
+        else if (
+            shipment.driver
+        ) {
+
+            const matchingDriver =
+                findActiveDriverByName(
+                    shipment.driver
+                );
+
+
+            shipmentDriverElement.value =
+                matchingDriver
+
+                    ? (
+                        matchingDriver.driverId ||
+                        matchingDriver.id
+                    )
+
+                    : "";
+
+        }
+
+        else {
+
+            shipmentDriverElement.value =
+                "";
+
+        }
+
+    }
 
 
     document
@@ -2245,8 +3023,6 @@ function editShipment(
 
 }
 
-
-
 // =========================================================
 // SAVE SHIPMENT
 // =========================================================
@@ -2277,12 +3053,43 @@ if (
                         .value;
 
 
-                const driver =
-                    document
-                        .getElementById(
-                            "shipmentDriver"
-                        )
-                        .value;
+                const shipmentDriverElement =
+                    document.getElementById(
+                        "shipmentDriver"
+                    );
+
+
+                const driverId =
+                    shipmentDriverElement
+
+                        ? shipmentDriverElement.value
+
+                        : "";
+
+
+                let driverName =
+                    "";
+
+
+                if (
+                    shipmentDriverElement &&
+                    driverId
+                ) {
+
+                    const selectedOption =
+                        shipmentDriverElement.options[
+                            shipmentDriverElement.selectedIndex
+                        ];
+
+
+                    driverName =
+                        selectedOption
+
+                            ? selectedOption.textContent.trim()
+
+                            : "";
+
+                }
 
 
                 let status =
@@ -2294,7 +3101,7 @@ if (
 
 
                 if (
-                    driver &&
+                    driverId &&
                     status ===
                     "ממתין לשיוך"
                 ) {
@@ -2306,7 +3113,7 @@ if (
 
 
                 if (
-                    !driver &&
+                    !driverId &&
                     status ===
                     "משויך"
                 ) {
@@ -2406,8 +3213,14 @@ if (
                             .value
                             .trim(),
 
+                    driverId:
+                        driverId,
+
+                    driverName:
+                        driverName,
+
                     driver:
-                        driver,
+                        driverName,
 
                     status:
                         status,
@@ -2422,6 +3235,10 @@ if (
 
                 };
 
+
+                // =============================================
+                // EDIT EXISTING SHIPMENT
+                // =============================================
 
                 if (
                     editingId
@@ -2442,6 +3259,32 @@ if (
                         index !== -1
                     ) {
 
+                        const previousDriverId =
+                            shipments[
+                                index
+                            ].driverId || "";
+
+
+                        const previousDriverName =
+                            shipments[
+                                index
+                            ].driverName ||
+                            shipments[
+                                index
+                            ].driver ||
+                            "";
+
+
+                        const driverChanged =
+                            String(
+                                previousDriverId
+                            )
+                            !==
+                            String(
+                                driverId
+                            );
+
+
                         shipments[
                             index
                         ] = {
@@ -2453,6 +3296,55 @@ if (
                             ...formData
 
                         };
+
+
+                        // =====================================
+                        // ASSIGNMENT HISTORY
+                        // =====================================
+
+                        if (
+                            driverChanged
+                        ) {
+
+                            if (
+                                !Array.isArray(
+                                    shipments[
+                                        index
+                                    ].assignmentHistory
+                                )
+                            ) {
+
+                                shipments[
+                                    index
+                                ].assignmentHistory =
+                                    [];
+
+                            }
+
+
+                            shipments[
+                                index
+                            ].assignmentHistory.push({
+
+                                fromDriverId:
+                                    previousDriverId,
+
+                                fromDriverName:
+                                    previousDriverName,
+
+                                toDriverId:
+                                    driverId,
+
+                                toDriverName:
+                                    driverName,
+
+                                changedAt:
+                                    new Date()
+                                        .toISOString()
+
+                            });
+
+                        }
 
 
                         if (
@@ -2471,10 +3363,27 @@ if (
 
                         }
 
+
+                        if (
+                            status !==
+                            "נמסר"
+                        ) {
+
+                            shipments[
+                                index
+                            ].deliveredAt =
+                                null;
+
+                        }
+
                     }
 
                 }
 
+
+                // =============================================
+                // NEW SHIPMENT
+                // =============================================
 
                 else {
 
@@ -2515,9 +3424,36 @@ if (
                         deliveredAt:
                             status ===
                             "נמסר"
+
                                 ? new Date()
                                     .toISOString()
-                                : null
+
+                                : null,
+
+                        assignmentHistory:
+                            driverId
+
+                                ? [
+                                    {
+                                        fromDriverId:
+                                            "",
+
+                                        fromDriverName:
+                                            "",
+
+                                        toDriverId:
+                                            driverId,
+
+                                        toDriverName:
+                                            driverName,
+
+                                        changedAt:
+                                            new Date()
+                                                .toISOString()
+                                    }
+                                ]
+
+                                : []
 
                     });
 
@@ -2535,6 +3471,9 @@ if (
                 populateCityFilter();
 
 
+                populateDriverSelectors();
+
+
                 updateShipmentCounters();
 
 
@@ -2546,8 +3485,6 @@ if (
 
 }
 
-
-
 // =========================================================
 // INITIALIZE SHIPMENTS PAGE
 // =========================================================
@@ -2558,7 +3495,12 @@ if (
 
     populateCityFilter();
 
+
+    populateDriverSelectors();
+
+
     updateShipmentCounters();
+
 
     renderShipments();
 
