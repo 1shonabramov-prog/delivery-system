@@ -1,41 +1,23 @@
 // =========================================================
-
 // DELIVERY SYSTEM
-
 // Main JavaScript
-
 // =========================================================
 
 
-
-
-
-
-
 // =========================================================
-
 // STORAGE
-
 // =========================================================
 
+const STORAGE_KEY =
+    "delivery_system_shipments";
 
-
-const STORAGE_KEY = "delivery_system_shipments";
-
-const USERS_STORAGE_KEY = "delivery_system_users";
-
-
-
-
-
+const USERS_STORAGE_KEY =
+    "delivery_system_users";
 
 
 // =========================================================
-
 // USERS / DRIVERS
 // =========================================================
-
-
 
 function getSystemUsers() {
 
@@ -74,8 +56,9 @@ function getSystemUsers() {
 }
 
 
-
-
+// =========================================================
+// ACTIVE DRIVERS
+// =========================================================
 
 function getActiveDrivers() {
 
@@ -84,19 +67,22 @@ function getActiveDrivers() {
 
             user =>
 
-                user.role === "DRIVER"
+                user.role ===
+                    "DRIVER"
 
                 &&
 
-                user.status === "פעיל"
+                user.status ===
+                    "פעיל"
 
         );
 
 }
 
 
-
-
+// =========================================================
+// FIND ACTIVE DRIVER BY ID
+// =========================================================
 
 function findActiveDriverById(
     driverId
@@ -123,8 +109,9 @@ function findActiveDriverById(
 }
 
 
-
-
+// =========================================================
+// FIND ACTIVE DRIVER BY NAME
+// =========================================================
 
 function findActiveDriverByName(
     driverName
@@ -136,13 +123,15 @@ function findActiveDriverByName(
             driver =>
 
                 driver.fullName ===
-                driverName
+                    driverName
 
         );
 
 }
+
+
 // =========================================================
-// FIND DRIVER INCLUDING INACTIVE
+// FIND DRIVER INCLUDING INACTIVE BY ID
 // =========================================================
 
 function findSystemDriverById(
@@ -154,7 +143,8 @@ function findSystemDriverById(
 
             user =>
 
-                user.role === "DRIVER"
+                user.role ===
+                    "DRIVER"
 
                 &&
 
@@ -174,6 +164,10 @@ function findSystemDriverById(
 }
 
 
+// =========================================================
+// FIND DRIVER INCLUDING INACTIVE BY NAME
+// =========================================================
+
 function findSystemDriverByName(
     driverName
 ) {
@@ -183,325 +177,225 @@ function findSystemDriverByName(
 
             user =>
 
-                user.role === "DRIVER"
+                user.role ===
+                    "DRIVER"
 
                 &&
 
                 user.fullName ===
-                driverName
+                    driverName
 
         );
 
 }
 
 
-
-
-
-
 // =========================================================
-
 // MOCK BARCODE DATABASE
-
 //
-
-// בעתיד זה יוחלף ב-API אמיתי.
-
+// בעתיד יוחלף ב-API אמיתי
 // =========================================================
-
-
 
 const mockShipmentsDatabase = {
 
 
-
     "72900100001": {
 
+        shipmentNumber:
+            "100401",
 
+        customer:
+            "משה לוי",
 
-        shipmentNumber: "100401",
+        phone:
+            "050-1112233",
 
+        city:
+            "ראשון לציון",
 
+        street:
+            "רוטשילד",
 
-        customer: "משה לוי",
+        houseNumber:
+            "44",
 
+        entrance:
+            "",
 
+        floor:
+            "",
 
-        phone: "050-1112233",
+        apartment:
+            "",
 
+        addressType:
+            "בית פרטי",
 
-
-        city: "ראשון לציון",
-
-
-
-        street: "רוטשילד",
-
-
-
-        houseNumber: "44",
-
-
-
-        entrance: "",
-
-
-
-        floor: "",
-
-
-
-        apartment: "",
-
-
-
-        addressType: "בית פרטי",
-
-
-
-        notes: ""
-
-
+        notes:
+            ""
 
     },
-
-
-
 
 
     "72900100002": {
 
+        shipmentNumber:
+            "100402",
 
+        customer:
+            "דנה כהן",
 
-        shipmentNumber: "100402",
+        phone:
+            "052-3334455",
 
+        city:
+            "חולון",
 
+        street:
+            "סוקולוב",
 
-        customer: "דנה כהן",
+        houseNumber:
+            "18",
 
+        entrance:
+            "ב",
 
+        floor:
+            "3",
 
-        phone: "052-3334455",
+        apartment:
+            "12",
 
+        addressType:
+            "בניין",
 
-
-        city: "חולון",
-
-
-
-        street: "סוקולוב",
-
-
-
-        houseNumber: "18",
-
-
-
-        entrance: "ב",
-
-
-
-        floor: "3",
-
-
-
-        apartment: "12",
-
-
-
-        addressType: "בניין",
-
-
-
-        notes: "להתקשר לפני הגעה"
-
-
+        notes:
+            "להתקשר לפני הגעה"
 
     },
-
-
-
 
 
     "72900100003": {
 
+        shipmentNumber:
+            "100403",
 
+        customer:
+            "יוסי ישראלי",
 
-        shipmentNumber: "100403",
+        phone:
+            "054-5556677",
 
+        city:
+            "פתח תקווה",
 
+        street:
+            "חיים עוזר",
 
-        customer: "יוסי ישראלי",
+        houseNumber:
+            "12",
 
+        entrance:
+            "א",
 
+        floor:
+            "2",
 
-        phone: "054-5556677",
+        apartment:
+            "6",
 
+        addressType:
+            "בניין",
 
-
-        city: "פתח תקווה",
-
-
-
-        street: "חיים עוזר",
-
-
-
-        houseNumber: "12",
-
-
-
-        entrance: "א",
-
-
-
-        floor: "2",
-
-
-
-        apartment: "6",
-
-
-
-        addressType: "בניין",
-
-
-
-        notes: ""
-
-
+        notes:
+            ""
 
     },
-
-
-
 
 
     "72900100004": {
 
+        shipmentNumber:
+            "100404",
 
+        customer:
+            "נועה אברהם",
 
-        shipmentNumber: "100404",
+        phone:
+            "053-7778899",
 
+        city:
+            "תל אביב",
 
+        street:
+            "דיזנגוף",
 
-        customer: "נועה אברהם",
+        houseNumber:
+            "91",
 
+        entrance:
+            "",
 
+        floor:
+            "4",
 
-        phone: "053-7778899",
+        apartment:
+            "15",
 
+        addressType:
+            "בניין",
 
-
-        city: "תל אביב",
-
-
-
-        street: "דיזנגוף",
-
-
-
-        houseNumber: "91",
-
-
-
-        entrance: "",
-
-
-
-        floor: "4",
-
-
-
-        apartment: "15",
-
-
-
-        addressType: "בניין",
-
-
-
-        notes: "קוד כניסה 2580#"
-
-
+        notes:
+            "קוד כניסה 2580#"
 
     },
 
 
-
-
-
     "72900100005": {
 
+        shipmentNumber:
+            "100405",
 
+        customer:
+            "אורן לוי",
 
-        shipmentNumber: "100405",
+        phone:
+            "050-9988776",
 
+        city:
+            "רמת גן",
 
+        street:
+            "ביאליק",
 
-        customer: "אורן לוי",
+        houseNumber:
+            "31",
 
+        entrance:
+            "",
 
+        floor:
+            "",
 
-        phone: "050-9988776",
+        apartment:
+            "",
 
+        addressType:
+            "עסק",
 
-
-        city: "רמת גן",
-
-
-
-        street: "ביאליק",
-
-
-
-        houseNumber: "31",
-
-
-
-        entrance: "",
-
-
-
-        floor: "",
-
-
-
-        apartment: "",
-
-
-
-        addressType: "עסק",
-
-
-
-        notes: "קבלה בקומת כניסה"
-
-
+        notes:
+            "קבלה בקומת כניסה"
 
     }
-
-
 
 };
 
 
-
-
-
-
-
 // =========================================================
-
-// LOCAL STORAGE FUNCTIONS
-
+// LOCAL STORAGE - SHIPMENTS
 // =========================================================
-
-
 
 function getShipments() {
-
-
 
     const saved =
         localStorage.getItem(
@@ -509,137 +403,78 @@ function getShipments() {
         );
 
 
-
-
-
     if (!saved) {
-
-
 
         return [];
 
-
-
     }
-
-
-
 
 
     try {
 
-
-
-        return JSON.parse(saved);
-
-
+        return JSON.parse(
+            saved
+        );
 
     }
 
     catch (error) {
-
-
 
         console.error(
             "Failed loading shipments",
             error
         );
 
-
-
         return [];
-
-
 
     }
 
-
-
 }
 
 
-
-
-
-
-
-function saveShipments(shipments) {
-
-
+function saveShipments(
+    shipments
+) {
 
     localStorage.setItem(
 
-
-
         STORAGE_KEY,
 
-
-
-        JSON.stringify(shipments)
-
-
-
-    );
-
-
-
-}
-
-
-
-
-
-
-
-// =========================================================
-
-// CREATE UNIQUE ID
-
-// =========================================================
-
-
-
-function createShipmentId() {
-
-
-
-    return (
-
-        "shipment_" +
-
-        Date.now() +
-
-        "_" +
-
-        Math.floor(
-
-            Math.random() * 100000
-
+        JSON.stringify(
+            shipments
         )
 
     );
 
+}
 
+
+// =========================================================
+// CREATE UNIQUE SHIPMENT ID
+// =========================================================
+
+function createShipmentId() {
+
+    return (
+        "shipment_" +
+        Date.now() +
+        "_" +
+        Math.floor(
+            Math.random() *
+            100000
+        )
+    );
 
 }
 
 
-
-
-
-
-
 // =========================================================
-
 // ADDRESS HELPERS
-
 // =========================================================
 
-
-
-function getMainAddress(shipment) {
-
-
+function getMainAddress(
+    shipment
+) {
 
     return (
 
@@ -647,150 +482,84 @@ function getMainAddress(shipment) {
 
     ).trim();
 
-
-
 }
 
 
+function getBuildingDetails(
+    shipment
+) {
 
-
-
-
-
-function getBuildingDetails(shipment) {
-
-
-
-    const parts = [];
-
-
-
+    const parts =
+        [];
 
 
     if (
-
         shipment.addressType
-
     ) {
 
-
-
         parts.push(
-
             shipment.addressType
-
         );
-
-
 
     }
 
 
-
-
-
     if (
-
         shipment.entrance
-
     ) {
 
-
-
         parts.push(
-
             `כניסה ${shipment.entrance}`
-
         );
-
-
 
     }
 
 
-
-
-
     if (
-
         shipment.floor
-
     ) {
 
-
-
         parts.push(
-
             `קומה ${shipment.floor}`
-
         );
 
-
-
     }
-
-
-
 
 
     if (
-
         shipment.apartment
-
     ) {
 
-
-
         parts.push(
-
             `דירה ${shipment.apartment}`
-
         );
 
-
-
     }
-
-
-
 
 
     return (
-
-        parts.join(" • ") || "-"
-
+        parts.join(" • ") ||
+        "-"
     );
-
-
 
 }
 
 
-
-
-
-
-
 // =========================================================
-
 // STATUS CLASS
-
 // =========================================================
 
+function getStatusClass(
+    status
+) {
 
-
-function getStatusClass(status) {
-
-
-
-    switch (status) {
-
-
+    switch (
+        status
+    ) {
 
         case "נמסר":
 
             return "completed";
-
 
 
         case "בדרך":
@@ -798,18 +567,14 @@ function getStatusClass(status) {
             return "active";
 
 
-
         case "לא נמסר":
 
             return "failed";
 
 
-
         default:
 
             return "waiting";
-
-
 
     }
 
@@ -872,7 +637,9 @@ let duplicateScans = 0;
 
 function updateWarehouseCounters() {
 
-    if (!receivedTodayCount) {
+    if (
+        !receivedTodayCount
+    ) {
 
         return;
 
@@ -893,7 +660,9 @@ function updateWarehouseCounters() {
 // BARCODE EVENTS
 // =========================================================
 
-if (barcodeInput) {
+if (
+    barcodeInput
+) {
 
     updateWarehouseCounters();
 
@@ -905,10 +674,13 @@ if (barcodeInput) {
 
         "keydown",
 
-        function (event) {
+        function (
+            event
+        ) {
 
             if (
-                event.key === "Enter"
+                event.key ===
+                "Enter"
             ) {
 
                 event.preventDefault();
@@ -924,7 +696,9 @@ if (barcodeInput) {
 }
 
 
-if (scanButton) {
+if (
+    scanButton
+) {
 
     scanButton.addEventListener(
 
@@ -943,7 +717,9 @@ if (scanButton) {
 
 function processBarcode() {
 
-    if (!barcodeInput) {
+    if (
+        !barcodeInput
+    ) {
 
         return;
 
@@ -983,7 +759,8 @@ function processBarcode() {
         shipments.some(
 
             shipment =>
-                shipment.barcode === barcode
+                shipment.barcode ===
+                barcode
 
         );
 
@@ -1097,7 +874,10 @@ function processBarcode() {
                 .toISOString(),
 
         deliveredAt:
-            null
+            null,
+
+        assignmentHistory:
+            []
 
     };
 
@@ -1128,6 +908,7 @@ function processBarcode() {
     resetScanner();
 
 }
+
 
 // =========================================================
 // SCAN SUCCESS
@@ -1184,7 +965,7 @@ function showScanSuccess(
 
 
 // =========================================================
-// DUPLICATE
+// DUPLICATE BARCODE
 // =========================================================
 
 function showDuplicateBarcode(
@@ -1306,7 +1087,6 @@ function showScanError(
 
         <div class="scan-result-icon">
             ✕
-
         </div>
 
         <div>
@@ -1498,7 +1278,7 @@ function resetScanner() {
 
 
 // =========================================================
-// WAREHOUSE MANUAL MODAL
+// MANUAL WAREHOUSE MODAL
 // =========================================================
 
 const manualDeliveryButton =
@@ -1621,7 +1401,9 @@ if (
 
             "submit",
 
-            function (event) {
+            function (
+                event
+            ) {
 
                 event.preventDefault();
 
@@ -1679,11 +1461,14 @@ if (
 
 
                 const houseNumber =
-                    addressParts.pop() || "";
+                    addressParts.pop() ||
+                    "";
 
 
                 const street =
-                    addressParts.join(" ");
+                    addressParts.join(
+                        " "
+                    );
 
 
                 const shipment = {
@@ -1764,7 +1549,10 @@ if (
                             .toISOString(),
 
                     deliveredAt:
-                        null
+                        null,
+
+                    assignmentHistory:
+                        []
 
                 };
 
@@ -1802,7 +1590,6 @@ if (
         );
 
 }
-
 // =========================================================
 // =========================================================
 // SHIPMENTS PAGE
@@ -1857,7 +1644,7 @@ function populateDriverSelectors() {
 
 
     // =====================================================
-    // SHIPMENT EDIT / CREATE SELECT
+    // SHIPMENT DRIVER SELECT
     // =====================================================
 
     if (
@@ -2039,7 +1826,7 @@ function updateShipmentCounters() {
 
             shipment =>
                 shipment.status ===
-                "נמסר"
+                    "נמסר"
 
         ).length;
 
@@ -2196,6 +1983,51 @@ function populateCityFilter() {
 function getShipmentDriverDisplayName(
     shipment
 ) {
+
+    if (
+        shipment.driverName
+    ) {
+
+        return shipment.driverName;
+
+    }
+
+
+    if (
+        shipment.driverId
+    ) {
+
+        const systemDriver =
+            findSystemDriverById(
+                shipment.driverId
+            );
+
+
+        if (
+            systemDriver
+        ) {
+
+            return systemDriver.fullName;
+
+        }
+
+    }
+
+
+    if (
+        shipment.driver
+    ) {
+
+        return shipment.driver;
+
+    }
+
+
+    return "ללא שיוך";
+
+}
+
+
 // =========================================================
 // DRIVER ASSIGNMENT STATUS
 // =========================================================
@@ -2261,48 +2093,6 @@ function isShipmentDriverInactive(
     );
 
 }
-    if (
-        shipment.driverName
-    ) {
-
-        return shipment.driverName;
-
-    }
-
-
-    if (
-        shipment.driverId
-    ) {
-
-        const activeDriver =
-            findActiveDriverById(
-                shipment.driverId
-            );
-
-
-        if (
-            activeDriver
-        ) {
-
-            return activeDriver.fullName;
-
-        }
-
-    }
-
-
-    if (
-        shipment.driver
-    ) {
-
-        return shipment.driver;
-
-    }
-
-
-    return "ללא שיוך";
-
-}
 
 
 // =========================================================
@@ -2360,8 +2150,8 @@ function shipmentMatchesDriverFilter(
 
 
     // =====================================================
-    // LEGACY SHIPMENT:
-    // old shipments saved only the driver name
+    // LEGACY SHIPMENT
+    // משלוחים ישנים ששמרו רק שם
     // =====================================================
 
     if (
@@ -2457,7 +2247,6 @@ function renderShipments() {
 
             shipment => {
 
-
                 const driverDisplayName =
                     getShipmentDriverDisplayName(
                         shipment
@@ -2491,10 +2280,9 @@ function renderShipments() {
 
                 if (
                     searchValue &&
-                    !searchableText
-                        .includes(
-                            searchValue
-                        )
+                    !searchableText.includes(
+                        searchValue
+                    )
                 ) {
 
                     return false;
@@ -2593,10 +2381,13 @@ function renderShipments() {
                     getShipmentDriverDisplayName(
                         shipment
                     );
-    const driverInactive =
-    isShipmentDriverInactive(
-        shipment
-    );
+
+
+                const driverInactive =
+                    isShipmentDriverInactive(
+                        shipment
+                    );
+
 
                 row.innerHTML = `
 
@@ -2632,34 +2423,36 @@ function renderShipments() {
 
                     <td>
 
-    <div>
-        ${driverText}
-    </div>
+                        <div>
+                            ${driverText}
+                        </div>
 
-    ${
-        driverInactive
+                        ${
+                            driverInactive
 
-            ? `
-                <div
-                    style="
-                        display:inline-block;
-                        margin-top:5px;
-                        padding:3px 7px;
-                        border-radius:7px;
-                        background:#fff7ed;
-                        color:#c2410c;
-                        font-size:11px;
-                        font-weight:700;
-                    "
-                >
-                    ⚠️ לא פעיל
-                </div>
-            `
+                                ? `
+                                    <div
+                                        style="
+                                            display:inline-block;
+                                            margin-top:5px;
+                                            padding:3px 7px;
+                                            border-radius:7px;
+                                            background:#fff7ed;
+                                            color:#c2410c;
+                                            font-size:11px;
+                                            font-weight:700;
+                                        "
+                                    >
+                                        ⚠️ לא פעיל
+                                    </div>
+                                `
 
-            : ""
-    }
+                                : ""
+                        }
 
-</td>
+                    </td>
+
+                    <td>
 
                         <span
                             class="
@@ -2707,7 +2500,7 @@ function renderShipments() {
 
 
 // =========================================================
-// SHIPMENT FILTER EVENTS
+// FILTER EVENTS
 // =========================================================
 
 if (
@@ -3042,7 +2835,8 @@ function editShipment(
             "shipmentEntrance"
         )
         .value =
-        shipment.entrance || "";
+        shipment.entrance ||
+        "";
 
 
     document
@@ -3050,7 +2844,8 @@ function editShipment(
             "shipmentFloor"
         )
         .value =
-        shipment.floor || "";
+        shipment.floor ||
+        "";
 
 
     document
@@ -3058,7 +2853,8 @@ function editShipment(
             "shipmentApartment"
         )
         .value =
-        shipment.apartment || "";
+        shipment.apartment ||
+        "";
 
 
     const shipmentDriverElement =
@@ -3147,7 +2943,8 @@ function editShipment(
             "shipmentNotes"
         )
         .value =
-        shipment.notes || "";
+        shipment.notes ||
+        "";
 
 
     document
@@ -3166,6 +2963,7 @@ function editShipment(
 
 }
 
+
 // =========================================================
 // SAVE SHIPMENT
 // =========================================================
@@ -3179,7 +2977,9 @@ if (
 
             "submit",
 
-            function (event) {
+            function (
+                event
+            ) {
 
                 event.preventDefault();
 
@@ -3405,7 +3205,8 @@ if (
                         const previousDriverId =
                             shipments[
                                 index
-                            ].driverId || "";
+                            ].driverId ||
+                            "";
 
 
                         const previousDriverName =
@@ -3627,6 +3428,7 @@ if (
         );
 
 }
+
 
 // =========================================================
 // INITIALIZE SHIPMENTS PAGE
