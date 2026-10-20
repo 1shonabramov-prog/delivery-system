@@ -141,7 +141,58 @@ function findActiveDriverByName(
         );
 
 }
+// =========================================================
+// FIND DRIVER INCLUDING INACTIVE
+// =========================================================
 
+function findSystemDriverById(
+    driverId
+) {
+
+    return getSystemUsers()
+        .find(
+
+            user =>
+
+                user.role === "DRIVER"
+
+                &&
+
+                String(
+                    user.driverId ||
+                    user.id
+                )
+
+                ===
+
+                String(
+                    driverId
+                )
+
+        );
+
+}
+
+
+function findSystemDriverByName(
+    driverName
+) {
+
+    return getSystemUsers()
+        .find(
+
+            user =>
+
+                user.role === "DRIVER"
+
+                &&
+
+                user.fullName ===
+                driverName
+
+        );
+
+}
 
 
 
@@ -761,7 +812,7 @@ function getStatusClass(status) {
 
 
     }
-    
+
 }
 // =========================================================
 // =========================================================
@@ -2145,7 +2196,71 @@ function populateCityFilter() {
 function getShipmentDriverDisplayName(
     shipment
 ) {
+// =========================================================
+// DRIVER ASSIGNMENT STATUS
+// =========================================================
 
+function isShipmentDriverInactive(
+    shipment
+) {
+
+    let driver =
+        null;
+
+
+    if (
+        shipment.driverId
+    ) {
+
+        driver =
+            findSystemDriverById(
+                shipment.driverId
+            );
+
+    }
+
+
+    if (
+        !driver &&
+        shipment.driverName
+    ) {
+
+        driver =
+            findSystemDriverByName(
+                shipment.driverName
+            );
+
+    }
+
+
+    if (
+        !driver &&
+        shipment.driver
+    ) {
+
+        driver =
+            findSystemDriverByName(
+                shipment.driver
+            );
+
+    }
+
+
+    if (
+        !driver
+    ) {
+
+        return false;
+
+    }
+
+
+    return (
+        driver.status !==
+        "פעיל"
+    );
+
+}
     if (
         shipment.driverName
     ) {
@@ -2478,7 +2593,10 @@ function renderShipments() {
                     getShipmentDriverDisplayName(
                         shipment
                     );
-
+    const driverInactive =
+    isShipmentDriverInactive(
+        shipment
+    );
 
                 row.innerHTML = `
 
@@ -2513,10 +2631,35 @@ function renderShipments() {
                     </td>
 
                     <td>
-                        ${driverText}
-                    </td>
 
-                    <td>
+    <div>
+        ${driverText}
+    </div>
+
+    ${
+        driverInactive
+
+            ? `
+                <div
+                    style="
+                        display:inline-block;
+                        margin-top:5px;
+                        padding:3px 7px;
+                        border-radius:7px;
+                        background:#fff7ed;
+                        color:#c2410c;
+                        font-size:11px;
+                        font-weight:700;
+                    "
+                >
+                    ⚠️ לא פעיל
+                </div>
+            `
+
+            : ""
+    }
+
+</td>
 
                         <span
                             class="
