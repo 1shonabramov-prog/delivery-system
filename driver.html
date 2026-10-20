@@ -1,0 +1,674 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
+
+    <title>
+        אזור שליח | Delivery
+    </title>
+
+    <link
+        rel="stylesheet"
+        href="driver.css"
+    >
+
+</head>
+
+
+<body>
+
+
+    <main class="driver-app">
+
+
+        <!-- =================================================
+             HEADER
+        ================================================== -->
+
+        <header class="driver-header">
+
+
+            <div class="driver-header-top">
+
+
+                <div>
+
+                    <span class="driver-greeting">
+                        שלום,
+                    </span>
+
+                    <h1 id="driverName">
+                        שליח
+                    </h1>
+
+                </div>
+
+
+                <button
+                    type="button"
+                    class="logout-button"
+                    id="logoutButton"
+                >
+                    יציאה
+                </button>
+
+
+            </div>
+
+
+
+            <!-- =================================================
+                 TODAY
+            ================================================== -->
+
+            <div class="driver-today">
+
+                <span>
+                    יום עבודה
+                </span>
+
+                <strong id="driverWorkDate">
+                    היום
+                </strong>
+
+            </div>
+
+
+        </header>
+
+
+
+        <!-- =================================================
+             SUMMARY
+        ================================================== -->
+
+        <section class="driver-summary">
+
+
+            <div class="summary-main-card">
+
+                <span>
+                    משלוחים להיום
+                </span>
+
+                <strong id="totalDeliveriesCount">
+                    0
+                </strong>
+
+            </div>
+
+
+
+            <div class="summary-grid">
+
+
+                <div class="summary-card">
+
+                    <span>
+                        נמסרו
+                    </span>
+
+                    <strong id="deliveredCount">
+                        0
+                    </strong>
+
+                </div>
+
+
+                <div class="summary-card">
+
+                    <span>
+                        נשארו
+                    </span>
+
+                    <strong id="remainingCount">
+                        0
+                    </strong>
+
+                </div>
+
+
+                <div class="summary-card">
+
+                    <span>
+                        לא נמסרו
+                    </span>
+
+                    <strong id="failedCount">
+                        0
+                    </strong>
+
+                </div>
+
+
+            </div>
+
+
+        </section>
+
+
+
+        <!-- =================================================
+             ROUTE PLANNER
+        ================================================== -->
+
+        <section class="route-section">
+
+
+            <button
+                type="button"
+                class="route-main-button"
+                id="openRoutePlannerButton"
+            >
+
+                <span class="route-button-icon">
+                    🧭
+                </span>
+
+                <span>
+
+                    <strong>
+                        סדר לי מסלול
+                    </strong>
+
+                    <small>
+                        תכנון מסלול לפי נקודת התחלה ושעת יציאה
+                    </small>
+
+                </span>
+
+            </button>
+
+
+            <div
+                class="route-planner hidden"
+                id="routePlanner"
+            >
+
+
+                <div class="route-planner-header">
+
+                    <div>
+
+                        <h2>
+                            תכנון יום העבודה
+                        </h2>
+
+                        <p>
+                            הגדר מתי ומאיפה אתה מתחיל
+                        </p>
+
+                    </div>
+
+
+                    <button
+                        type="button"
+                        class="close-route-button"
+                        id="closeRoutePlannerButton"
+                    >
+                        ×
+                    </button>
+
+                </div>
+
+
+
+                <div class="route-form-grid">
+
+
+                    <div class="route-form-group">
+
+                        <label for="routeDate">
+                            תאריך
+                        </label>
+
+                        <input
+                            type="date"
+                            id="routeDate"
+                        >
+
+                    </div>
+
+
+                    <div class="route-form-group">
+
+                        <label for="routeStartTime">
+                            שעת התחלה
+                        </label>
+
+                        <input
+                            type="time"
+                            id="routeStartTime"
+                        >
+
+                    </div>
+
+
+                </div>
+
+
+
+                <div class="route-form-group">
+
+                    <label for="routeStartAddress">
+                        כתובת התחלה
+                    </label>
+
+                    <input
+                        type="text"
+                        id="routeStartAddress"
+                        placeholder="לדוגמה: תעשייה אווירית שער מערב"
+                    >
+
+                </div>
+
+
+
+                <div class="route-form-group">
+
+                    <label for="routeEndAddress">
+                        כתובת סיום
+                    </label>
+
+                    <input
+                        type="text"
+                        id="routeEndAddress"
+                        placeholder="לדוגמה: אהרון הכהן 4, ראשון לציון"
+                    >
+
+                </div>
+
+
+
+                <button
+                    type="button"
+                    class="build-route-button"
+                    id="buildRouteButton"
+                >
+                    בנה לי מסלול
+                </button>
+
+
+            </div>
+
+
+        </section>
+
+
+
+        <!-- =================================================
+             DELIVERIES TITLE
+        ================================================== -->
+
+        <section class="deliveries-section">
+
+
+            <div class="deliveries-header">
+
+
+                <div>
+
+                    <h2>
+                        המשלוחים שלי
+                    </h2>
+
+                    <p>
+                        לחץ על משלוח לצפייה בפרטים
+                    </p>
+
+                </div>
+
+
+                <span
+                    class="deliveries-counter"
+                    id="deliveriesHeaderCount"
+                >
+                    0
+                </span>
+
+
+            </div>
+
+
+
+            <!-- =================================================
+                 DELIVERIES LIST
+            ================================================== -->
+
+            <div
+                class="deliveries-list"
+                id="deliveriesList"
+            >
+
+
+                <div class="empty-deliveries">
+
+                    <div class="empty-deliveries-icon">
+                        📦
+                    </div>
+
+                    <h3>
+                        אין משלוחים להצגה
+                    </h3>
+
+                    <p>
+                        משלוחים ששויכו אליך יופיעו כאן.
+                    </p>
+
+                </div>
+
+
+            </div>
+
+
+        </section>
+
+
+
+        <!-- =================================================
+             REPORTS BUTTON
+        ================================================== -->
+
+        <section class="driver-bottom-section">
+
+
+            <a
+                href="driver-reports.html"
+                class="reports-button"
+            >
+
+                <span>
+                    📊
+                </span>
+
+                <div>
+
+                    <strong>
+                        דוחות והכנסות
+                    </strong>
+
+                    <small>
+                        יומי, שבועי וחודשי
+                    </small>
+
+                </div>
+
+                <span class="reports-arrow">
+                    ‹
+                </span>
+
+            </a>
+
+
+        </section>
+
+
+    </main>
+
+
+
+    <!-- =====================================================
+         DELIVERY DETAILS BOTTOM SHEET
+    ====================================================== -->
+
+    <div
+        class="sheet-overlay hidden"
+        id="deliverySheetOverlay"
+    >
+
+
+        <div class="delivery-sheet">
+
+
+            <div class="sheet-handle">
+            </div>
+
+
+            <div class="sheet-header">
+
+
+                <div>
+
+                    <span class="sheet-label">
+                        פרטי משלוח
+                    </span>
+
+                    <h2 id="sheetCustomerName">
+                        שם הלקוח
+                    </h2>
+
+                </div>
+
+
+                <button
+                    type="button"
+                    class="sheet-close"
+                    id="closeDeliverySheetButton"
+                >
+                    ×
+                </button>
+
+
+            </div>
+
+
+
+            <div class="sheet-content">
+
+
+                <!-- PHONE -->
+
+                <a
+                    href="#"
+                    class="sheet-action-row"
+                    id="sheetPhoneLink"
+                >
+
+                    <div class="sheet-action-icon">
+                        📞
+                    </div>
+
+                    <div>
+
+                        <span>
+                            טלפון
+                        </span>
+
+                        <strong id="sheetPhone">
+                            -
+                        </strong>
+
+                    </div>
+
+                </a>
+
+
+
+                <!-- ADDRESS -->
+
+                <button
+                    type="button"
+                    class="sheet-action-row"
+                    id="sheetNavigationButton"
+                >
+
+                    <div class="sheet-action-icon">
+                        🧭
+                    </div>
+
+                    <div>
+
+                        <span>
+                            כתובת
+                        </span>
+
+                        <strong id="sheetAddress">
+                            -
+                        </strong>
+
+                        <small id="sheetBuildingDetails">
+                        </small>
+
+                    </div>
+
+                </button>
+
+
+
+                <!-- NOTES -->
+
+                <div class="sheet-info-block">
+
+                    <span>
+                        הערות לשליח
+                    </span>
+
+                    <p id="sheetNotes">
+                        אין הערות
+                    </p>
+
+                </div>
+
+
+
+                <!-- ETA -->
+
+                <div class="sheet-info-block">
+
+                    <span>
+                        שעת הגעה משוערת
+                    </span>
+
+                    <strong id="sheetEta">
+                        טרם חושב מסלול
+                    </strong>
+
+                </div>
+
+
+            </div>
+
+
+
+            <!-- =================================================
+                 DELIVERY ACTIONS
+            ================================================== -->
+
+            <div class="sheet-actions">
+
+
+                <button
+                    type="button"
+                    class="delivery-success-button"
+                    id="markDeliveredButton"
+                >
+                    ✅ נמסר
+                </button>
+
+
+                <button
+                    type="button"
+                    class="delivery-failed-button"
+                    id="markFailedButton"
+                >
+                    ❌ לא נמסר
+                </button>
+
+
+            </div>
+
+
+        </div>
+
+
+    </div>
+
+
+
+    <!-- =====================================================
+         NAVIGATION CHOICE
+    ====================================================== -->
+
+    <div
+        class="navigation-overlay hidden"
+        id="navigationOverlay"
+    >
+
+
+        <div class="navigation-modal">
+
+
+            <h2>
+                פתיחת ניווט
+            </h2>
+
+            <p id="navigationAddressText">
+                בחר אפליקציית ניווט
+            </p>
+
+
+            <div class="navigation-buttons">
+
+
+                <button
+                    type="button"
+                    class="navigation-app-button"
+                    id="openWazeButton"
+                >
+
+                    <span>
+                        🚗
+                    </span>
+
+                    Waze
+
+                </button>
+
+
+                <button
+                    type="button"
+                    class="navigation-app-button"
+                    id="openGoogleMapsButton"
+                >
+
+                    <span>
+                        🗺️
+                    </span>
+
+                    Google Maps
+
+                </button>
+
+
+            </div>
+
+
+            <button
+                type="button"
+                class="navigation-cancel-button"
+                id="closeNavigationButton"
+            >
+                ביטול
+            </button>
+
+
+        </div>
+
+
+    </div>
+
+
+
+    <script src="driver.js"></script>
+
+
+</body>
+
+</html>

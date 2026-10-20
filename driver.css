@@ -1,0 +1,1365 @@
+/* =========================================================
+   DELIVERY SYSTEM
+   DRIVER APP
+   Mobile First
+   ========================================================= */
+
+
+/* =========================================================
+   RESET
+   ========================================================= */
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+
+html,
+body {
+    width: 100%;
+    min-height: 100%;
+}
+
+
+body {
+    font-family: Arial, "Segoe UI", sans-serif;
+
+    background: #f4f7fb;
+
+    color: #172033;
+
+    direction: rtl;
+}
+
+
+button,
+input {
+    font-family: inherit;
+}
+
+
+button {
+    cursor: pointer;
+}
+
+
+.hidden {
+    display: none !important;
+}
+
+
+/* =========================================================
+   APP
+   ========================================================= */
+
+.driver-app {
+    width: 100%;
+    min-height: 100vh;
+
+    padding-bottom: 28px;
+}
+
+
+/* =========================================================
+   HEADER
+   ========================================================= */
+
+.driver-header {
+    background:
+        linear-gradient(
+            135deg,
+            #1e40af 0%,
+            #2563eb 100%
+        );
+
+    color: white;
+
+    padding:
+        22px 18px
+        26px;
+
+    border-radius:
+        0 0
+        28px 28px;
+
+    box-shadow:
+        0 12px 30px
+        rgba(37, 99, 235, 0.16);
+}
+
+
+.driver-header-top {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+
+    gap: 16px;
+}
+
+
+.driver-greeting {
+    display: block;
+
+    font-size: 13px;
+
+    opacity: 0.85;
+
+    margin-bottom: 3px;
+}
+
+
+.driver-header h1 {
+    font-size: 27px;
+    font-weight: 800;
+
+    line-height: 1.1;
+}
+
+
+.logout-button {
+    min-width: 70px;
+    height: 40px;
+
+    border: none;
+
+    border-radius: 12px;
+
+    background:
+        rgba(
+            255,
+            255,
+            255,
+            0.14
+        );
+
+    color: white;
+
+    font-size: 13px;
+    font-weight: 700;
+
+    padding: 0 14px;
+}
+
+
+.logout-button:hover {
+    background:
+        rgba(
+            255,
+            255,
+            255,
+            0.22
+        );
+}
+
+
+/* =========================================================
+   TODAY
+   ========================================================= */
+
+.driver-today {
+    margin-top: 20px;
+
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+
+    gap: 12px;
+
+    padding: 13px 15px;
+
+    background:
+        rgba(
+            255,
+            255,
+            255,
+            0.11
+        );
+
+    border:
+        1px solid
+        rgba(
+            255,
+            255,
+            255,
+            0.12
+        );
+
+    border-radius: 14px;
+}
+
+
+.driver-today span {
+    font-size: 13px;
+
+    opacity: 0.85;
+}
+
+
+.driver-today strong {
+    font-size: 14px;
+}
+
+
+/* =========================================================
+   SUMMARY
+   ========================================================= */
+
+.driver-summary {
+    padding:
+        16px 14px 0;
+}
+
+
+.summary-main-card {
+    background: #ffffff;
+
+    border-radius: 20px;
+
+    padding: 20px;
+
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+
+    box-shadow:
+        0 8px 24px
+        rgba(15, 23, 42, 0.07);
+
+    border:
+        1px solid
+        #e9eef5;
+}
+
+
+.summary-main-card span {
+    color: #64748b;
+
+    font-size: 14px;
+    font-weight: 700;
+}
+
+
+.summary-main-card strong {
+    font-size: 36px;
+
+    color: #2563eb;
+
+    line-height: 1;
+}
+
+
+.summary-grid {
+    display: grid;
+
+    grid-template-columns:
+        repeat(3, 1fr);
+
+    gap: 9px;
+
+    margin-top: 10px;
+}
+
+
+.summary-card {
+    background: #ffffff;
+
+    border:
+        1px solid
+        #e9eef5;
+
+    border-radius: 15px;
+
+    padding:
+        14px 8px;
+
+    text-align: center;
+
+    box-shadow:
+        0 5px 14px
+        rgba(15, 23, 42, 0.04);
+}
+
+
+.summary-card span {
+    display: block;
+
+    color: #64748b;
+
+    font-size: 11px;
+
+    margin-bottom: 6px;
+}
+
+
+.summary-card strong {
+    font-size: 23px;
+
+    font-weight: 800;
+}
+
+
+/* =========================================================
+   ROUTE
+   ========================================================= */
+
+.route-section {
+    padding:
+        14px 14px 0;
+}
+
+
+.route-main-button {
+    width: 100%;
+
+    border: none;
+
+    border-radius: 18px;
+
+    background: #172033;
+
+    color: white;
+
+    padding:
+        15px 16px;
+
+    display: flex;
+    align-items: center;
+
+    gap: 13px;
+
+    text-align: right;
+
+    box-shadow:
+        0 10px 24px
+        rgba(15, 23, 42, 0.12);
+}
+
+
+.route-button-icon {
+    width: 45px;
+    height: 45px;
+
+    border-radius: 13px;
+
+    background:
+        rgba(
+            255,
+            255,
+            255,
+            0.11
+        );
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    font-size: 21px;
+
+    flex-shrink: 0;
+}
+
+
+.route-main-button strong {
+    display: block;
+
+    font-size: 16px;
+
+    margin-bottom: 3px;
+}
+
+
+.route-main-button small {
+    display: block;
+
+    color: #cbd5e1;
+
+    font-size: 11px;
+
+    line-height: 1.4;
+}
+
+
+.route-planner {
+    margin-top: 11px;
+
+    background: white;
+
+    border-radius: 18px;
+
+    padding: 17px;
+
+    border:
+        1px solid
+        #e7edf5;
+
+    box-shadow:
+        0 8px 22px
+        rgba(15, 23, 42, 0.05);
+}
+
+
+.route-planner-header {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+
+    gap: 14px;
+
+    margin-bottom: 17px;
+}
+
+
+.route-planner-header h2 {
+    font-size: 18px;
+
+    margin-bottom: 4px;
+}
+
+
+.route-planner-header p {
+    font-size: 12px;
+
+    color: #64748b;
+}
+
+
+.close-route-button {
+    width: 34px;
+    height: 34px;
+
+    border: none;
+
+    background: #f1f5f9;
+
+    border-radius: 10px;
+
+    color: #475569;
+
+    font-size: 22px;
+
+    line-height: 1;
+}
+
+
+.route-form-grid {
+    display: grid;
+
+    grid-template-columns:
+        repeat(2, 1fr);
+
+    gap: 10px;
+}
+
+
+.route-form-group {
+    margin-bottom: 13px;
+}
+
+
+.route-form-group label {
+    display: block;
+
+    color: #334155;
+
+    font-size: 12px;
+    font-weight: 700;
+
+    margin-bottom: 6px;
+}
+
+
+.route-form-group input {
+    width: 100%;
+
+    min-height: 46px;
+
+    border:
+        1px solid
+        #dbe3ed;
+
+    border-radius: 12px;
+
+    background: white;
+
+    padding:
+        0 12px;
+
+    font-size: 14px;
+
+    color: #172033;
+
+    outline: none;
+}
+
+
+.route-form-group input:focus {
+    border-color: #2563eb;
+
+    box-shadow:
+        0 0 0 3px
+        rgba(37, 99, 235, 0.07);
+}
+
+
+.build-route-button {
+    width: 100%;
+
+    min-height: 49px;
+
+    border: none;
+
+    border-radius: 13px;
+
+    background: #2563eb;
+
+    color: white;
+
+    font-size: 14px;
+    font-weight: 800;
+
+    margin-top: 2px;
+}
+
+
+/* =========================================================
+   DELIVERIES
+   ========================================================= */
+
+.deliveries-section {
+    padding:
+        19px 14px 0;
+}
+
+
+.deliveries-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+
+    gap: 14px;
+
+    margin-bottom: 12px;
+}
+
+
+.deliveries-header h2 {
+    font-size: 20px;
+
+    margin-bottom: 3px;
+}
+
+
+.deliveries-header p {
+    font-size: 12px;
+
+    color: #64748b;
+}
+
+
+.deliveries-counter {
+    min-width: 40px;
+    height: 40px;
+
+    padding:
+        0 10px;
+
+    border-radius: 12px;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    background: #eaf1ff;
+
+    color: #2563eb;
+
+    font-size: 16px;
+    font-weight: 800;
+}
+
+
+/* =========================================================
+   DELIVERY LIST
+   ========================================================= */
+
+.deliveries-list {
+    display: flex;
+    flex-direction: column;
+
+    gap: 10px;
+}
+
+
+/* JS can use this class later */
+
+.delivery-card {
+    background: white;
+
+    border:
+        1px solid
+        #e7edf5;
+
+    border-radius: 17px;
+
+    padding: 15px;
+
+    box-shadow:
+        0 6px 18px
+        rgba(15, 23, 42, 0.05);
+}
+
+
+.delivery-card-top {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+
+    gap: 12px;
+}
+
+
+.delivery-number {
+    width: 34px;
+    height: 34px;
+
+    border-radius: 11px;
+
+    background: #eaf1ff;
+
+    color: #2563eb;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    font-size: 14px;
+    font-weight: 800;
+
+    flex-shrink: 0;
+}
+
+
+.delivery-card-info {
+    flex: 1;
+
+    min-width: 0;
+}
+
+
+.delivery-customer {
+    font-size: 15px;
+
+    font-weight: 800;
+
+    margin-bottom: 5px;
+}
+
+
+.delivery-address {
+    font-size: 14px;
+
+    font-weight: 700;
+
+    color: #334155;
+
+    line-height: 1.45;
+}
+
+
+.delivery-building {
+    display: block;
+
+    margin-top: 4px;
+
+    font-size: 11px;
+
+    color: #64748b;
+}
+
+
+.delivery-eta {
+    margin-top: 9px;
+
+    display: inline-flex;
+    align-items: center;
+
+    gap: 5px;
+
+    padding:
+        5px 8px;
+
+    border-radius: 8px;
+
+    background: #f8fafc;
+
+    color: #475569;
+
+    font-size: 11px;
+}
+
+
+.delivery-card-actions {
+    display: grid;
+
+    grid-template-columns:
+        repeat(3, 1fr);
+
+    gap: 7px;
+
+    margin-top: 13px;
+}
+
+
+.delivery-card-actions button,
+.delivery-card-actions a {
+    min-height: 41px;
+
+    border-radius: 11px;
+
+    font-size: 12px;
+    font-weight: 800;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    text-decoration: none;
+}
+
+
+.delivery-details-button {
+    border:
+        1px solid
+        #dbe3ed;
+
+    background: #ffffff;
+
+    color: #334155;
+}
+
+
+.delivery-navigation-button {
+    border: none;
+
+    background: #eaf1ff;
+
+    color: #1d4ed8;
+}
+
+
+.delivery-delivered-button {
+    border: none;
+
+    background: #dcfce7;
+
+    color: #15803d;
+}
+
+
+/* =========================================================
+   EMPTY
+   ========================================================= */
+
+.empty-deliveries {
+    background: white;
+
+    border:
+        1px dashed
+        #cbd5e1;
+
+    border-radius: 18px;
+
+    padding:
+        32px 18px;
+
+    text-align: center;
+}
+
+
+.empty-deliveries-icon {
+    font-size: 35px;
+
+    margin-bottom: 10px;
+}
+
+
+.empty-deliveries h3 {
+    font-size: 16px;
+
+    margin-bottom: 5px;
+}
+
+
+.empty-deliveries p {
+    font-size: 12px;
+
+    color: #64748b;
+}
+
+
+/* =========================================================
+   REPORTS BUTTON
+   ========================================================= */
+
+.driver-bottom-section {
+    padding:
+        15px 14px 0;
+}
+
+
+.reports-button {
+    width: 100%;
+
+    min-height: 68px;
+
+    background: white;
+
+    border:
+        1px solid
+        #e7edf5;
+
+    border-radius: 17px;
+
+    padding:
+        12px 14px;
+
+    display: flex;
+    align-items: center;
+
+    gap: 12px;
+
+    text-decoration: none;
+
+    color: #172033;
+
+    box-shadow:
+        0 6px 18px
+        rgba(15, 23, 42, 0.04);
+}
+
+
+.reports-button > span:first-child {
+    width: 42px;
+    height: 42px;
+
+    border-radius: 12px;
+
+    background: #f1f5f9;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    font-size: 20px;
+
+    flex-shrink: 0;
+}
+
+
+.reports-button div {
+    flex: 1;
+}
+
+
+.reports-button strong {
+    display: block;
+
+    font-size: 14px;
+
+    margin-bottom: 3px;
+}
+
+
+.reports-button small {
+    font-size: 11px;
+
+    color: #64748b;
+}
+
+
+.reports-arrow {
+    font-size: 26px;
+
+    color: #94a3b8;
+}
+
+
+/* =========================================================
+   SHEET OVERLAY
+   ========================================================= */
+
+.sheet-overlay {
+    position: fixed;
+
+    inset: 0;
+
+    z-index: 1000;
+
+    background:
+        rgba(
+            15,
+            23,
+            42,
+            0.52
+        );
+
+    display: flex;
+    align-items: flex-end;
+    justify-content: center;
+
+    padding-top: 40px;
+}
+
+
+.delivery-sheet {
+    width: 100%;
+
+    max-height: 88vh;
+
+    overflow-y: auto;
+
+    background: #ffffff;
+
+    border-radius:
+        24px 24px
+        0 0;
+
+    padding:
+        10px 17px
+        18px;
+
+    box-shadow:
+        0 -16px 50px
+        rgba(15, 23, 42, 0.18);
+}
+
+
+.sheet-handle {
+    width: 52px;
+    height: 5px;
+
+    border-radius: 99px;
+
+    background: #dbe3ed;
+
+    margin:
+        0 auto
+        16px;
+}
+
+
+.sheet-header {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+
+    gap: 14px;
+
+    margin-bottom: 18px;
+}
+
+
+.sheet-label {
+    color: #64748b;
+
+    font-size: 11px;
+}
+
+
+.sheet-header h2 {
+    margin-top: 3px;
+
+    font-size: 22px;
+}
+
+
+.sheet-close {
+    width: 38px;
+    height: 38px;
+
+    border: none;
+
+    border-radius: 11px;
+
+    background: #f1f5f9;
+
+    color: #475569;
+
+    font-size: 24px;
+}
+
+
+/* =========================================================
+   SHEET CONTENT
+   ========================================================= */
+
+.sheet-content {
+    display: flex;
+    flex-direction: column;
+
+    gap: 10px;
+}
+
+
+.sheet-action-row {
+    width: 100%;
+
+    min-height: 66px;
+
+    border:
+        1px solid
+        #e4eaf2;
+
+    border-radius: 15px;
+
+    background: white;
+
+    padding:
+        11px 12px;
+
+    display: flex;
+    align-items: center;
+
+    gap: 12px;
+
+    text-align: right;
+
+    text-decoration: none;
+
+    color: #172033;
+}
+
+
+.sheet-action-icon {
+    width: 42px;
+    height: 42px;
+
+    border-radius: 12px;
+
+    background: #eef4ff;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    flex-shrink: 0;
+
+    font-size: 19px;
+}
+
+
+.sheet-action-row div:last-child {
+    flex: 1;
+}
+
+
+.sheet-action-row span {
+    display: block;
+
+    color: #64748b;
+
+    font-size: 10px;
+
+    margin-bottom: 3px;
+}
+
+
+.sheet-action-row strong {
+    display: block;
+
+    font-size: 14px;
+
+    line-height: 1.45;
+}
+
+
+.sheet-action-row small {
+    display: block;
+
+    margin-top: 4px;
+
+    font-size: 11px;
+
+    color: #64748b;
+}
+
+
+.sheet-info-block {
+    background: #f8fafc;
+
+    border-radius: 14px;
+
+    padding: 13px 14px;
+}
+
+
+.sheet-info-block span {
+    display: block;
+
+    color: #64748b;
+
+    font-size: 10px;
+
+    margin-bottom: 4px;
+}
+
+
+.sheet-info-block p,
+.sheet-info-block strong {
+    font-size: 13px;
+
+    color: #334155;
+
+    line-height: 1.5;
+}
+
+
+/* =========================================================
+   SHEET ACTIONS
+   ========================================================= */
+
+.sheet-actions {
+    display: grid;
+
+    grid-template-columns:
+        repeat(2, 1fr);
+
+    gap: 9px;
+
+    margin-top: 16px;
+}
+
+
+.delivery-success-button,
+.delivery-failed-button {
+    min-height: 53px;
+
+    border: none;
+
+    border-radius: 14px;
+
+    font-size: 15px;
+    font-weight: 800;
+}
+
+
+.delivery-success-button {
+    background: #16a34a;
+
+    color: white;
+}
+
+
+.delivery-failed-button {
+    background: #fee2e2;
+
+    color: #b91c1c;
+}
+
+
+/* =========================================================
+   NAVIGATION MODAL
+   ========================================================= */
+
+.navigation-overlay {
+    position: fixed;
+
+    inset: 0;
+
+    z-index: 1100;
+
+    background:
+        rgba(
+            15,
+            23,
+            42,
+            0.56
+        );
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    padding: 20px;
+}
+
+
+.navigation-modal {
+    width: 100%;
+    max-width: 370px;
+
+    background: white;
+
+    border-radius: 22px;
+
+    padding: 21px;
+
+    text-align: center;
+
+    box-shadow:
+        0 22px 60px
+        rgba(15, 23, 42, 0.22);
+}
+
+
+.navigation-modal h2 {
+    font-size: 20px;
+
+    margin-bottom: 6px;
+}
+
+
+.navigation-modal p {
+    font-size: 12px;
+
+    color: #64748b;
+
+    line-height: 1.5;
+
+    margin-bottom: 17px;
+}
+
+
+.navigation-buttons {
+    display: grid;
+
+    grid-template-columns:
+        repeat(2, 1fr);
+
+    gap: 9px;
+}
+
+
+.navigation-app-button {
+    min-height: 75px;
+
+    border:
+        1px solid
+        #dce4ee;
+
+    border-radius: 15px;
+
+    background: white;
+
+    color: #172033;
+
+    font-size: 14px;
+    font-weight: 800;
+
+    display: flex;
+    flex-direction: column;
+
+    align-items: center;
+    justify-content: center;
+
+    gap: 6px;
+}
+
+
+.navigation-app-button span {
+    font-size: 24px;
+}
+
+
+.navigation-cancel-button {
+    width: 100%;
+
+    min-height: 45px;
+
+    border: none;
+
+    background: #f1f5f9;
+
+    border-radius: 12px;
+
+    color: #475569;
+
+    font-size: 13px;
+    font-weight: 700;
+
+    margin-top: 10px;
+}
+
+
+/* =========================================================
+   VERY SMALL MOBILE
+   ========================================================= */
+
+@media (max-width: 360px) {
+
+    .driver-header {
+        padding-right: 14px;
+        padding-left: 14px;
+    }
+
+
+    .driver-header h1 {
+        font-size: 24px;
+    }
+
+
+    .summary-grid {
+        gap: 6px;
+    }
+
+
+    .summary-card {
+        padding:
+            12px 5px;
+    }
+
+
+    .summary-card strong {
+        font-size: 20px;
+    }
+
+
+    .route-form-grid {
+        grid-template-columns: 1fr;
+    }
+
+
+    .delivery-card-actions {
+        grid-template-columns: 1fr;
+    }
+
+}
+
+
+/* =========================================================
+   DESKTOP / LARGE SCREEN
+   ========================================================= */
+
+@media (min-width: 700px) {
+
+    body {
+        background: #e9eef5;
+    }
+
+
+    .driver-app {
+        max-width: 520px;
+
+        margin: 0 auto;
+
+        background: #f4f7fb;
+
+        min-height: 100vh;
+
+        box-shadow:
+            0 0 40px
+            rgba(15, 23, 42, 0.08);
+    }
+
+
+    .delivery-sheet {
+        max-width: 520px;
+
+        border-radius:
+            24px 24px
+            0 0;
+    }
+
+}
