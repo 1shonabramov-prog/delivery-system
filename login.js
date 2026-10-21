@@ -1,62 +1,28 @@
 // =========================================================
-// DELIVERY SYSTEM
-// LOGIN
+// LOGIN - SUPABASE AUTH
 // =========================================================
+
+
+// =========================================================
+// CREATE SUPABASE CLIENT
+// =========================================================
+
+const supabaseClient =
+    supabase.createClient(
+        SUPABASE_URL,
+        SUPABASE_PUBLISHABLE_KEY
+    );
 
 
 // =========================================================
 // STORAGE KEYS
 // =========================================================
 
-const USERS_STORAGE_KEY =
-    "delivery_system_users";
-
 const CURRENT_USER_STORAGE_KEY =
     "delivery_system_current_user";
 
 const REMEMBERED_USERNAME_KEY =
     "delivery_system_remembered_username";
-
-
-// =========================================================
-// GET USERS
-// =========================================================
-
-function getUsers() {
-
-    const savedUsers =
-        localStorage.getItem(
-            USERS_STORAGE_KEY
-        );
-
-
-    if (!savedUsers) {
-
-        return [];
-
-    }
-
-
-    try {
-
-        return JSON.parse(
-            savedUsers
-        );
-
-    }
-
-    catch (error) {
-
-        console.error(
-            "Failed loading users",
-            error
-        );
-
-        return [];
-
-    }
-
-}
 
 
 // =========================================================
@@ -68,35 +34,65 @@ const loginForm =
         "loginForm"
     );
 
-
-const loginUsername =
+const usernameInput =
     document.getElementById(
-        "loginUsername"
+        "username"
     );
 
-
-const loginPassword =
+const passwordInput =
     document.getElementById(
-        "loginPassword"
+        "password"
     );
 
+const rememberMe =
+    document.getElementById(
+        "rememberMe"
+    );
 
 const loginMessage =
     document.getElementById(
         "loginMessage"
     );
 
-
-const rememberUser =
-    document.getElementById(
-        "rememberUser"
-    );
-
-
 const togglePasswordButton =
     document.getElementById(
-        "togglePasswordButton"
+        "togglePassword"
     );
+
+
+// =========================================================
+// RESTORE REMEMBERED EMAIL
+// =========================================================
+
+function restoreRememberedUsername() {
+
+    const remembered =
+        localStorage.getItem(
+            REMEMBERED_USERNAME_KEY
+        );
+
+
+    if (
+        remembered &&
+        usernameInput
+    ) {
+
+        usernameInput.value =
+            remembered;
+
+
+        if (
+            rememberMe
+        ) {
+
+            rememberMe.checked =
+                true;
+
+        }
+
+    }
+
+}
 
 
 // =========================================================
@@ -105,10 +101,12 @@ const togglePasswordButton =
 
 function showLoginMessage(
     message,
-    type
+    type = "error"
 ) {
 
-    if (!loginMessage) {
+    if (
+        !loginMessage
+    ) {
 
         return;
 
@@ -120,43 +118,197 @@ function showLoginMessage(
 
 
     loginMessage.className =
-        "login-message " +
-        type;
+        "login-message";
+
+
+    loginMessage.classList.add(
+        type
+    );
 
 }
 
 
 // =========================================================
-// HIDE MESSAGE
+// CLEAR MESSAGE
 // =========================================================
 
-function hideLoginMessage() {
+function clearLoginMessage() {
 
-    if (!loginMessage) {
+    if (
+        !loginMessage
+    ) {
 
         return;
 
     }
 
 
-    loginMessage.className =
-        "login-message hidden";
-
-
     loginMessage.textContent =
         "";
+
+
+    loginMessage.className =
+        "login-message";
 
 }
 
 
 // =========================================================
-// REDIRECT USER BY ROLE
+// SHOW / HIDE PASSWORD
 // =========================================================
 
-function redirectUserByRole(user) {
+if (
+    togglePasswordButton &&
+    passwordInput
+) {
 
-    switch (user.role) {
+    togglePasswordButton
+        .addEventListener(
 
+            "click",
+
+            function () {
+
+                const isPassword =
+                    passwordInput.type ===
+                    "password";
+
+
+                passwordInput.type =
+                    isPassword
+                        ? "text"
+                        : "password";
+
+
+                togglePasswordButton.textContent =
+                    isPassword
+                        ? "🙈"
+                        : "👁";
+
+            }
+
+        );
+
+}
+
+
+// =========================================================
+// LOAD PROFILE AFTER LOGIN
+// =========================================================
+
+async function loadProfile(
+    userId
+) {
+
+    const {
+        data,
+        error
+    } =
+        await supabaseClient
+            .from(
+                "profiles"
+            )
+            .select(
+                "id, username, full_name, phone, role, status, driver_rate, notes"
+            )
+            .eq(
+                "id",
+                userId
+            )
+            .single();
+
+
+    if (
+        error
+    ) {
+
+        console.error(
+            "Profile load failed",
+            error
+        );
+
+
+        return null;
+
+    }
+
+
+    return data;
+
+}
+
+
+// =========================================================
+// SAVE CURRENT USER
+// =========================================================
+
+function saveCurrentUser(
+    profile,
+    authUser
+) {
+
+    const currentUser = {
+
+        id:
+            profile.id,
+
+        driverId:
+            profile.id,
+
+        username:
+            profile.username,
+
+        fullName:
+            profile.full_name,
+
+        phone:
+            profile.phone,
+
+        role:
+            profile.role,
+
+        status:
+            profile.status,
+
+        driverRate:
+            Number(
+                profile.driver_rate ||
+                0
+            ),
+
+        notes:
+            profile.notes,
+
+        email:
+            authUser.email
+
+    };
+
+
+    sessionStorage.setItem(
+
+        CURRENT_USER_STORAGE_KEY,
+
+        JSON.stringify(
+            currentUser
+        )
+
+    );
+
+}
+
+
+// =========================================================
+// REDIRECT BY ROLE
+// =========================================================
+
+function redirectByRole(
+    profile
+) {
+
+    switch (
+        profile.role
+    ) {
 
         case "ADMIN":
 
@@ -185,11 +337,8 @@ function redirectUserByRole(user) {
         default:
 
             showLoginMessage(
-                "לתפקיד המשתמש אין הרשאה מוגדרת במערכת.",
-                "error"
+                "למשתמש אין תפקיד תקין במערכת."
             );
-
-            break;
 
     }
 
@@ -200,392 +349,194 @@ function redirectUserByRole(user) {
 // LOGIN
 // =========================================================
 
-function loginUser(
-    username,
-    password
+if (
+    loginForm
 ) {
 
-    const users =
-        getUsers();
+    loginForm
+        .addEventListener(
 
+            "submit",
 
-    const normalizedUsername =
-        username
-            .trim()
-            .toLowerCase();
-
-
-    const user =
-        users.find(
-
-            item =>
-
-                item.username
-                    .trim()
-                    .toLowerCase()
-
-                ===
-
-                normalizedUsername
-
-        );
-
-
-    // =====================================================
-    // USER NOT FOUND
-    // =====================================================
-
-    if (!user) {
-
-        showLoginMessage(
-            "שם המשתמש או הסיסמה אינם נכונים.",
-            "error"
-        );
-
-        return;
-
-    }
-
-
-    // =====================================================
-    // WRONG PASSWORD
-    // =====================================================
-
-    if (
-        user.password !==
-        password
-    ) {
-
-        showLoginMessage(
-            "שם המשתמש או הסיסמה אינם נכונים.",
-            "error"
-        );
-
-        return;
-
-    }
-
-
-    // =====================================================
-    // INACTIVE USER
-    // =====================================================
-
-    if (
-        user.status !==
-        "פעיל"
-    ) {
-
-        showLoginMessage(
-            "המשתמש אינו פעיל. יש לפנות למנהל המערכת.",
-            "warning"
-        );
-
-        return;
-
-    }
-
-
-    // =====================================================
-    // SAVE CURRENT SESSION
-    // =====================================================
-
-    const currentUser = {
-
-        id:
-            user.id,
-
-        fullName:
-            user.fullName,
-
-        username:
-            user.username,
-
-        role:
-            user.role,
-
-        status:
-            user.status,
-
-        driverId:
-            user.driverId || null,
-
-        deliveryRate:
-            user.deliveryRate || 0,
-
-        loginAt:
-            new Date()
-                .toISOString()
-
-    };
-
-
-    sessionStorage.setItem(
-
-        CURRENT_USER_STORAGE_KEY,
-
-        JSON.stringify(
-            currentUser
-        )
-
-    );
-
-
-    // =====================================================
-    // REMEMBER USERNAME
-    // =====================================================
-
-    if (
-        rememberUser &&
-        rememberUser.checked
-    ) {
-
-        localStorage.setItem(
-
-            REMEMBERED_USERNAME_KEY,
-
-            user.username
-
-        );
-
-    }
-
-    else {
-
-        localStorage.removeItem(
-            REMEMBERED_USERNAME_KEY
-        );
-
-    }
-
-
-    // =====================================================
-    // SUCCESS
-    // =====================================================
-
-    showLoginMessage(
-        "התחברת בהצלחה. מעביר אותך למערכת...",
-        "success"
-    );
-
-
-    setTimeout(
-
-        function () {
-
-            redirectUserByRole(
-                user
-            );
-
-        },
-
-        500
-
-    );
-
-}
-
-
-// =========================================================
-// LOGIN FORM SUBMIT
-// =========================================================
-
-if (loginForm) {
-
-    loginForm.addEventListener(
-
-        "submit",
-
-        function (event) {
-
-            event.preventDefault();
-
-
-            hideLoginMessage();
-
-
-            const username =
-                loginUsername
-                    .value
-                    .trim();
-
-
-            const password =
-                loginPassword
-                    .value;
-
-
-            if (
-                username === ""
+            async function (
+                event
             ) {
 
-                showLoginMessage(
-                    "יש להזין שם משתמש.",
-                    "error"
+                event.preventDefault();
+
+
+                clearLoginMessage();
+
+
+                const email =
+                    usernameInput
+                        .value
+                        .trim()
+                        .toLowerCase();
+
+
+                const password =
+                    passwordInput
+                        .value;
+
+
+                if (
+                    !email ||
+                    !password
+                ) {
+
+                    showLoginMessage(
+                        "יש להזין אימייל וסיסמה."
+                    );
+
+                    return;
+
+                }
+
+
+                // =============================================
+                // SUPABASE AUTH
+                // =============================================
+
+                const {
+                    data,
+                    error
+                } =
+                    await supabaseClient
+                        .auth
+                        .signInWithPassword(
+                            {
+                                email:
+                                    email,
+
+                                password:
+                                    password
+                            }
+                        );
+
+
+                if (
+                    error ||
+                    !data.user
+                ) {
+
+                    console.error(
+                        "Login failed",
+                        error
+                    );
+
+
+                    showLoginMessage(
+                        "האימייל או הסיסמה אינם נכונים."
+                    );
+
+                    return;
+
+                }
+
+
+                // =============================================
+                // LOAD PROFILE
+                // =============================================
+
+                const profile =
+                    await loadProfile(
+                        data.user.id
+                    );
+
+
+                if (
+                    !profile
+                ) {
+
+                    await supabaseClient
+                        .auth
+                        .signOut();
+
+
+                    showLoginMessage(
+                        "לא נמצא פרופיל משתמש במערכת."
+                    );
+
+                    return;
+
+                }
+
+
+                // =============================================
+                // ACTIVE CHECK
+                // =============================================
+
+                if (
+                    profile.status !==
+                    "פעיל"
+                ) {
+
+                    await supabaseClient
+                        .auth
+                        .signOut();
+
+
+                    showLoginMessage(
+                        "המשתמש אינו פעיל במערכת."
+                    );
+
+                    return;
+
+                }
+
+
+                // =============================================
+                // REMEMBER EMAIL
+                // =============================================
+
+                if (
+                    rememberMe &&
+                    rememberMe.checked
+                ) {
+
+                    localStorage.setItem(
+
+                        REMEMBERED_USERNAME_KEY,
+
+                        email
+
+                    );
+
+                }
+
+                else {
+
+                    localStorage.removeItem(
+                        REMEMBERED_USERNAME_KEY
+                    );
+
+                }
+
+
+                // =============================================
+                // SAVE APP SESSION
+                // =============================================
+
+                saveCurrentUser(
+                    profile,
+                    data.user
                 );
 
-                loginUsername.focus();
 
-                return;
+                showLoginMessage(
+                    "התחברת בהצלחה.",
+                    "success"
+                );
+
+
+                redirectByRole(
+                    profile
+                );
 
             }
 
-
-            if (
-                password === ""
-            ) {
-
-                showLoginMessage(
-                    "יש להזין סיסמה.",
-                    "error"
-                );
-
-                loginPassword.focus();
-
-                return;
-
-            }
-
-
-            loginUser(
-                username,
-                password
-            );
-
-        }
-
-    );
-
-}
-
-
-// =========================================================
-// SHOW / HIDE PASSWORD
-// =========================================================
-
-if (togglePasswordButton) {
-
-    togglePasswordButton.addEventListener(
-
-        "click",
-
-        function () {
-
-            const isPassword =
-                loginPassword.type ===
-                "password";
-
-
-            loginPassword.type =
-                isPassword
-                    ? "text"
-                    : "password";
-
-
-            togglePasswordButton.textContent =
-                isPassword
-                    ? "🙈"
-                    : "👁️";
-
-        }
-
-    );
-
-}
-
-
-// =========================================================
-// LOAD REMEMBERED USERNAME
-// =========================================================
-
-function loadRememberedUsername() {
-
-    const rememberedUsername =
-        localStorage.getItem(
-            REMEMBERED_USERNAME_KEY
         );
-
-
-    if (
-        rememberedUsername
-    ) {
-
-        loginUsername.value =
-            rememberedUsername;
-
-
-        rememberUser.checked =
-            true;
-
-
-        loginPassword.focus();
-
-    }
-
-    else {
-
-        loginUsername.focus();
-
-    }
-
-}
-
-
-// =========================================================
-// IF USER IS ALREADY LOGGED IN
-// =========================================================
-
-function checkExistingSession() {
-
-    const currentUserData =
-        sessionStorage.getItem(
-            CURRENT_USER_STORAGE_KEY
-        );
-
-
-    if (
-        !currentUserData
-    ) {
-
-        return false;
-
-    }
-
-
-    try {
-
-        const currentUser =
-            JSON.parse(
-                currentUserData
-            );
-
-
-        if (
-            currentUser &&
-            currentUser.role &&
-            currentUser.status ===
-                "פעיל"
-        ) {
-
-            redirectUserByRole(
-                currentUser
-            );
-
-            return true;
-
-        }
-
-    }
-
-    catch (error) {
-
-        sessionStorage.removeItem(
-            CURRENT_USER_STORAGE_KEY
-        );
-
-    }
-
-
-    return false;
 
 }
 
@@ -594,12 +545,4 @@ function checkExistingSession() {
 // INITIALIZE
 // =========================================================
 
-const redirected =
-    checkExistingSession();
-
-
-if (!redirected) {
-
-    loadRememberedUsername();
-
-}
+restoreRememberedUsername();

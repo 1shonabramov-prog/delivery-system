@@ -87,10 +87,8 @@
 
                 <div class="login-form-group">
 
-                    <label for="loginUsername">
-
-                        שם משתמש
-
+                    <label for="username">
+                          אימייל
                     </label>
 
 
@@ -102,9 +100,9 @@
 
 
                         <input
-                            type="text"
+                            type="email"
                             id="loginUsername"
-                            placeholder="הזן שם משתמש"
+                            placeholder="הכנס אימייל"
                             autocomplete="username"
                             required
                         >
@@ -224,7 +222,11 @@
 
 
 
-    <script src="login.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+    <script src="supabase-config.js"></script>
+
+    <script src="login.js?v=20261021-1"></script>
 
 
 </body>
