@@ -56,7 +56,7 @@ const loginMessage =
 
 const togglePasswordButton =
     document.getElementById(
-        "togglePassword"
+        "togglePasswordButton"
     );
 
 
