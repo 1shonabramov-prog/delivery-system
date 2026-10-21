@@ -21,8 +21,8 @@ const supabaseClient =
 const CURRENT_USER_STORAGE_KEY =
     "delivery_system_current_user";
 
-const REMEMBERED_USERNAME_KEY =
-    "delivery_system_remembered_username";
+const REMEMBERED_EMAIL_KEY =
+    "delivery_system_remembered_email";
 
 
 // =========================================================
@@ -34,25 +34,30 @@ const loginForm =
         "loginForm"
     );
 
-const usernameInput =
+
+const emailInput =
     document.getElementById(
-        "username"
+        "loginEmail"
     );
+
 
 const passwordInput =
     document.getElementById(
-        "password"
+        "loginPassword"
     );
 
-const rememberMe =
+
+const rememberUser =
     document.getElementById(
-        "rememberMe"
+        "rememberUser"
     );
+
 
 const loginMessage =
     document.getElementById(
         "loginMessage"
     );
+
 
 const togglePasswordButton =
     document.getElementById(
@@ -64,28 +69,28 @@ const togglePasswordButton =
 // RESTORE REMEMBERED EMAIL
 // =========================================================
 
-function restoreRememberedUsername() {
+function restoreRememberedEmail() {
 
-    const remembered =
+    const rememberedEmail =
         localStorage.getItem(
-            REMEMBERED_USERNAME_KEY
+            REMEMBERED_EMAIL_KEY
         );
 
 
     if (
-        remembered &&
-        usernameInput
+        rememberedEmail &&
+        emailInput
     ) {
 
-        usernameInput.value =
-            remembered;
+        emailInput.value =
+            rememberedEmail;
 
 
         if (
-            rememberMe
+            rememberUser
         ) {
 
-            rememberMe.checked =
+            rememberUser.checked =
                 true;
 
         }
@@ -148,7 +153,7 @@ function clearLoginMessage() {
 
 
     loginMessage.className =
-        "login-message";
+        "login-message hidden";
 
 }
 
@@ -169,21 +174,32 @@ if (
 
             function () {
 
-                const isPassword =
+                const passwordIsHidden =
                     passwordInput.type ===
                     "password";
 
 
                 passwordInput.type =
-                    isPassword
+                    passwordIsHidden
                         ? "text"
                         : "password";
 
 
                 togglePasswordButton.textContent =
-                    isPassword
+                    passwordIsHidden
                         ? "🙈"
-                        : "👁";
+                        : "👁️";
+
+
+                togglePasswordButton.setAttribute(
+
+                    "aria-label",
+
+                    passwordIsHidden
+                        ? "הסתר סיסמה"
+                        : "הצג סיסמה"
+
+                );
 
             }
 
@@ -193,7 +209,7 @@ if (
 
 
 // =========================================================
-// LOAD PROFILE AFTER LOGIN
+// LOAD PROFILE
 // =========================================================
 
 async function loadProfile(
@@ -209,7 +225,16 @@ async function loadProfile(
                 "profiles"
             )
             .select(
-                "id, username, full_name, phone, role, status, driver_rate, notes"
+                `
+                id,
+                username,
+                full_name,
+                phone,
+                role,
+                status,
+                driver_rate,
+                notes
+                `
             )
             .eq(
                 "id",
@@ -223,7 +248,7 @@ async function loadProfile(
     ) {
 
         console.error(
-            "Profile load failed",
+            "Profile load failed:",
             error
         );
 
@@ -239,7 +264,7 @@ async function loadProfile(
 
 
 // =========================================================
-// SAVE CURRENT USER
+// SAVE CURRENT APP USER
 // =========================================================
 
 function saveCurrentUser(
@@ -256,19 +281,19 @@ function saveCurrentUser(
             profile.id,
 
         username:
-            profile.username,
+            profile.username || "",
 
         fullName:
-            profile.full_name,
+            profile.full_name || "",
 
         phone:
-            profile.phone,
+            profile.phone || "",
 
         role:
-            profile.role,
+            profile.role || "",
 
         status:
-            profile.status,
+            profile.status || "",
 
         driverRate:
             Number(
@@ -277,10 +302,10 @@ function saveCurrentUser(
             ),
 
         notes:
-            profile.notes,
+            profile.notes || "",
 
         email:
-            authUser.email
+            authUser.email || ""
 
     };
 
@@ -353,190 +378,194 @@ if (
     loginForm
 ) {
 
-    loginForm
-        .addEventListener(
+    loginForm.addEventListener(
 
-            "submit",
+        "submit",
 
-            async function (
-                event
+        async function (
+            event
+        ) {
+
+            event.preventDefault();
+
+
+            clearLoginMessage();
+
+
+            const email =
+                emailInput
+                    .value
+                    .trim()
+                    .toLowerCase();
+
+
+            const password =
+                passwordInput
+                    .value;
+
+
+            if (
+                !email ||
+                !password
             ) {
 
-                event.preventDefault();
+                showLoginMessage(
+                    "יש להזין אימייל וסיסמה."
+                );
+
+                return;
+
+            }
 
 
-                clearLoginMessage();
+            // =============================================
+            // SUPABASE AUTH LOGIN
+            // =============================================
 
+            const {
+                data,
+                error
+            } =
+                await supabaseClient
+                    .auth
+                    .signInWithPassword(
+                        {
+                            email:
+                                email,
 
-                const email =
-                    usernameInput
-                        .value
-                        .trim()
-                        .toLowerCase();
-
-
-                const password =
-                    passwordInput
-                        .value;
-
-
-                if (
-                    !email ||
-                    !password
-                ) {
-
-                    showLoginMessage(
-                        "יש להזין אימייל וסיסמה."
+                            password:
+                                password
+                        }
                     );
 
-                    return;
 
-                }
+            if (
+                error ||
+                !data ||
+                !data.user
+            ) {
 
-
-                // =============================================
-                // SUPABASE AUTH
-                // =============================================
-
-                const {
-                    data,
+                console.error(
+                    "Login failed:",
                     error
-                } =
-                    await supabaseClient
-                        .auth
-                        .signInWithPassword(
-                            {
-                                email:
-                                    email,
-
-                                password:
-                                    password
-                            }
-                        );
-
-
-                if (
-                    error ||
-                    !data.user
-                ) {
-
-                    console.error(
-                        "Login failed",
-                        error
-                    );
-
-
-                    showLoginMessage(
-                        "האימייל או הסיסמה אינם נכונים."
-                    );
-
-                    return;
-
-                }
-
-
-                // =============================================
-                // LOAD PROFILE
-                // =============================================
-
-                const profile =
-                    await loadProfile(
-                        data.user.id
-                    );
-
-
-                if (
-                    !profile
-                ) {
-
-                    await supabaseClient
-                        .auth
-                        .signOut();
-
-
-                    showLoginMessage(
-                        "לא נמצא פרופיל משתמש במערכת."
-                    );
-
-                    return;
-
-                }
-
-
-                // =============================================
-                // ACTIVE CHECK
-                // =============================================
-
-                if (
-                    profile.status !==
-                    "פעיל"
-                ) {
-
-                    await supabaseClient
-                        .auth
-                        .signOut();
-
-
-                    showLoginMessage(
-                        "המשתמש אינו פעיל במערכת."
-                    );
-
-                    return;
-
-                }
-
-
-                // =============================================
-                // REMEMBER EMAIL
-                // =============================================
-
-                if (
-                    rememberMe &&
-                    rememberMe.checked
-                ) {
-
-                    localStorage.setItem(
-
-                        REMEMBERED_USERNAME_KEY,
-
-                        email
-
-                    );
-
-                }
-
-                else {
-
-                    localStorage.removeItem(
-                        REMEMBERED_USERNAME_KEY
-                    );
-
-                }
-
-
-                // =============================================
-                // SAVE APP SESSION
-                // =============================================
-
-                saveCurrentUser(
-                    profile,
-                    data.user
                 );
 
 
                 showLoginMessage(
-                    "התחברת בהצלחה.",
-                    "success"
+                    "האימייל או הסיסמה אינם נכונים."
+                );
+
+                return;
+
+            }
+
+
+            // =============================================
+            // LOAD PROFILE
+            // =============================================
+
+            const profile =
+                await loadProfile(
+                    data.user.id
                 );
 
 
-                redirectByRole(
-                    profile
+            if (
+                !profile
+            ) {
+
+                await supabaseClient
+                    .auth
+                    .signOut();
+
+
+                showLoginMessage(
+                    "לא נמצא פרופיל משתמש במערכת."
+                );
+
+                return;
+
+            }
+
+
+            // =============================================
+            // ACTIVE USER CHECK
+            // =============================================
+
+            if (
+                profile.status !==
+                "פעיל"
+            ) {
+
+                await supabaseClient
+                    .auth
+                    .signOut();
+
+
+                showLoginMessage(
+                    "המשתמש אינו פעיל במערכת."
+                );
+
+                return;
+
+            }
+
+
+            // =============================================
+            // REMEMBER EMAIL
+            // =============================================
+
+            if (
+                rememberUser &&
+                rememberUser.checked
+            ) {
+
+                localStorage.setItem(
+
+                    REMEMBERED_EMAIL_KEY,
+
+                    email
+
                 );
 
             }
 
-        );
+            else {
+
+                localStorage.removeItem(
+                    REMEMBERED_EMAIL_KEY
+                );
+
+            }
+
+
+            // =============================================
+            // SAVE LOCAL APP SESSION
+            // =============================================
+
+            saveCurrentUser(
+                profile,
+                data.user
+            );
+
+
+            showLoginMessage(
+                "התחברת בהצלחה.",
+                "success"
+            );
+
+
+            // =============================================
+            // REDIRECT
+            // =============================================
+
+            redirectByRole(
+                profile
+            );
+
+        }
+
+    );
 
 }
 
@@ -545,4 +574,4 @@ if (
 // INITIALIZE
 // =========================================================
 
-restoreRememberedUsername();
+restoreRememberedEmail();

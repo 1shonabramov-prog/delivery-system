@@ -28,14 +28,12 @@
     <main class="login-page">
 
 
-        <!-- =================================================
-             LOGIN CARD
-        ================================================== -->
-
         <section class="login-card">
 
 
-            <!-- LOGO -->
+            <!-- =================================================
+                 BRAND
+            ================================================== -->
 
             <div class="login-brand">
 
@@ -59,7 +57,9 @@
 
 
 
-            <!-- TITLE -->
+            <!-- =================================================
+                 TITLE
+            ================================================== -->
 
             <div class="login-title">
 
@@ -68,14 +68,16 @@
                 </h2>
 
                 <p>
-                    הזן שם משתמש וסיסמה
+                    הזן אימייל וסיסמה
                 </p>
 
             </div>
 
 
 
-            <!-- LOGIN FORM -->
+            <!-- =================================================
+                 LOGIN FORM
+            ================================================== -->
 
             <form
                 id="loginForm"
@@ -83,12 +85,12 @@
             >
 
 
-                <!-- USERNAME -->
+                <!-- EMAIL -->
 
                 <div class="login-form-group">
 
-                    <label for="username">
-                          אימייל
+                    <label for="loginEmail">
+                        אימייל
                     </label>
 
 
@@ -101,9 +103,9 @@
 
                         <input
                             type="email"
-                            id="loginUsername"
+                            id="loginEmail"
                             placeholder="הכנס אימייל"
-                            autocomplete="username"
+                            autocomplete="email"
                             required
                         >
 
@@ -118,9 +120,7 @@
                 <div class="login-form-group">
 
                     <label for="loginPassword">
-
                         סיסמה
-
                     </label>
 
 
@@ -146,9 +146,7 @@
                             class="password-toggle"
                             aria-label="הצג או הסתר סיסמה"
                         >
-
                             👁️
-
                         </button>
 
                     </div>
@@ -157,7 +155,7 @@
 
 
 
-                <!-- REMEMBER ME -->
+                <!-- REMEMBER -->
 
                 <label class="remember-row">
 
@@ -174,7 +172,7 @@
 
 
 
-                <!-- ERROR MESSAGE -->
+                <!-- MESSAGE -->
 
                 <div
                     id="loginMessage"
@@ -190,9 +188,7 @@
                     type="submit"
                     class="login-button"
                 >
-
                     כניסה למערכת
-
                 </button>
 
 
@@ -200,7 +196,9 @@
 
 
 
-            <!-- DEVELOPMENT NOTE -->
+            <!-- =================================================
+                 FOOTER
+            ================================================== -->
 
             <div class="login-footer">
 
@@ -221,12 +219,15 @@
     </main>
 
 
+    <!-- =====================================================
+         SUPABASE
+    ====================================================== -->
 
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
     <script src="supabase-config.js"></script>
 
-    <script src="login.js?v=20261021-1"></script>
+    <script src="login.js?v=20261022-1"></script>
 
 
 </body>
