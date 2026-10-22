@@ -1,17 +1,22 @@
 // =========================================================
-// DRIVER APP
+// DRIVER APP - SUPABASE
 // =========================================================
 
 
 // =========================================================
-// STORAGE KEYS
+// CREATE SUPABASE CLIENT
 // =========================================================
 
-const DRIVER_SHIPMENTS_STORAGE_KEY =
-    "delivery_system_shipments";
+const supabaseClient =
+    supabase.createClient(
+        SUPABASE_URL,
+        SUPABASE_PUBLISHABLE_KEY
+    );
 
-const DRIVER_USERS_STORAGE_KEY =
-    "delivery_system_users";
+
+// =========================================================
+// STORAGE
+// =========================================================
 
 const CURRENT_USER_STORAGE_KEY =
     "delivery_system_current_user";
@@ -21,389 +26,20 @@ const DRIVER_ROUTE_STORAGE_KEY =
 
 
 // =========================================================
-// CURRENT USER
+// GLOBAL STATE
 // =========================================================
 
-function getCurrentUser() {
+let currentAuthUser =
+    null;
 
-    const saved =
-        sessionStorage.getItem(
-            CURRENT_USER_STORAGE_KEY
-        );
+let currentProfile =
+    null;
 
+let driverShipments =
+    [];
 
-    if (
-        !saved
-    ) {
-
-        return null;
-
-    }
-
-
-    try {
-
-        return JSON.parse(
-            saved
-        );
-
-    }
-
-    catch (
-        error
-    ) {
-
-        console.error(
-            "Failed loading current user",
-            error
-        );
-
-        return null;
-
-    }
-
-}
-
-
-// =========================================================
-// USERS
-// =========================================================
-
-function getSystemUsers() {
-
-    const saved =
-        localStorage.getItem(
-            DRIVER_USERS_STORAGE_KEY
-        );
-
-
-    if (
-        !saved
-    ) {
-
-        return [];
-
-    }
-
-
-    try {
-
-        return JSON.parse(
-            saved
-        );
-
-    }
-
-    catch (
-        error
-    ) {
-
-        console.error(
-            "Failed loading users",
-            error
-        );
-
-        return [];
-
-    }
-
-}
-
-
-// =========================================================
-// LIVE USER CHECK
-// =========================================================
-
-function getLiveCurrentUser() {
-
-    const sessionUser =
-        getCurrentUser();
-
-
-    if (
-        !sessionUser
-    ) {
-
-        return null;
-
-    }
-
-
-    const users =
-        getSystemUsers();
-
-
-    const liveUser =
-        users.find(
-
-            user =>
-
-                String(
-                    user.id ||
-                    user.driverId ||
-                    ""
-                )
-
-                ===
-
-                String(
-                    sessionUser.id ||
-                    sessionUser.driverId ||
-                    ""
-                )
-
-                ||
-
-                (
-                    user.username &&
-                    sessionUser.username &&
-                    user.username ===
-                    sessionUser.username
-                )
-
-        );
-
-
-    if (
-        liveUser
-    ) {
-
-        return liveUser;
-
-    }
-
-
-    return sessionUser;
-
-}
-
-
-// =========================================================
-// AUTHORIZATION
-// =========================================================
-
-const currentUser =
-    getLiveCurrentUser();
-
-
-if (
-    !currentUser ||
-    currentUser.role !==
-        "DRIVER" ||
-    currentUser.status !==
-        "פעיל"
-) {
-
-    sessionStorage.removeItem(
-        CURRENT_USER_STORAGE_KEY
-    );
-
-
-    window.location.href =
-        "login.html";
-
-}
-
-
-// =========================================================
-// CURRENT DRIVER ID
-// =========================================================
-
-function getCurrentDriverId() {
-
-    return (
-
-        currentUser.driverId ||
-        currentUser.id ||
-        ""
-
-    );
-
-}
-
-
-// =========================================================
-// SHIPMENTS STORAGE
-// =========================================================
-
-function getDriverAllShipments() {
-
-    const saved =
-        localStorage.getItem(
-            DRIVER_SHIPMENTS_STORAGE_KEY
-        );
-
-
-    if (
-        !saved
-    ) {
-
-        return [];
-
-    }
-
-
-    try {
-
-        return JSON.parse(
-            saved
-        );
-
-    }
-
-    catch (
-        error
-    ) {
-
-        console.error(
-            "Failed loading shipments",
-            error
-        );
-
-        return [];
-
-    }
-
-}
-
-
-function saveDriverAllShipments(
-    shipments
-) {
-
-    localStorage.setItem(
-
-        DRIVER_SHIPMENTS_STORAGE_KEY,
-
-        JSON.stringify(
-            shipments
-        )
-
-    );
-
-}
-
-
-// =========================================================
-// CREATE SHIPMENT ID
-// =========================================================
-
-function createDriverShipmentId() {
-
-    return (
-        "shipment_" +
-        Date.now() +
-        "_" +
-        Math.floor(
-            Math.random() *
-            100000
-        )
-    );
-
-}
-
-
-// =========================================================
-// CREATE SHIPMENT NUMBER
-// =========================================================
-
-function createDriverShipmentNumber() {
-
-    return (
-        "D" +
-        Date.now()
-            .toString()
-            .slice(
-                -7
-            )
-    );
-
-}
-
-
-// =========================================================
-// DRIVER MATCH
-// =========================================================
-
-function shipmentBelongsToCurrentDriver(
-    shipment
-) {
-
-    const currentDriverId =
-        String(
-            getCurrentDriverId()
-        );
-
-
-    if (
-        shipment.driverId
-    ) {
-
-        return (
-
-            String(
-                shipment.driverId
-            )
-
-            ===
-
-            currentDriverId
-
-        );
-
-    }
-
-
-    if (
-        shipment.driverName
-    ) {
-
-        return (
-
-            shipment.driverName ===
-            currentUser.fullName
-
-        );
-
-    }
-
-
-    if (
-        shipment.driver
-    ) {
-
-        return (
-
-            shipment.driver ===
-            currentUser.fullName
-
-            ||
-
-            shipment.driver ===
-            currentUser.username
-
-        );
-
-    }
-
-
-    return false;
-
-}
-
-
-// =========================================================
-// GET CURRENT DRIVER SHIPMENTS
-// =========================================================
-
-function getCurrentDriverShipments() {
-
-    return getDriverAllShipments()
-        .filter(
-            shipmentBelongsToCurrentDriver
-        );
-
-}
+let selectedShipmentId =
+    null;
 
 
 // =========================================================
@@ -481,6 +117,11 @@ const driverShipmentsList =
 const shipmentCountBadge =
     document.getElementById(
         "shipmentCountBadge"
+    );
+
+const shipmentListSubtitle =
+    document.getElementById(
+        "shipmentListSubtitle"
     );
 
 
@@ -565,6 +206,11 @@ const deliveryNotes =
         "deliveryNotes"
     );
 
+const deliveryEta =
+    document.getElementById(
+        "deliveryEta"
+    );
+
 const callCustomerButton =
     document.getElementById(
         "callCustomerButton"
@@ -607,11 +253,230 @@ const driverReportsButton =
 
 
 // =========================================================
-// CURRENT SELECTED SHIPMENT
+// AUTH
 // =========================================================
 
-let selectedShipmentId =
-    null;
+async function loadAuthenticatedUser() {
+
+    const {
+        data,
+        error
+    } =
+        await supabaseClient.auth
+            .getSession();
+
+
+    if (
+        error
+    ) {
+
+        console.error(
+            "Failed loading Supabase session:",
+            error
+        );
+
+        redirectToLogin();
+
+        return false;
+
+    }
+
+
+    if (
+        !data.session ||
+        !data.session.user
+    ) {
+
+        redirectToLogin();
+
+        return false;
+
+    }
+
+
+    currentAuthUser =
+        data.session.user;
+
+
+    return true;
+
+}
+
+
+// =========================================================
+// LOAD CURRENT PROFILE
+// =========================================================
+
+async function loadCurrentProfile() {
+
+    if (
+        !currentAuthUser
+    ) {
+
+        return false;
+
+    }
+
+
+    const {
+        data,
+        error
+    } =
+        await supabaseClient
+            .from(
+                "profiles"
+            )
+            .select(
+                `
+                id,
+                username,
+                full_name,
+                phone,
+                role,
+                status,
+                driver_rate,
+                notes
+                `
+            )
+            .eq(
+                "id",
+                currentAuthUser.id
+            )
+            .single();
+
+
+    if (
+        error
+    ) {
+
+        console.error(
+            "Failed loading profile:",
+            error
+        );
+
+        return false;
+
+    }
+
+
+    if (
+        !data ||
+        data.role !==
+            "DRIVER" ||
+        data.status !==
+            "פעיל"
+    ) {
+
+        await supabaseClient.auth
+            .signOut();
+
+
+        redirectToLogin();
+
+        return false;
+
+    }
+
+
+    currentProfile =
+        data;
+
+
+    saveCurrentUserSession();
+
+
+    return true;
+
+}
+
+
+// =========================================================
+// SAVE APP SESSION
+// =========================================================
+
+function saveCurrentUserSession() {
+
+    if (
+        !currentProfile ||
+        !currentAuthUser
+    ) {
+
+        return;
+
+    }
+
+
+    const currentUser = {
+
+        id:
+            currentProfile.id,
+
+        driverId:
+            currentProfile.id,
+
+        username:
+            currentProfile.username ||
+            "",
+
+        fullName:
+            currentProfile.full_name ||
+            "",
+
+        phone:
+            currentProfile.phone ||
+            "",
+
+        role:
+            currentProfile.role,
+
+        status:
+            currentProfile.status,
+
+        driverRate:
+            Number(
+                currentProfile.driver_rate ||
+                0
+            ),
+
+        notes:
+            currentProfile.notes ||
+            "",
+
+        email:
+            currentAuthUser.email ||
+            ""
+
+    };
+
+
+    sessionStorage.setItem(
+
+        CURRENT_USER_STORAGE_KEY,
+
+        JSON.stringify(
+            currentUser
+        )
+
+    );
+
+}
+
+
+// =========================================================
+// LOGIN REDIRECT
+// =========================================================
+
+function redirectToLogin() {
+
+    sessionStorage.removeItem(
+        CURRENT_USER_STORAGE_KEY
+    );
+
+
+    window.location.href =
+        "login.html";
+
+}
 
 
 // =========================================================
@@ -625,8 +490,8 @@ function initializeDriverHeader() {
     ) {
 
         driverNameElement.textContent =
-            currentUser.fullName ||
-            currentUser.username ||
+            currentProfile.full_name ||
+            currentProfile.username ||
             "שליח";
 
     }
@@ -668,56 +533,90 @@ if (
     logoutButton
 ) {
 
-    logoutButton
-        .addEventListener(
+    logoutButton.addEventListener(
 
-            "click",
+        "click",
 
-            function () {
+        async function () {
 
-                sessionStorage.removeItem(
-                    CURRENT_USER_STORAGE_KEY
-                );
+            await supabaseClient.auth
+                .signOut();
 
 
-                window.location.href =
-                    "login.html";
+            sessionStorage.removeItem(
+                CURRENT_USER_STORAGE_KEY
+            );
 
-            }
 
-        );
+            window.location.href =
+                "login.html";
+
+        }
+
+    );
 
 }
 
 
 // =========================================================
-// ADDRESS HELPERS
+// ADDRESS
 // =========================================================
 
-function getDriverShipmentMainAddress(
+function getShipmentMainAddress(
     shipment
 ) {
 
-    return (
+    const mainAddress =
 
-        `${shipment.street || ""} ${shipment.houseNumber || ""}, ${shipment.city || ""}`
+        `${shipment.street || ""} ${shipment.house_number || ""}`
 
-    )
-        .replace(
-            /\s+/g,
-            " "
-        )
-        .trim();
+            .replace(
+                /\s+/g,
+                " "
+            )
+
+            .trim();
+
+
+    if (
+        shipment.city
+    ) {
+
+        return (
+            `${mainAddress}, ${shipment.city}`
+        );
+
+    }
+
+
+    return mainAddress;
 
 }
 
 
-function getDriverBuildingDetails(
+// =========================================================
+// BUILDING DETAILS
+// =========================================================
+
+function getShipmentBuildingDetails(
     shipment
 ) {
 
     const parts =
         [];
+
+
+    if (
+        shipment.address_type &&
+        shipment.address_type !==
+            "אחר"
+    ) {
+
+        parts.push(
+            shipment.address_type
+        );
+
+    }
 
 
     if (
@@ -762,7 +661,7 @@ function getDriverBuildingDetails(
 
 
 // =========================================================
-// STATUS TEXT
+// STATUS CLASS
 // =========================================================
 
 function getDriverStatusClass(
@@ -803,21 +702,135 @@ function getDriverStatusClass(
 
 
 // =========================================================
+// LOAD SHIPMENTS FROM SUPABASE
+// =========================================================
+
+async function loadDriverShipments() {
+
+    if (
+        !currentProfile
+    ) {
+
+        return;
+
+    }
+
+
+    if (
+        shipmentListSubtitle
+    ) {
+
+        shipmentListSubtitle.textContent =
+            "טוען משלוחים...";
+
+    }
+
+
+    const {
+        data,
+        error
+    } =
+        await supabaseClient
+            .from(
+                "shipments"
+            )
+            .select(
+                `
+                id,
+                shipment_number,
+                barcode,
+                customer,
+                phone,
+                city,
+                street,
+                house_number,
+                entrance,
+                floor,
+                apartment,
+                address_type,
+                notes,
+                driver_id,
+                driver_name,
+                status,
+                created_at,
+                delivered_at,
+                failed_at,
+                failed_reason,
+                delivery_rate,
+                delivery_amount,
+                created_by
+                `
+            )
+            .eq(
+                "driver_id",
+                currentProfile.id
+            )
+            .order(
+                "created_at",
+                {
+                    ascending:
+                        true
+                }
+            );
+
+
+    if (
+        error
+    ) {
+
+        console.error(
+            "Failed loading shipments:",
+            error
+        );
+
+
+        if (
+            shipmentListSubtitle
+        ) {
+
+            shipmentListSubtitle.textContent =
+                "שגיאה בטעינת המשלוחים";
+
+        }
+
+
+        return;
+
+    }
+
+
+    driverShipments =
+        data ||
+        [];
+
+
+    if (
+        shipmentListSubtitle
+    ) {
+
+        shipmentListSubtitle.textContent =
+            "כל המשלוחים המשויכים אליך";
+
+    }
+
+
+    renderDriverShipments();
+
+}
+
+
+// =========================================================
 // COUNTERS
 // =========================================================
 
 function updateDriverCounters() {
 
-    const shipments =
-        getCurrentDriverShipments();
-
-
     const total =
-        shipments.length;
+        driverShipments.length;
 
 
     const delivered =
-        shipments.filter(
+        driverShipments.filter(
 
             shipment =>
                 shipment.status ===
@@ -827,7 +840,7 @@ function updateDriverCounters() {
 
 
     const failed =
-        shipments.filter(
+        driverShipments.filter(
 
             shipment =>
                 shipment.status ===
@@ -837,17 +850,17 @@ function updateDriverCounters() {
 
 
     const remaining =
-        shipments.filter(
+        driverShipments.filter(
 
             shipment =>
 
                 shipment.status !==
-                "נמסר"
+                    "נמסר"
 
                 &&
 
                 shipment.status !==
-                "לא נמסר"
+                    "לא נמסר"
 
         ).length;
 
@@ -873,21 +886,21 @@ function updateDriverCounters() {
 
 
     if (
-        failedShipmentsElement
-    ) {
-
-        failedShipmentsElement.textContent =
-            failed;
-
-    }
-
-
-    if (
         remainingShipmentsElement
     ) {
 
         remainingShipmentsElement.textContent =
             remaining;
+
+    }
+
+
+    if (
+        failedShipmentsElement
+    ) {
+
+        failedShipmentsElement.textContent =
+            failed;
 
     }
 
@@ -905,7 +918,7 @@ function updateDriverCounters() {
 
 
 // =========================================================
-// RENDER DRIVER SHIPMENTS
+// RENDER SHIPMENTS
 // =========================================================
 
 function renderDriverShipments() {
@@ -919,16 +932,12 @@ function renderDriverShipments() {
     }
 
 
-    const shipments =
-        getCurrentDriverShipments();
-
-
     driverShipmentsList.innerHTML =
         "";
 
 
     if (
-        shipments.length ===
+        driverShipments.length ===
         0
     ) {
 
@@ -955,7 +964,7 @@ function renderDriverShipments() {
     }
 
 
-    shipments.forEach(
+    driverShipments.forEach(
 
         shipment => {
 
@@ -1014,7 +1023,7 @@ function renderDriverShipments() {
                         </h3>
 
                         <div class="shipment-card-number">
-                            #${shipment.shipmentNumber || ""}
+                            #${shipment.shipment_number || ""}
                         </div>
 
                     </div>
@@ -1038,7 +1047,7 @@ function renderDriverShipments() {
 
                     📍
 
-                    ${getDriverShipmentMainAddress(
+                    ${getShipmentMainAddress(
                         shipment
                     )}
 
@@ -1047,9 +1056,7 @@ function renderDriverShipments() {
 
                 <div class="shipment-card-phone">
 
-                    📞
-
-                    ${phone}
+                    📞 ${phone}
 
                 </div>
 
@@ -1105,8 +1112,7 @@ function openAddShipmentModal() {
     }
 
 
-    addShipmentModal
-        .classList
+    addShipmentModal.classList
         .remove(
             "hidden"
         );
@@ -1150,8 +1156,7 @@ function closeDriverAddShipmentModal() {
     }
 
 
-    addShipmentModal
-        .classList
+    addShipmentModal.classList
         .add(
             "hidden"
         );
@@ -1163,14 +1168,13 @@ if (
     addShipmentButton
 ) {
 
-    addShipmentButton
-        .addEventListener(
+    addShipmentButton.addEventListener(
 
-            "click",
+        "click",
 
-            openAddShipmentModal
+        openAddShipmentModal
 
-        );
+    );
 
 }
 
@@ -1179,14 +1183,13 @@ if (
     closeAddShipmentModal
 ) {
 
-    closeAddShipmentModal
-        .addEventListener(
+    closeAddShipmentModal.addEventListener(
 
-            "click",
+        "click",
 
-            closeDriverAddShipmentModal
+        closeDriverAddShipmentModal
 
-        );
+    );
 
 }
 
@@ -1195,260 +1198,338 @@ if (
     cancelAddShipmentButton
 ) {
 
-    cancelAddShipmentButton
-        .addEventListener(
+    cancelAddShipmentButton.addEventListener(
 
-            "click",
+        "click",
 
-            closeDriverAddShipmentModal
+        closeDriverAddShipmentModal
 
-        );
+    );
 
 }
 
 
 // =========================================================
-// ADD SHIPMENT
+// CREATE SHIPMENT NUMBER
+// =========================================================
+
+function createShipmentNumber() {
+
+    return (
+        "D" +
+        Date.now()
+            .toString()
+            .slice(
+                -8
+            )
+    );
+
+}
+
+
+// =========================================================
+// ADD SHIPMENT TO SUPABASE
 // =========================================================
 
 if (
     driverAddShipmentForm
 ) {
 
-    driverAddShipmentForm
-        .addEventListener(
+    driverAddShipmentForm.addEventListener(
 
-            "submit",
+        "submit",
 
-            function (
-                event
+        async function (
+            event
+        ) {
+
+            event.preventDefault();
+
+
+            if (
+                !currentProfile
             ) {
 
-                event.preventDefault();
-
-
-                const customer =
-                    document
-                        .getElementById(
-                            "driverShipmentCustomer"
-                        )
-                        .value
-                        .trim();
-
-
-                const phone =
-                    document
-                        .getElementById(
-                            "driverShipmentPhone"
-                        )
-                        .value
-                        .trim();
-
-
-                const city =
-                    document
-                        .getElementById(
-                            "driverShipmentCity"
-                        )
-                        .value
-                        .trim();
-
-
-                const street =
-                    document
-                        .getElementById(
-                            "driverShipmentStreet"
-                        )
-                        .value
-                        .trim();
-
-
-                const houseNumber =
-                    document
-                        .getElementById(
-                            "driverShipmentHouseNumber"
-                        )
-                        .value
-                        .trim();
-
-
-                const entrance =
-                    document
-                        .getElementById(
-                            "driverShipmentEntrance"
-                        )
-                        .value
-                        .trim();
-
-
-                const floor =
-                    document
-                        .getElementById(
-                            "driverShipmentFloor"
-                        )
-                        .value
-                        .trim();
-
-
-                const apartment =
-                    document
-                        .getElementById(
-                            "driverShipmentApartment"
-                        )
-                        .value
-                        .trim();
-
-
-                const notes =
-                    document
-                        .getElementById(
-                            "driverShipmentNotes"
-                        )
-                        .value
-                        .trim();
-
-
-                if (
-                    !city ||
-                    !street ||
-                    !houseNumber
-                ) {
-
-                    alert(
-                        "יש להזין עיר, רחוב ומספר בית."
-                    );
-
-                    return;
-
-                }
-
-
-                const shipments =
-                    getDriverAllShipments();
-
-
-                const shipment = {
-
-                    id:
-                        createDriverShipmentId(),
-
-                    barcode:
-                        "",
-
-                    shipmentNumber:
-                        createDriverShipmentNumber(),
-
-                    customer:
-                        customer ||
-                        "לקוח",
-
-                    phone:
-                        phone,
-
-                    city:
-                        city,
-
-                    street:
-                        street,
-
-                    houseNumber:
-                        houseNumber,
-
-                    entrance:
-                        entrance,
-
-                    floor:
-                        floor,
-
-                    apartment:
-                        apartment,
-
-                    addressType:
-                        "אחר",
-
-                    notes:
-                        notes,
-
-                    driverId:
-                        getCurrentDriverId(),
-
-                    driverName:
-                        currentUser.fullName ||
-                        currentUser.username ||
-                        "",
-
-                    driver:
-                        currentUser.fullName ||
-                        currentUser.username ||
-                        "",
-
-                    status:
-                        "משויך",
-
-                    createdAt:
-                        new Date()
-                            .toISOString(),
-
-                    deliveredAt:
-                        null,
-
-                    failedAt:
-                        null,
-
-                    failedReason:
-                        "",
-
-                    assignmentHistory: [
-                        {
-
-                            fromDriverId:
-                                "",
-
-                            fromDriverName:
-                                "",
-
-                            toDriverId:
-                                getCurrentDriverId(),
-
-                            toDriverName:
-                                currentUser.fullName ||
-                                currentUser.username ||
-                                "",
-
-                            changedAt:
-                                new Date()
-                                    .toISOString(),
-
-                            source:
-                                "driver_manual"
-
-                        }
-                    ]
-
-                };
-
-
-                shipments.push(
-                    shipment
-                );
-
-
-                saveDriverAllShipments(
-                    shipments
-                );
-
-
-                driverAddShipmentForm.reset();
-
-
-                closeDriverAddShipmentModal();
-
-
-                renderDriverShipments();
+                return;
 
             }
 
-        );
+
+            const customer =
+                document
+                    .getElementById(
+                        "driverShipmentCustomer"
+                    )
+                    .value
+                    .trim();
+
+
+            const phone =
+                document
+                    .getElementById(
+                        "driverShipmentPhone"
+                    )
+                    .value
+                    .trim();
+
+
+            const city =
+                document
+                    .getElementById(
+                        "driverShipmentCity"
+                    )
+                    .value
+                    .trim();
+
+
+            const street =
+                document
+                    .getElementById(
+                        "driverShipmentStreet"
+                    )
+                    .value
+                    .trim();
+
+
+            const houseNumber =
+                document
+                    .getElementById(
+                        "driverShipmentHouseNumber"
+                    )
+                    .value
+                    .trim();
+
+
+            const entrance =
+                document
+                    .getElementById(
+                        "driverShipmentEntrance"
+                    )
+                    .value
+                    .trim();
+
+
+            const floor =
+                document
+                    .getElementById(
+                        "driverShipmentFloor"
+                    )
+                    .value
+                    .trim();
+
+
+            const apartment =
+                document
+                    .getElementById(
+                        "driverShipmentApartment"
+                    )
+                    .value
+                    .trim();
+
+
+            const notes =
+                document
+                    .getElementById(
+                        "driverShipmentNotes"
+                    )
+                    .value
+                    .trim();
+
+
+            if (
+                !city ||
+                !street ||
+                !houseNumber
+            ) {
+
+                alert(
+                    "יש להזין עיר, רחוב ומספר בית."
+                );
+
+                return;
+
+            }
+
+
+            const newShipment = {
+
+                shipment_number:
+                    createShipmentNumber(),
+
+                barcode:
+                    null,
+
+                customer:
+                    customer ||
+                    "לקוח",
+
+                phone:
+                    phone ||
+                    null,
+
+                city:
+                    city,
+
+                street:
+                    street,
+
+                house_number:
+                    houseNumber,
+
+                entrance:
+                    entrance ||
+                    null,
+
+                floor:
+                    floor ||
+                    null,
+
+                apartment:
+                    apartment ||
+                    null,
+
+                address_type:
+                    "אחר",
+
+                notes:
+                    notes ||
+                    null,
+
+                driver_id:
+                    currentProfile.id,
+
+                driver_name:
+                    currentProfile.full_name ||
+                    currentProfile.username ||
+                    "",
+
+                status:
+                    "משויך",
+
+                delivery_rate:
+                    Number(
+                        currentProfile.driver_rate ||
+                        0
+                    ),
+
+                delivery_amount:
+                    null,
+
+                created_by:
+                    currentProfile.id
+
+            };
+
+
+            const submitButton =
+                driverAddShipmentForm
+                    .querySelector(
+                        'button[type="submit"]'
+                    );
+
+
+            if (
+                submitButton
+            ) {
+
+                submitButton.disabled =
+                    true;
+
+                submitButton.textContent =
+                    "שומר...";
+
+            }
+
+
+            const {
+                data,
+                error
+            } =
+                await supabaseClient
+                    .from(
+                        "shipments"
+                    )
+                    .insert(
+                        newShipment
+                    )
+                    .select()
+                    .single();
+
+
+            if (
+                submitButton
+            ) {
+
+                submitButton.disabled =
+                    false;
+
+                submitButton.textContent =
+                    "הוסף משלוח";
+
+            }
+
+
+            if (
+                error
+            ) {
+
+                console.error(
+                    "Failed creating shipment:",
+                    error
+                );
+
+
+                alert(
+                    "לא ניתן היה לשמור את המשלוח."
+                );
+
+                return;
+
+            }
+
+
+            driverAddShipmentForm.reset();
+
+
+            closeDriverAddShipmentModal();
+
+
+            driverShipments.push(
+                data
+            );
+
+
+            renderDriverShipments();
+
+        }
+
+    );
+
+}
+
+
+// =========================================================
+// GET SELECTED SHIPMENT
+// =========================================================
+
+function getSelectedShipment() {
+
+    if (
+        !selectedShipmentId
+    ) {
+
+        return null;
+
+    }
+
+
+    return driverShipments.find(
+
+        shipment =>
+            shipment.id ===
+            selectedShipmentId
+
+    ) || null;
 
 }
 
@@ -1462,14 +1543,13 @@ function openShipmentDetails(
 ) {
 
     const shipment =
-        getCurrentDriverShipments()
-            .find(
+        driverShipments.find(
 
-                item =>
-                    item.id ===
-                    shipmentId
+            item =>
+                item.id ===
+                shipmentId
 
-            );
+        );
 
 
     if (
@@ -1490,7 +1570,7 @@ function openShipmentDetails(
     ) {
 
         deliveryShipmentNumber.textContent =
-            `משלוח #${shipment.shipmentNumber || ""}`;
+            `משלוח #${shipment.shipment_number || ""}`;
 
     }
 
@@ -1511,7 +1591,7 @@ function openShipmentDetails(
     ) {
 
         deliveryAddress.textContent =
-            getDriverShipmentMainAddress(
+            getShipmentMainAddress(
                 shipment
             );
 
@@ -1523,7 +1603,7 @@ function openShipmentDetails(
     ) {
 
         deliveryBuildingDetails.textContent =
-            getDriverBuildingDetails(
+            getShipmentBuildingDetails(
                 shipment
             );
 
@@ -1537,6 +1617,16 @@ function openShipmentDetails(
         deliveryNotes.textContent =
             shipment.notes ||
             "ללא הערות";
+
+    }
+
+
+    if (
+        deliveryEta
+    ) {
+
+        deliveryEta.textContent =
+            "עדיין לא חושב";
 
     }
 
@@ -1557,9 +1647,7 @@ function openShipmentDetails(
 
         deliveryPhone.href =
             phone
-
                 ? `tel:${phone}`
-
                 : "#";
 
     }
@@ -1571,9 +1659,7 @@ function openShipmentDetails(
 
         callCustomerButton.href =
             phone
-
                 ? `tel:${phone}`
-
                 : "#";
 
 
@@ -1589,8 +1675,7 @@ function openShipmentDetails(
         navigationOptions
     ) {
 
-        navigationOptions
-            .classList
+        navigationOptions.classList
             .add(
                 "hidden"
             );
@@ -1602,8 +1687,7 @@ function openShipmentDetails(
         deliveryDetailsOverlay
     ) {
 
-        deliveryDetailsOverlay
-            .classList
+        deliveryDetailsOverlay.classList
             .remove(
                 "hidden"
             );
@@ -1627,8 +1711,7 @@ function closeShipmentDetails() {
         deliveryDetailsOverlay
     ) {
 
-        deliveryDetailsOverlay
-            .classList
+        deliveryDetailsOverlay.classList
             .add(
                 "hidden"
             );
@@ -1640,8 +1723,7 @@ function closeShipmentDetails() {
         navigationOptions
     ) {
 
-        navigationOptions
-            .classList
+        navigationOptions.classList
             .add(
                 "hidden"
             );
@@ -1655,75 +1737,45 @@ if (
     closeDeliveryDetailsButton
 ) {
 
-    closeDeliveryDetailsButton
-        .addEventListener(
+    closeDeliveryDetailsButton.addEventListener(
 
-            "click",
+        "click",
 
-            closeShipmentDetails
+        closeShipmentDetails
 
-        );
+    );
 
 }
 
 
 // =========================================================
-// NAVIGATION OPTIONS
+// NAVIGATION
 // =========================================================
 
 if (
     openNavigationButton
 ) {
 
-    openNavigationButton
-        .addEventListener(
+    openNavigationButton.addEventListener(
 
-            "click",
+        "click",
 
-            function () {
+        function () {
 
-                if (
-                    navigationOptions
-                ) {
+            if (
+                navigationOptions
+            ) {
 
-                    navigationOptions
-                        .classList
-                        .toggle(
-                            "hidden"
-                        );
-
-                }
+                navigationOptions.classList
+                    .toggle(
+                        "hidden"
+                    );
 
             }
 
-        );
+        }
 
-}
-
-
-// =========================================================
-// GET SELECTED SHIPMENT
-// =========================================================
-
-function getSelectedShipment() {
-
-    if (
-        !selectedShipmentId
-    ) {
-
-        return null;
-
-    }
-
-
-    return getCurrentDriverShipments()
-        .find(
-
-            shipment =>
-                shipment.id ===
-                selectedShipmentId
-
-        );
+    );
 
 }
 
@@ -1736,48 +1788,47 @@ if (
     openWazeButton
 ) {
 
-    openWazeButton
-        .addEventListener(
+    openWazeButton.addEventListener(
 
-            "click",
+        "click",
 
-            function () {
+        function () {
 
-                const shipment =
-                    getSelectedShipment();
-
-
-                if (
-                    !shipment
-                ) {
-
-                    return;
-
-                }
+            const shipment =
+                getSelectedShipment();
 
 
-                const address =
-                    getDriverShipmentMainAddress(
-                        shipment
-                    );
+            if (
+                !shipment
+            ) {
 
-
-                const url =
-                    "https://waze.com/ul?q=" +
-                    encodeURIComponent(
-                        address
-                    ) +
-                    "&navigate=yes";
-
-
-                window.open(
-                    url,
-                    "_blank"
-                );
+                return;
 
             }
 
-        );
+
+            const address =
+                getShipmentMainAddress(
+                    shipment
+                );
+
+
+            const url =
+                "https://waze.com/ul?q=" +
+                encodeURIComponent(
+                    address
+                ) +
+                "&navigate=yes";
+
+
+            window.open(
+                url,
+                "_blank"
+            );
+
+        }
+
+    );
 
 }
 
@@ -1790,47 +1841,46 @@ if (
     openGoogleMapsButton
 ) {
 
-    openGoogleMapsButton
-        .addEventListener(
+    openGoogleMapsButton.addEventListener(
 
-            "click",
+        "click",
 
-            function () {
+        function () {
 
-                const shipment =
-                    getSelectedShipment();
-
-
-                if (
-                    !shipment
-                ) {
-
-                    return;
-
-                }
+            const shipment =
+                getSelectedShipment();
 
 
-                const address =
-                    getDriverShipmentMainAddress(
-                        shipment
-                    );
+            if (
+                !shipment
+            ) {
 
-
-                const url =
-                    "https://www.google.com/maps/dir/?api=1&destination=" +
-                    encodeURIComponent(
-                        address
-                    );
-
-
-                window.open(
-                    url,
-                    "_blank"
-                );
+                return;
 
             }
 
-        );
+
+            const address =
+                getShipmentMainAddress(
+                    shipment
+                );
+
+
+            const url =
+                "https://www.google.com/maps/dir/?api=1&destination=" +
+                encodeURIComponent(
+                    address
+                );
+
+
+            window.open(
+                url,
+                "_blank"
+            );
+
+        }
+
+    );
 
 }
 
@@ -1843,110 +1893,118 @@ if (
     markDeliveredButton
 ) {
 
-    markDeliveredButton
-        .addEventListener(
+    markDeliveredButton.addEventListener(
 
-            "click",
+        "click",
 
-            function () {
+        async function () {
 
-                if (
-                    !selectedShipmentId
-                ) {
-
-                    return;
-
-                }
+            const shipment =
+                getSelectedShipment();
 
 
-                const shipments =
-                    getDriverAllShipments();
+            if (
+                !shipment
+            ) {
 
-
-                const index =
-                    shipments.findIndex(
-
-                        shipment =>
-                            shipment.id ===
-                            selectedShipmentId
-
-                    );
-
-
-                if (
-                    index ===
-                    -1
-                ) {
-
-                    return;
-
-                }
-
-
-                const rate =
-                    Number(
-                        currentUser.driverRate ||
-                        currentUser.rate ||
-                        0
-                    );
-
-
-                shipments[
-                    index
-                ].status =
-                    "נמסר";
-
-
-                shipments[
-                    index
-                ].deliveredAt =
-                    new Date()
-                        .toISOString();
-
-
-                shipments[
-                    index
-                ].failedAt =
-                    null;
-
-
-                shipments[
-                    index
-                ].failedReason =
-                    "";
-
-
-                shipments[
-                    index
-                ].deliveryRate =
-                    rate;
-
-
-                shipments[
-                    index
-                ].deliveryAmount =
-                    rate;
-
-
-                shipments[
-                    index
-                ].deliveredBy =
-                    getCurrentDriverId();
-
-
-                saveDriverAllShipments(
-                    shipments
-                );
-
-
-                closeShipmentDetails();
-
-
-                renderDriverShipments();
+                return;
 
             }
 
-        );
+
+            const rate =
+                Number(
+                    currentProfile.driver_rate ||
+                    shipment.delivery_rate ||
+                    0
+                );
+
+
+            const deliveredAt =
+                new Date()
+                    .toISOString();
+
+
+            const {
+                error
+            } =
+                await supabaseClient
+                    .from(
+                        "shipments"
+                    )
+                    .update(
+                        {
+                            status:
+                                "נמסר",
+
+                            delivered_at:
+                                deliveredAt,
+
+                            failed_at:
+                                null,
+
+                            failed_reason:
+                                null,
+
+                            delivery_rate:
+                                rate,
+
+                            delivery_amount:
+                                rate
+                        }
+                    )
+                    .eq(
+                        "id",
+                        shipment.id
+                    );
+
+
+            if (
+                error
+            ) {
+
+                console.error(
+                    "Failed marking shipment delivered:",
+                    error
+                );
+
+
+                alert(
+                    "לא ניתן היה לעדכן את המשלוח."
+                );
+
+                return;
+
+            }
+
+
+            shipment.status =
+                "נמסר";
+
+            shipment.delivered_at =
+                deliveredAt;
+
+            shipment.failed_at =
+                null;
+
+            shipment.failed_reason =
+                null;
+
+            shipment.delivery_rate =
+                rate;
+
+            shipment.delivery_amount =
+                rate;
+
+
+            closeShipmentDetails();
+
+
+            renderDriverShipments();
+
+        }
+
+    );
 
 }
 
@@ -1959,140 +2017,152 @@ if (
     markFailedButton
 ) {
 
-    markFailedButton
-        .addEventListener(
+    markFailedButton.addEventListener(
 
-            "click",
+        "click",
 
-            function () {
+        async function () {
 
-                if (
-                    !selectedShipmentId
-                ) {
-
-                    return;
-
-                }
+            const shipment =
+                getSelectedShipment();
 
 
-                const reason =
-                    prompt(
-                        "למה המשלוח לא נמסר?"
-                    );
+            if (
+                !shipment
+            ) {
 
-
-                if (
-                    reason ===
-                    null
-                ) {
-
-                    return;
-
-                }
-
-
-                const shipments =
-                    getDriverAllShipments();
-
-
-                const index =
-                    shipments.findIndex(
-
-                        shipment =>
-                            shipment.id ===
-                            selectedShipmentId
-
-                    );
-
-
-                if (
-                    index ===
-                    -1
-                ) {
-
-                    return;
-
-                }
-
-
-                shipments[
-                    index
-                ].status =
-                    "לא נמסר";
-
-
-                shipments[
-                    index
-                ].failedAt =
-                    new Date()
-                        .toISOString();
-
-
-                shipments[
-                    index
-                ].failedReason =
-                    reason.trim();
-
-
-                shipments[
-                    index
-                ].deliveryAmount =
-                    0;
-
-
-                shipments[
-                    index
-                ].deliveredAt =
-                    null;
-
-
-                saveDriverAllShipments(
-                    shipments
-                );
-
-
-                closeShipmentDetails();
-
-
-                renderDriverShipments();
+                return;
 
             }
 
-        );
+
+            const reason =
+                prompt(
+                    "למה המשלוח לא נמסר?"
+                );
+
+
+            if (
+                reason ===
+                null
+            ) {
+
+                return;
+
+            }
+
+
+            const failedAt =
+                new Date()
+                    .toISOString();
+
+
+            const {
+                error
+            } =
+                await supabaseClient
+                    .from(
+                        "shipments"
+                    )
+                    .update(
+                        {
+                            status:
+                                "לא נמסר",
+
+                            failed_at:
+                                failedAt,
+
+                            failed_reason:
+                                reason.trim(),
+
+                            delivered_at:
+                                null,
+
+                            delivery_amount:
+                                0
+                        }
+                    )
+                    .eq(
+                        "id",
+                        shipment.id
+                    );
+
+
+            if (
+                error
+            ) {
+
+                console.error(
+                    "Failed marking shipment failed:",
+                    error
+                );
+
+
+                alert(
+                    "לא ניתן היה לעדכן את המשלוח."
+                );
+
+                return;
+
+            }
+
+
+            shipment.status =
+                "לא נמסר";
+
+            shipment.failed_at =
+                failedAt;
+
+            shipment.failed_reason =
+                reason.trim();
+
+            shipment.delivered_at =
+                null;
+
+            shipment.delivery_amount =
+                0;
+
+
+            closeShipmentDetails();
+
+
+            renderDriverShipments();
+
+        }
+
+    );
 
 }
 
 
 // =========================================================
-// ROUTE PLANNER TOGGLE
+// ROUTE PLANNER
 // =========================================================
 
 if (
     toggleRoutePlannerButton
 ) {
 
-    toggleRoutePlannerButton
-        .addEventListener(
+    toggleRoutePlannerButton.addEventListener(
 
-            "click",
+        "click",
 
-            function () {
+        function () {
 
-                if (
-                    routePlannerSection
-                ) {
+            if (
+                routePlannerSection
+            ) {
 
-                    routePlannerSection
-                        .classList
-                        .toggle(
-                            "hidden"
-                        );
-
-                }
+                routePlannerSection.classList
+                    .toggle(
+                        "hidden"
+                    );
 
             }
 
-        );
+        }
+
+    );
 
 }
 
@@ -2103,9 +2173,17 @@ if (
 
 function loadRouteSettings() {
 
+    const storageKey =
+        currentProfile
+
+            ? `${DRIVER_ROUTE_STORAGE_KEY}_${currentProfile.id}`
+
+            : DRIVER_ROUTE_STORAGE_KEY;
+
+
     const saved =
         localStorage.getItem(
-            DRIVER_ROUTE_STORAGE_KEY
+            storageKey
         );
 
 
@@ -2113,18 +2191,28 @@ function loadRouteSettings() {
         !saved
     ) {
 
-        const today =
-            new Date()
-                .toISOString()
-                .split("T")[0];
-
-
         if (
             routeDate
         ) {
 
+            const now =
+                new Date();
+
+
+            const localDate =
+                new Date(
+                    now.getTime() -
+                    now.getTimezoneOffset() *
+                    60000
+                )
+                    .toISOString()
+                    .split(
+                        "T"
+                    )[0];
+
+
             routeDate.value =
-                today;
+                localDate;
 
         }
 
@@ -2192,7 +2280,7 @@ function loadRouteSettings() {
     ) {
 
         console.error(
-            "Failed loading route settings",
+            "Failed loading route settings:",
             error
         );
 
@@ -2209,61 +2297,73 @@ if (
     saveRouteSettingsButton
 ) {
 
-    saveRouteSettingsButton
-        .addEventListener(
+    saveRouteSettingsButton.addEventListener(
 
-            "click",
+        "click",
 
-            function () {
+        function () {
 
-                const settings = {
+            if (
+                !currentProfile
+            ) {
 
-                    date:
-                        routeDate
-                            ? routeDate.value
-                            : "",
-
-                    startTime:
-                        routeStartTime
-                            ? routeStartTime.value
-                            : "",
-
-                    startAddress:
-                        routeStartAddress
-                            ? routeStartAddress.value.trim()
-                            : "",
-
-                    endAddress:
-                        routeEndAddress
-                            ? routeEndAddress.value.trim()
-                            : ""
-
-                };
-
-
-                localStorage.setItem(
-
-                    DRIVER_ROUTE_STORAGE_KEY,
-
-                    JSON.stringify(
-                        settings
-                    )
-
-                );
-
-
-                if (
-                    routePlannerMessage
-                ) {
-
-                    routePlannerMessage.textContent =
-                        "הגדרות המסלול נשמרו. בשלב הבא נחבר אופטימיזציה של Google Maps.";
-
-                }
+                return;
 
             }
 
-        );
+
+            const settings = {
+
+                date:
+                    routeDate
+                        ? routeDate.value
+                        : "",
+
+                startTime:
+                    routeStartTime
+                        ? routeStartTime.value
+                        : "",
+
+                startAddress:
+                    routeStartAddress
+                        ? routeStartAddress.value.trim()
+                        : "",
+
+                endAddress:
+                    routeEndAddress
+                        ? routeEndAddress.value.trim()
+                        : ""
+
+            };
+
+
+            const storageKey =
+                `${DRIVER_ROUTE_STORAGE_KEY}_${currentProfile.id}`;
+
+
+            localStorage.setItem(
+
+                storageKey,
+
+                JSON.stringify(
+                    settings
+                )
+
+            );
+
+
+            if (
+                routePlannerMessage
+            ) {
+
+                routePlannerMessage.textContent =
+                    "הגדרות המסלול נשמרו. בשלב הבא נחבר אופטימיזציה של Google Maps.";
+
+            }
+
+        }
+
+    );
 
 }
 
@@ -2276,30 +2376,68 @@ if (
     driverReportsButton
 ) {
 
-    driverReportsButton
-        .addEventListener(
+    driverReportsButton.addEventListener(
 
-            "click",
+        "click",
 
-            function () {
+        function () {
 
-                alert(
-                    "מסך הדוחות וההכנסות יתווסף בשלב הבא."
-                );
+            alert(
+                "מסך הדוחות וההכנסות יחובר ל-Supabase בשלב הבא."
+            );
 
-            }
+        }
 
-        );
+    );
 
 }
 
 
 // =========================================================
-// INITIALIZE
+// INITIALIZE DRIVER APP
 // =========================================================
 
-initializeDriverHeader();
+async function initializeDriverApp() {
 
-loadRouteSettings();
+    const authenticated =
+        await loadAuthenticatedUser();
 
-renderDriverShipments();
+
+    if (
+        !authenticated
+    ) {
+
+        return;
+
+    }
+
+
+    const profileLoaded =
+        await loadCurrentProfile();
+
+
+    if (
+        !profileLoaded
+    ) {
+
+        return;
+
+    }
+
+
+    initializeDriverHeader();
+
+
+    loadRouteSettings();
+
+
+    await loadDriverShipments();
+
+}
+
+
+// =========================================================
+// START
+// =========================================================
+
+initializeDriverApp();

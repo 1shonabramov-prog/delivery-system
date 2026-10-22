@@ -16,7 +16,7 @@
 
     <link
         rel="stylesheet"
-        href="driver.css?v=20261020-1"
+        href="driver.css?v=20261022-1"
     >
 
 </head>
@@ -321,12 +321,6 @@
                 id="driverShipmentsList"
                 class="driver-shipments-list"
             >
-
-                <!--
-                    המשלוחים ייטענו
-                    באמצעות driver.js
-                -->
-
             </div>
 
 
@@ -346,9 +340,7 @@
                 type="button"
             >
 
-                📊
-
-                דוחות והכנסות
+                📊 דוחות והכנסות
 
             </button>
 
@@ -476,7 +468,6 @@
                         <input
                             id="driverShipmentHouseNumber"
                             type="text"
-                            inputmode="numeric"
                             placeholder="12"
                             required
                         >
@@ -514,7 +505,6 @@
                         <input
                             id="driverShipmentFloor"
                             type="text"
-                            inputmode="numeric"
                             placeholder="2"
                         >
 
@@ -530,7 +520,6 @@
                         <input
                             id="driverShipmentApartment"
                             type="text"
-                            inputmode="numeric"
                             placeholder="6"
                         >
 
@@ -588,7 +577,7 @@
 
 
     <!-- ===================================================== -->
-    <!-- DELIVERY DETAILS BOTTOM SHEET -->
+    <!-- DELIVERY DETAILS -->
     <!-- ===================================================== -->
 
     <div
@@ -787,9 +776,15 @@
 
 
 
-    <script
-        src="driver.js?v=20261020-1"
-    ></script>
+    <!-- ===================================================== -->
+    <!-- SUPABASE -->
+    <!-- ===================================================== -->
+
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+    <script src="supabase-config.js"></script>
+
+    <script src="driver.js?v=20261022-2"></script>
 
 
 </body>
