@@ -1,6 +1,6 @@
 // =========================================================
 // DELIVERY SYSTEM
-// ACTIVITY MAP PREPARATION - SUPABASE
+// ACTIVITY MAP - SUPABASE
 // =========================================================
 
 
@@ -168,14 +168,6 @@ async function loadMapSession() {
 
 async function loadMapCurrentProfile() {
 
-    if (
-        !mapAuthUser
-    ) {
-
-        return false;
-    }
-
-
     const {
         data,
         error
@@ -274,62 +266,38 @@ async function loadMapCurrentProfile() {
 
 function renderMapCurrentUser() {
 
-    if (
-        !mapCurrentProfile
-    ) {
-
-        return;
-    }
-
-
     const fullName =
         mapCurrentProfile.full_name ||
         mapCurrentProfile.username ||
         "משתמש";
 
 
-    if (
-        mapUserName
-    ) {
-
-        mapUserName.textContent =
-            fullName;
-    }
+    mapUserName.textContent =
+        fullName;
 
 
-    if (
-        mapUserAvatar
-    ) {
-
-        mapUserAvatar.textContent =
-            fullName
-                .trim()
-                .charAt(
-                    0
-                )
-            ||
-            "מ";
-    }
+    mapUserAvatar.textContent =
+        fullName
+            .trim()
+            .charAt(
+                0
+            )
+        ||
+        "מ";
 
 
-    if (
-        mapUserRole
-    ) {
+    mapUserRole.textContent =
+        mapCurrentProfile.role ===
+            "ADMIN"
 
-        mapUserRole.textContent =
-            mapCurrentProfile.role ===
-                "ADMIN"
+            ? "Administrator"
 
-                ? "Administrator"
-
-                : "Warehouse";
-    }
-
+            : "Warehouse";
 }
 
 
 // =========================================================
-// LOAD PROFILES
+// LOAD DRIVERS
 // =========================================================
 
 async function loadMapProfiles() {
@@ -413,7 +381,10 @@ async function loadMapShipments() {
                 driver_id,
                 driver_name,
                 status,
-                created_at
+                created_at,
+                latitude,
+                longitude,
+                geocoded_at
                 `
             )
             .order(
@@ -568,6 +539,38 @@ function getMapDriverName(
 
 
 // =========================================================
+// HAS LOCATION
+// =========================================================
+
+function shipmentHasLocation(
+    shipment
+) {
+
+    return (
+
+        shipment.latitude !==
+            null
+
+        &&
+
+        shipment.latitude !==
+            undefined
+
+        &&
+
+        shipment.longitude !==
+            null
+
+        &&
+
+        shipment.longitude !==
+            undefined
+
+    );
+}
+
+
+// =========================================================
 // COUNTERS
 // =========================================================
 
@@ -598,51 +601,31 @@ function renderMapCounters() {
         ).length;
 
 
-    /*
-        For now every shipment is considered missing coordinates
-        because latitude / longitude do not exist yet in the table.
-        After the next DB change this counter will become real.
-    */
-
     const missingLocation =
-        mapShipments.length;
+        mapShipments.filter(
+
+            shipment =>
+                !shipmentHasLocation(
+                    shipment
+                )
+
+        ).length;
 
 
-    if (
-        mapTotalShipments
-    ) {
-
-        mapTotalShipments.textContent =
-            total;
-    }
+    mapTotalShipments.textContent =
+        total;
 
 
-    if (
-        mapAssignedShipments
-    ) {
-
-        mapAssignedShipments.textContent =
-            assigned;
-    }
+    mapAssignedShipments.textContent =
+        assigned;
 
 
-    if (
-        mapOnRouteShipments
-    ) {
-
-        mapOnRouteShipments.textContent =
-            onRoute;
-    }
+    mapOnRouteShipments.textContent =
+        onRoute;
 
 
-    if (
-        mapMissingLocationCount
-    ) {
-
-        mapMissingLocationCount.textContent =
-            missingLocation;
-    }
-
+    mapMissingLocationCount.textContent =
+        missingLocation;
 }
 
 
@@ -685,7 +668,25 @@ function getMapStatusClass(
 // LOCATION BADGE
 // =========================================================
 
-function getMapLocationBadge() {
+function getMapLocationBadge(
+    shipment
+) {
+
+    if (
+        shipmentHasLocation(
+            shipment
+        )
+    ) {
+
+        return `
+
+            <span class="status completed">
+                יש מיקום
+            </span>
+
+        `;
+    }
+
 
     return `
 
@@ -704,21 +705,13 @@ function getMapLocationBadge() {
 function getFilteredMapShipments() {
 
     const search =
-        mapSearchInput
-
-            ? mapSearchInput.value
-                .trim()
-                .toLowerCase()
-
-            : "";
+        mapSearchInput.value
+            .trim()
+            .toLowerCase();
 
 
     const selectedStatus =
-        mapStatusFilter
-
-            ? mapStatusFilter.value
-
-            : "";
+        mapStatusFilter.value;
 
 
     return mapShipments.filter(
@@ -792,14 +785,6 @@ function getFilteredMapShipments() {
 // =========================================================
 
 function renderMapShipmentsTable() {
-
-    if (
-        !mapShipmentsTableBody
-    ) {
-
-        return;
-    }
-
 
     const shipments =
         getFilteredMapShipments();
@@ -912,7 +897,11 @@ function renderMapShipmentsTable() {
 
 
                 <td>
-                    ${getMapLocationBadge()}
+
+                    ${getMapLocationBadge(
+                        shipment
+                    )}
+
                 </td>
 
             `;
@@ -936,14 +925,6 @@ function showMapTableError(
     message
 ) {
 
-    if (
-        !mapShipmentsTableBody
-    ) {
-
-        return;
-    }
-
-
     mapShipmentsTableBody.innerHTML = `
 
         <tr>
@@ -966,35 +947,25 @@ function showMapTableError(
 
 
 // =========================================================
-// FILTER EVENTS
+// EVENTS
 // =========================================================
 
-if (
-    mapSearchInput
-) {
+mapSearchInput.addEventListener(
 
-    mapSearchInput.addEventListener(
+    "input",
 
-        "input",
+    renderMapShipmentsTable
 
-        renderMapShipmentsTable
-
-    );
-}
+);
 
 
-if (
-    mapStatusFilter
-) {
+mapStatusFilter.addEventListener(
 
-    mapStatusFilter.addEventListener(
+    "change",
 
-        "change",
+    renderMapShipmentsTable
 
-        renderMapShipmentsTable
-
-    );
-}
+);
 
 
 // =========================================================
