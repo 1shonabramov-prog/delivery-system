@@ -280,10 +280,8 @@ function settingsRedirectToLogin() {
         "delivery_system_current_user"
     );
 
-
     window.location.href =
         "login.html";
-
 }
 
 
@@ -311,11 +309,9 @@ async function loadSettingsSession() {
             error
         );
 
-
         settingsRedirectToLogin();
 
         return false;
-
     }
 
 
@@ -327,7 +323,6 @@ async function loadSettingsSession() {
         settingsRedirectToLogin();
 
         return false;
-
     }
 
 
@@ -336,7 +331,6 @@ async function loadSettingsSession() {
 
 
     return true;
-
 }
 
 
@@ -351,7 +345,6 @@ async function loadSettingsCurrentProfile() {
     ) {
 
         return false;
-
     }
 
 
@@ -391,9 +384,7 @@ async function loadSettingsCurrentProfile() {
             error
         );
 
-
         return false;
-
     }
 
 
@@ -404,7 +395,7 @@ async function loadSettingsCurrentProfile() {
     if (
         !settingsCurrentProfile ||
         settingsCurrentProfile.status !==
-            "פעיל"
+        "פעיל"
     ) {
 
         await settingsSupabase
@@ -415,11 +406,8 @@ async function loadSettingsCurrentProfile() {
         settingsRedirectToLogin();
 
         return false;
-
     }
 
-
-    // Settings / user management is ADMIN only
 
     if (
         settingsCurrentProfile.role !==
@@ -433,24 +421,20 @@ async function loadSettingsCurrentProfile() {
 
             window.location.href =
                 "driver.html";
-
         }
 
         else {
 
             window.location.href =
                 "index.html";
-
         }
 
 
         return false;
-
     }
 
 
     return true;
-
 }
 
 
@@ -465,7 +449,6 @@ function renderSettingsCurrentUser() {
     ) {
 
         return;
-
     }
 
 
@@ -481,7 +464,6 @@ function renderSettingsCurrentUser() {
 
         settingsUserName.textContent =
             fullName;
-
     }
 
 
@@ -497,7 +479,6 @@ function renderSettingsCurrentUser() {
                 )
             ||
             "מ";
-
     }
 
 
@@ -507,7 +488,6 @@ function renderSettingsCurrentUser() {
 
         settingsUserRole.textContent =
             "Administrator";
-
     }
 
 }
@@ -569,7 +549,6 @@ async function loadSettingsProfiles() {
 
 
         return false;
-
     }
 
 
@@ -579,7 +558,6 @@ async function loadSettingsProfiles() {
 
 
     return true;
-
 }
 
 
@@ -596,7 +574,6 @@ function showSettingsTableError(
     ) {
 
         return;
-
     }
 
 
@@ -618,7 +595,6 @@ function showSettingsTableError(
         </tr>
 
     `;
-
 }
 
 
@@ -635,25 +611,16 @@ function getSettingsRoleName(
     ) {
 
         case "ADMIN":
-
             return "מנהל מערכת";
 
-
         case "WAREHOUSE":
-
             return "עובד מחסן";
 
-
         case "DRIVER":
-
             return "שליח";
 
-
         default:
-
-            return role ||
-                "-";
-
+            return role || "-";
     }
 
 }
@@ -684,7 +651,6 @@ function getSettingsRoleBadge(
 
         className =
             "active";
-
     }
 
 
@@ -695,7 +661,6 @@ function getSettingsRoleBadge(
 
         className =
             "completed";
-
     }
 
 
@@ -706,7 +671,6 @@ function getSettingsRoleBadge(
         </span>
 
     `;
-
 }
 
 
@@ -730,7 +694,6 @@ function getSettingsStatusBadge(
             </span>
 
         `;
-
     }
 
 
@@ -741,12 +704,11 @@ function getSettingsStatusBadge(
         </span>
 
     `;
-
 }
 
 
 // =========================================================
-// MONEY FORMAT
+// MONEY
 // =========================================================
 
 function settingsFormatMoney(
@@ -754,16 +716,12 @@ function settingsFormatMoney(
 ) {
 
     if (
-        value ===
-        null ||
-        value ===
-        undefined ||
-        value ===
-        ""
+        value === null ||
+        value === undefined ||
+        value === ""
     ) {
 
         return "-";
-
     }
 
 
@@ -777,16 +735,12 @@ function settingsFormatMoney(
             .toLocaleString(
                 "he-IL",
                 {
-                    minimumFractionDigits:
-                        0,
-
                     maximumFractionDigits:
                         2
                 }
             )
 
     );
-
 }
 
 
@@ -814,12 +768,9 @@ function renderSettingsCounters() {
         settingsProfiles.filter(
 
             profile =>
-
                 profile.role ===
                     "DRIVER"
-
                 &&
-
                 profile.status ===
                     "פעיל"
 
@@ -836,45 +787,20 @@ function renderSettingsCounters() {
         ).length;
 
 
-    if (
-        totalUsersCount
-    ) {
-
-        totalUsersCount.textContent =
-            total;
-
-    }
+    totalUsersCount.textContent =
+        total;
 
 
-    if (
-        activeUsersCount
-    ) {
-
-        activeUsersCount.textContent =
-            active;
-
-    }
+    activeUsersCount.textContent =
+        active;
 
 
-    if (
-        activeDriverUsersCount
-    ) {
-
-        activeDriverUsersCount.textContent =
-            activeDrivers;
-
-    }
+    activeDriverUsersCount.textContent =
+        activeDrivers;
 
 
-    if (
-        inactiveUsersCount
-    ) {
-
-        inactiveUsersCount.textContent =
-            inactive;
-
-    }
-
+    inactiveUsersCount.textContent =
+        inactive;
 }
 
 
@@ -886,29 +812,17 @@ function getFilteredSettingsProfiles() {
 
     const search =
         userSearchInput
-
-            ? userSearchInput
-                .value
-                .trim()
-                .toLowerCase()
-
-            : "";
+            .value
+            .trim()
+            .toLowerCase();
 
 
     const selectedRole =
-        userRoleFilter
-
-            ? userRoleFilter.value
-
-            : "";
+        userRoleFilter.value;
 
 
     const selectedStatus =
-        userStatusFilter
-
-            ? userStatusFilter.value
-
-            : "";
+        userStatusFilter.value;
 
 
     return settingsProfiles.filter(
@@ -918,22 +832,20 @@ function getFilteredSettingsProfiles() {
             if (
                 selectedRole &&
                 profile.role !==
-                    selectedRole
+                selectedRole
             ) {
 
                 return false;
-
             }
 
 
             if (
                 selectedStatus &&
                 profile.status !==
-                    selectedStatus
+                selectedStatus
             ) {
 
                 return false;
-
             }
 
 
@@ -971,23 +883,20 @@ function getFilteredSettingsProfiles() {
                 ) {
 
                     return false;
-
                 }
 
             }
 
 
             return true;
-
         }
 
     );
-
 }
 
 
 // =========================================================
-// RENDER USERS TABLE
+// RENDER TABLE
 // =========================================================
 
 function renderSettingsUsersTable() {
@@ -997,7 +906,6 @@ function renderSettingsUsersTable() {
     ) {
 
         return;
-
     }
 
 
@@ -1035,7 +943,6 @@ function renderSettingsUsersTable() {
 
 
         return;
-
     }
 
 
@@ -1067,16 +974,10 @@ function renderSettingsUsersTable() {
 
 
             const isCurrentUser =
-                settingsCurrentProfile
-
-                &&
-
                 String(
                     profile.id
                 )
-
                 ===
-
                 String(
                     settingsCurrentProfile.id
                 );
@@ -1086,32 +987,28 @@ function renderSettingsUsersTable() {
 
                 <td>
 
-                    <div>
+                    <strong>
+                        ${displayName}
+                    </strong>
 
-                        <strong>
-                            ${displayName}
-                        </strong>
+                    ${
+                        isCurrentUser
 
-                        ${
-                            isCurrentUser
+                            ? `
+                                <div
+                                    style="
+                                        margin-top:4px;
+                                        font-size:11px;
+                                        color:#2563eb;
+                                        font-weight:700;
+                                    "
+                                >
+                                    המשתמש שלך
+                                </div>
+                            `
 
-                                ? `
-                                    <div
-                                        style="
-                                            margin-top:4px;
-                                            font-size:11px;
-                                            color:#2563eb;
-                                            font-weight:700;
-                                        "
-                                    >
-                                        המשתמש שלך
-                                    </div>
-                                `
-
-                                : ""
-                        }
-
-                    </div>
+                            : ""
+                    }
 
                 </td>
 
@@ -1171,7 +1068,6 @@ function renderSettingsUsersTable() {
         }
 
     );
-
 }
 
 
@@ -1179,66 +1075,29 @@ function renderSettingsUsersTable() {
 // FILTER EVENTS
 // =========================================================
 
-if (
-    userSearchInput
-) {
-
-    userSearchInput.addEventListener(
-
-        "input",
-
-        renderSettingsUsersTable
-
-    );
-
-}
+userSearchInput.addEventListener(
+    "input",
+    renderSettingsUsersTable
+);
 
 
-if (
-    userRoleFilter
-) {
-
-    userRoleFilter.addEventListener(
-
-        "change",
-
-        renderSettingsUsersTable
-
-    );
-
-}
+userRoleFilter.addEventListener(
+    "change",
+    renderSettingsUsersTable
+);
 
 
-if (
-    userStatusFilter
-) {
-
-    userStatusFilter.addEventListener(
-
-        "change",
-
-        renderSettingsUsersTable
-
-    );
-
-}
+userStatusFilter.addEventListener(
+    "change",
+    renderSettingsUsersTable
+);
 
 
 // =========================================================
-// DRIVER RATE VISIBILITY
+// DRIVER RATE
 // =========================================================
 
 function updateDriverRateVisibility() {
-
-    if (
-        !driverRateGroup ||
-        !userRole
-    ) {
-
-        return;
-
-    }
-
 
     if (
         userRole.value ===
@@ -1247,72 +1106,60 @@ function updateDriverRateVisibility() {
 
         driverRateGroup.style.display =
             "";
-
     }
 
     else {
 
         driverRateGroup.style.display =
             "none";
-
     }
 
 }
 
 
-if (
-    userRole
-) {
-
-    userRole.addEventListener(
-
-        "change",
-
-        updateDriverRateVisibility
-
-    );
-
-}
+userRole.addEventListener(
+    "change",
+    updateDriverRateVisibility
+);
 
 
 // =========================================================
-// CLOSE USER MODAL
+// CLOSE MODAL
 // =========================================================
 
 function closeSettingsUserModal() {
 
-    if (
-        !userModal
-    ) {
-
-        return;
-
-    }
-
-
-    userModal.classList
-        .add(
-            "hidden"
-        );
+    userModal.classList.add(
+        "hidden"
+    );
 
 
     editingProfile =
         null;
 
 
-    if (
-        userForm
-    ) {
+    userForm.reset();
 
-        userForm.reset();
 
-    }
+    userRole.disabled =
+        false;
 
+
+    userStatus.disabled =
+        false;
+
+
+    userEmail.required =
+        false;
+
+
+    userPassword.required =
+        false;
 }
 
 
 // =========================================================
-// OPEN EDIT USER
+// EDIT USER
 // =========================================================
 
 function openSettingsEditUser(
@@ -1326,9 +1173,7 @@ function openSettingsEditUser(
                 String(
                     item.id
                 )
-
                 ===
-
                 String(
                     profileId
                 )
@@ -1337,12 +1182,10 @@ function openSettingsEditUser(
 
 
     if (
-        !profile ||
-        !userModal
+        !profile
     ) {
 
         return;
-
     }
 
 
@@ -1350,257 +1193,118 @@ function openSettingsEditUser(
         profile;
 
 
-    if (
-        editingUserId
-    ) {
-
-        editingUserId.value =
-            profile.id;
-
-    }
+    editingUserId.value =
+        profile.id;
 
 
-    if (
-        userFullName
-    ) {
-
-        userFullName.value =
-            profile.full_name ||
-            "";
-
-    }
+    userFullName.value =
+        profile.full_name ||
+        "";
 
 
-    if (
-        userPhone
-    ) {
-
-        userPhone.value =
-            profile.phone ||
-            "";
-
-    }
+    userPhone.value =
+        profile.phone ||
+        "";
 
 
-    if (
-        userUsername
-    ) {
-
-        userUsername.value =
-            profile.username ||
-            "";
-
-    }
+    userUsername.value =
+        profile.username ||
+        "";
 
 
-    if (
-        userRole
-    ) {
-
-        userRole.value =
-            profile.role;
-
-    }
+    userRole.value =
+        profile.role;
 
 
-    if (
-        userStatus
-    ) {
-
-        userStatus.value =
-            profile.status;
-
-    }
+    userStatus.value =
+        profile.status;
 
 
-    if (
-        userDeliveryRate
-    ) {
-
-        userDeliveryRate.value =
-            profile.driver_rate ??
-            13;
-
-    }
+    userDeliveryRate.value =
+        profile.driver_rate ??
+        13;
 
 
-    if (
-        userNotes
-    ) {
-
-        userNotes.value =
-            profile.notes ||
-            "";
-
-    }
+    userNotes.value =
+        profile.notes ||
+        "";
 
 
-    // Email lives in Supabase Auth, not profiles.
-    // We are not editing Auth email from frontend.
-
-    if (
-        userEmail
-    ) {
-
-        userEmail.value =
-            "";
-
-    }
+    userEmailGroup.style.display =
+        "none";
 
 
-    if (
-        userEmailGroup
-    ) {
-
-        userEmailGroup.style.display =
-            "none";
-
-    }
+    userPasswordGroup.style.display =
+        "none";
 
 
-    if (
-        userPasswordGroup
-    ) {
-
-        userPasswordGroup.style.display =
-            "none";
-
-    }
+    userModalTitle.textContent =
+        "עריכת משתמש";
 
 
-    if (
-        userModalTitle
-    ) {
-
-        userModalTitle.textContent =
-            "עריכת משתמש";
-
-    }
+    userModalSubtitle.textContent =
+        profile.full_name ||
+        profile.username ||
+        "משתמש";
 
 
-    if (
-        userModalSubtitle
-    ) {
-
-        userModalSubtitle.textContent =
-            profile.full_name ||
-            profile.username ||
-            "משתמש";
-
-    }
-
-
-    if (
-        userSecurityMessage
-    ) {
-
-        userSecurityMessage.textContent =
-            "השינויים יישמרו ישירות בפרופיל המשתמש ב-Supabase.";
-
-    }
+    userSecurityMessage.textContent =
+        "השינויים יישמרו ישירות ב-Supabase.";
 
 
     const editingSelf =
-        settingsCurrentProfile
-
-        &&
-
         String(
             profile.id
         )
-
         ===
-
         String(
             settingsCurrentProfile.id
         );
 
 
-    /*
-        Safety:
-        The logged-in admin may edit their name / phone / username /
-        notes, but cannot accidentally deactivate themselves or change
-        their own ADMIN role and lock themselves out.
-    */
-
     if (
         editingSelf
     ) {
 
-        if (
-            userRole
-        ) {
-
-            userRole.disabled =
-                true;
-
-        }
+        userRole.disabled =
+            true;
 
 
-        if (
-            userStatus
-        ) {
-
-            userStatus.disabled =
-                true;
-
-        }
+        userStatus.disabled =
+            true;
 
 
-        if (
-            userSecurityMessage
-        ) {
-
-            userSecurityMessage.textContent =
-                "זה המשתמש שמחובר כרגע. ניתן לערוך פרטים, אך לא ניתן לשנות לעצמך תפקיד או להפוך את החשבון ללא פעיל.";
-
-        }
-
+        userSecurityMessage.textContent =
+            "לא ניתן לשנות לעצמך תפקיד או להפוך את המשתמש שמחובר כרגע ללא פעיל.";
     }
 
     else {
 
-        if (
-            userRole
-        ) {
-
-            userRole.disabled =
-                false;
-
-        }
+        userRole.disabled =
+            false;
 
 
-        if (
-            userStatus
-        ) {
-
-            userStatus.disabled =
-                false;
-
-        }
-
+        userStatus.disabled =
+            false;
     }
 
 
     updateDriverRateVisibility();
 
 
-    userModal.classList
-        .remove(
-            "hidden"
-        );
+    userModal.classList.remove(
+        "hidden"
+    );
 
 }
 
-
-// Make function available to inline button
 
 window.openSettingsEditUser =
     openSettingsEditUser;
 
 
 // =========================================================
-// NEW USER BUTTON
+// NEW USER
 // =========================================================
 
 function openSettingsNewUserModal() {
@@ -1609,524 +1313,670 @@ function openSettingsNewUserModal() {
         null;
 
 
-    if (
-        userForm
-    ) {
-
-        userForm.reset();
-
-    }
+    userForm.reset();
 
 
-    if (
-        editingUserId
-    ) {
-
-        editingUserId.value =
-            "";
-
-    }
+    editingUserId.value =
+        "";
 
 
-    if (
-        userModalTitle
-    ) {
-
-        userModalTitle.textContent =
-            "משתמש חדש";
-
-    }
+    userModalTitle.textContent =
+        "משתמש חדש";
 
 
-    if (
-        userModalSubtitle
-    ) {
-
-        userModalSubtitle.textContent =
-            "יצירת עובד חדש במערכת";
-
-    }
+    userModalSubtitle.textContent =
+        "יצירת עובד חדש במערכת";
 
 
-    if (
-        userEmailGroup
-    ) {
-
-        userEmailGroup.style.display =
-            "";
-
-    }
+    userEmailGroup.style.display =
+        "";
 
 
-    if (
-        userPasswordGroup
-    ) {
-
-        userPasswordGroup.style.display =
-            "";
-
-    }
+    userPasswordGroup.style.display =
+        "";
 
 
-    if (
-        userEmail
-    ) {
-
-        userEmail.value =
-            "";
-
-        userEmail.required =
-            true;
-
-    }
+    userEmail.required =
+        true;
 
 
-    if (
-        userPassword
-    ) {
-
-        userPassword.value =
-            "";
-
-        userPassword.required =
-            true;
-
-    }
+    userPassword.required =
+        true;
 
 
-    if (
-        userRole
-    ) {
-
-        userRole.disabled =
-            false;
-
-        userRole.value =
-            "DRIVER";
-
-    }
+    userRole.disabled =
+        false;
 
 
-    if (
-        userStatus
-    ) {
-
-        userStatus.disabled =
-            false;
-
-        userStatus.value =
-            "פעיל";
-
-    }
+    userStatus.disabled =
+        false;
 
 
-    if (
-        userDeliveryRate
-    ) {
-
-        userDeliveryRate.value =
-            13;
-
-    }
+    userRole.value =
+        "DRIVER";
 
 
-    if (
-        userSecurityMessage
-    ) {
+    userStatus.value =
+        "פעיל";
 
-        userSecurityMessage.textContent =
-            "יצירת משתמש חדש תחובר בשלב הבא ל-Supabase Auth באמצעות פונקציית Backend מאובטחת.";
 
-    }
+    userDeliveryRate.value =
+        13;
+
+
+    userSecurityMessage.textContent =
+        "המשתמש ייווצר ב-Supabase Auth ובטבלת profiles באופן אוטומטי.";
 
 
     updateDriverRateVisibility();
 
 
+    userModal.classList.remove(
+        "hidden"
+    );
+
+}
+
+
+newUserButton.addEventListener(
+    "click",
+    openSettingsNewUserModal
+);
+
+
+// =========================================================
+// CLOSE EVENTS
+// =========================================================
+
+closeUserModal.addEventListener(
+    "click",
+    closeSettingsUserModal
+);
+
+
+cancelUserButton.addEventListener(
+    "click",
+    closeSettingsUserModal
+);
+
+
+// =========================================================
+// CREATE NEW USER
+// =========================================================
+
+async function createNewSystemUser() {
+
+    const email =
+        userEmail.value
+            .trim()
+            .toLowerCase();
+
+
+    const password =
+        userPassword.value;
+
+
+    const username =
+        userUsername.value
+            .trim();
+
+
+    const fullName =
+        userFullName.value
+            .trim();
+
+
+    const phone =
+        userPhone.value
+            .trim();
+
+
+    const role =
+        userRole.value;
+
+
+    const status =
+        userStatus.value;
+
+
+    const notes =
+        userNotes.value
+            .trim();
+
+
+    const driverRate =
+        role ===
+            "DRIVER"
+
+            ? Number(
+                userDeliveryRate.value ||
+                0
+            )
+
+            : null;
+
+
     if (
-        userModal
+        !fullName
     ) {
 
-        userModal.classList
-            .remove(
-                "hidden"
+        alert(
+            "יש להזין שם מלא."
+        );
+
+        return false;
+    }
+
+
+    if (
+        !username
+    ) {
+
+        alert(
+            "יש להזין שם משתמש."
+        );
+
+        return false;
+    }
+
+
+    if (
+        !email
+    ) {
+
+        alert(
+            "יש להזין כתובת אימייל."
+        );
+
+        return false;
+    }
+
+
+    if (
+        !password ||
+        password.length < 6
+    ) {
+
+        alert(
+            "הסיסמה חייבת להכיל לפחות 6 תווים."
+        );
+
+        return false;
+    }
+
+
+    saveUserButton.disabled =
+        true;
+
+
+    saveUserButton.textContent =
+        "יוצר משתמש...";
+
+
+    try {
+
+        const {
+            data,
+            error
+        } =
+            await settingsSupabase
+                .functions
+                .invoke(
+                    "create-user",
+                    {
+                        body: {
+
+                            email:
+                                email,
+
+                            password:
+                                password,
+
+                            username:
+                                username,
+
+                            full_name:
+                                fullName,
+
+                            phone:
+                                phone ||
+                                null,
+
+                            role:
+                                role,
+
+                            status:
+                                status,
+
+                            driver_rate:
+                                driverRate,
+
+                            notes:
+                                notes ||
+                                null
+
+                        }
+                    }
+                );
+
+
+        if (
+            error
+        ) {
+
+            console.error(
+                "create-user function error:",
+                error
             );
 
+
+            let message =
+                error.message ||
+                "יצירת המשתמש נכשלה.";
+
+
+            if (
+                error.context
+            ) {
+
+                try {
+
+                    const responseBody =
+                        await error.context.json();
+
+
+                    if (
+                        responseBody &&
+                        responseBody.error
+                    ) {
+
+                        message =
+                            responseBody.error;
+                    }
+
+                } catch (
+                    contextError
+                ) {
+
+                    console.warn(
+                        "Could not read function error response:",
+                        contextError
+                    );
+                }
+
+            }
+
+
+            alert(
+                "לא ניתן ליצור את המשתמש:\n" +
+                message
+            );
+
+
+            return false;
+        }
+
+
+        if (
+            !data ||
+            data.success !==
+            true
+        ) {
+
+            console.error(
+                "Unexpected create-user response:",
+                data
+            );
+
+
+            alert(
+                "יצירת המשתמש לא הושלמה."
+            );
+
+
+            return false;
+        }
+
+
+        await loadSettingsProfiles();
+
+
+        renderSettingsCounters();
+
+
+        renderSettingsUsersTable();
+
+
+        closeSettingsUserModal();
+
+
+        alert(
+            "המשתמש נוצר בהצלחה."
+        );
+
+
+        return true;
+
+    }
+
+    catch (
+        error
+    ) {
+
+        console.error(
+            "Unexpected create user error:",
+            error
+        );
+
+
+        alert(
+            "אירעה שגיאה ביצירת המשתמש."
+        );
+
+
+        return false;
+
+    }
+
+    finally {
+
+        saveUserButton.disabled =
+            false;
+
+
+        saveUserButton.textContent =
+            "שמור משתמש";
     }
 
 }
 
 
-if (
-    newUserButton
-) {
-
-    newUserButton.addEventListener(
-
-        "click",
-
-        openSettingsNewUserModal
-
-    );
-
-}
-
-
 // =========================================================
-// MODAL CLOSE EVENTS
+// UPDATE EXISTING USER
 // =========================================================
 
-if (
-    closeUserModal
+async function updateExistingSystemUser(
+    profileId
 ) {
 
-    closeUserModal.addEventListener(
+    const existingProfile =
+        settingsProfiles.find(
 
-        "click",
-
-        closeSettingsUserModal
-
-    );
-
-}
-
-
-if (
-    cancelUserButton
-) {
-
-    cancelUserButton.addEventListener(
-
-        "click",
-
-        closeSettingsUserModal
-
-    );
-
-}
-
-
-// =========================================================
-// SAVE USER
-// =========================================================
-
-if (
-    userForm
-) {
-
-    userForm.addEventListener(
-
-        "submit",
-
-        async function (
-            event
-        ) {
-
-            event.preventDefault();
-
-
-            const profileId =
-                editingUserId
-                    ? editingUserId.value
-                    : "";
-
-
-            // =================================================
-            // NEW USER
-            // =================================================
-
-            if (
-                !profileId
-            ) {
-
-                alert(
-                    "יצירת משתמש חדש עדיין לא הופעלה. בשלב הבא נחבר את הכפתור ל-Supabase Auth באמצעות Edge Function מאובטחת."
-                );
-
-
-                return;
-
-            }
-
-
-            // =================================================
-            // EXISTING USER
-            // =================================================
-
-            const existingProfile =
-                settingsProfiles.find(
-
-                    profile =>
-                        String(
-                            profile.id
-                        )
-
-                        ===
-
-                        String(
-                            profileId
-                        )
-
-                );
-
-
-            if (
-                !existingProfile
-            ) {
-
-                alert(
-                    "המשתמש לא נמצא."
-                );
-
-
-                return;
-
-            }
-
-
-            const editingSelf =
-                settingsCurrentProfile
-
-                &&
-
+            profile =>
+                String(
+                    profile.id
+                )
+                ===
                 String(
                     profileId
                 )
 
-                ===
+        );
 
+
+    if (
+        !existingProfile
+    ) {
+
+        alert(
+            "המשתמש לא נמצא."
+        );
+
+        return false;
+    }
+
+
+    const editingSelf =
+        String(
+            profileId
+        )
+        ===
+        String(
+            settingsCurrentProfile.id
+        );
+
+
+    let role =
+        userRole.value;
+
+
+    let status =
+        userStatus.value;
+
+
+    if (
+        editingSelf
+    ) {
+
+        role =
+            settingsCurrentProfile.role;
+
+
+        status =
+            settingsCurrentProfile.status;
+    }
+
+
+    const updateData = {
+
+        full_name:
+            userFullName.value
+                .trim(),
+
+        phone:
+            userPhone.value
+                .trim()
+            ||
+            null,
+
+        username:
+            userUsername.value
+                .trim(),
+
+        role:
+            role,
+
+        status:
+            status,
+
+        notes:
+            userNotes.value
+                .trim()
+            ||
+            null,
+
+        driver_rate:
+            role ===
+                "DRIVER"
+
+                ? Number(
+                    userDeliveryRate.value ||
+                    0
+                )
+
+                : null
+
+    };
+
+
+    if (
+        !updateData.full_name
+    ) {
+
+        alert(
+            "יש להזין שם מלא."
+        );
+
+        return false;
+    }
+
+
+    if (
+        !updateData.username
+    ) {
+
+        alert(
+            "יש להזין שם משתמש."
+        );
+
+        return false;
+    }
+
+
+    saveUserButton.disabled =
+        true;
+
+
+    saveUserButton.textContent =
+        "שומר...";
+
+
+    const {
+        data,
+        error
+    } =
+        await settingsSupabase
+            .from(
+                "profiles"
+            )
+            .update(
+                updateData
+            )
+            .eq(
+                "id",
+                profileId
+            )
+            .select(
+                `
+                id,
+                username,
+                full_name,
+                phone,
+                role,
+                status,
+                driver_rate,
+                notes,
+                created_at
+                `
+            )
+            .single();
+
+
+    saveUserButton.disabled =
+        false;
+
+
+    saveUserButton.textContent =
+        "שמור משתמש";
+
+
+    if (
+        error
+    ) {
+
+        console.error(
+            "Profile update failed:",
+            error
+        );
+
+
+        alert(
+            "לא ניתן היה לעדכן את המשתמש."
+        );
+
+
+        return false;
+    }
+
+
+    const index =
+        settingsProfiles.findIndex(
+
+            profile =>
                 String(
-                    settingsCurrentProfile.id
-                );
+                    profile.id
+                )
+                ===
+                String(
+                    profileId
+                )
 
+        );
 
-            let role =
-                userRole.value;
 
+    if (
+        index !==
+        -1
+    ) {
 
-            let status =
-                userStatus.value;
+        settingsProfiles[
+            index
+        ] =
+            data;
+    }
 
 
-            if (
-                editingSelf
-            ) {
+    if (
+        editingSelf
+    ) {
 
-                role =
-                    settingsCurrentProfile.role;
+        settingsCurrentProfile =
+            data;
 
 
-                status =
-                    settingsCurrentProfile.status;
+        renderSettingsCurrentUser();
+    }
 
-            }
 
+    renderSettingsCounters();
 
-            const updateData = {
 
-                full_name:
-                    userFullName.value
-                        .trim(),
+    renderSettingsUsersTable();
 
-                phone:
-                    userPhone.value
-                        .trim()
-                    ||
-                    null,
 
-                username:
-                    userUsername.value
-                        .trim(),
+    closeSettingsUserModal();
 
-                role:
-                    role,
 
-                status:
-                    status,
+    return true;
+}
 
-                notes:
-                    userNotes.value
-                        .trim()
-                    ||
-                    null,
 
-                driver_rate:
-                    role ===
-                        "DRIVER"
+// =========================================================
+// FORM SUBMIT
+// =========================================================
 
-                        ? Number(
-                            userDeliveryRate.value ||
-                            0
-                        )
+userForm.addEventListener(
 
-                        : null
+    "submit",
 
-            };
+    async function (
+        event
+    ) {
 
+        event.preventDefault();
 
-            if (
-                !updateData.full_name
-            ) {
 
-                alert(
-                    "יש להזין שם מלא."
-                );
+        const profileId =
+            editingUserId.value;
 
 
-                return;
+        if (
+            profileId
+        ) {
 
-            }
+            await updateExistingSystemUser(
+                profileId
+            );
 
-
-            if (
-                !updateData.username
-            ) {
-
-                alert(
-                    "יש להזין שם משתמש."
-                );
-
-
-                return;
-
-            }
-
-
-            if (
-                saveUserButton
-            ) {
-
-                saveUserButton.disabled =
-                    true;
-
-
-                saveUserButton.textContent =
-                    "שומר...";
-
-            }
-
-
-            const {
-                data,
-                error
-            } =
-                await settingsSupabase
-                    .from(
-                        "profiles"
-                    )
-                    .update(
-                        updateData
-                    )
-                    .eq(
-                        "id",
-                        profileId
-                    )
-                    .select(
-                        `
-                        id,
-                        username,
-                        full_name,
-                        phone,
-                        role,
-                        status,
-                        driver_rate,
-                        notes,
-                        created_at
-                        `
-                    )
-                    .single();
-
-
-            if (
-                saveUserButton
-            ) {
-
-                saveUserButton.disabled =
-                    false;
-
-
-                saveUserButton.textContent =
-                    "שמור משתמש";
-
-            }
-
-
-            if (
-                error
-            ) {
-
-                console.error(
-                    "Profile update failed:",
-                    error
-                );
-
-
-                alert(
-                    "לא ניתן היה לעדכן את המשתמש."
-                );
-
-
-                return;
-
-            }
-
-
-            const index =
-                settingsProfiles.findIndex(
-
-                    profile =>
-                        String(
-                            profile.id
-                        )
-
-                        ===
-
-                        String(
-                            profileId
-                        )
-
-                );
-
-
-            if (
-                index !==
-                -1
-            ) {
-
-                settingsProfiles[
-                    index
-                ] =
-                    data;
-
-            }
-
-
-            if (
-                editingSelf
-            ) {
-
-                settingsCurrentProfile =
-                    data;
-
-
-                renderSettingsCurrentUser();
-
-            }
-
-
-            renderSettingsCounters();
-
-
-            renderSettingsUsersTable();
-
-
-            closeSettingsUserModal();
-
+            return;
         }
 
-    );
 
-}
+        await createNewSystemUser();
+
+    }
+
+);
 
 
 // =========================================================
@@ -2174,20 +2024,18 @@ settingsNavItems.forEach(
 
                     navItem => {
 
-                        navItem.classList
-                            .remove(
-                                "active"
-                            );
+                        navItem.classList.remove(
+                            "active"
+                        );
 
                     }
 
                 );
 
 
-                this.classList
-                    .add(
-                        "active"
-                    );
+                this.classList.add(
+                    "active"
+                );
 
 
                 if (
@@ -2195,71 +2043,36 @@ settingsNavItems.forEach(
                     "users"
                 ) {
 
-                    if (
-                        usersSection
-                    ) {
-
-                        usersSection.classList
-                            .remove(
-                                "hidden"
-                            );
-
-                    }
+                    usersSection.classList.remove(
+                        "hidden"
+                    );
 
 
-                    if (
-                        placeholderSection
-                    ) {
-
-                        placeholderSection.classList
-                            .add(
-                                "hidden"
-                            );
-
-                    }
+                    placeholderSection.classList.add(
+                        "hidden"
+                    );
 
 
                     return;
-
                 }
 
 
-                if (
-                    usersSection
-                ) {
-
-                    usersSection.classList
-                        .add(
-                            "hidden"
-                        );
-
-                }
+                usersSection.classList.add(
+                    "hidden"
+                );
 
 
-                if (
-                    placeholderSection
-                ) {
-
-                    placeholderSection.classList
-                        .remove(
-                            "hidden"
-                        );
-
-                }
+                placeholderSection.classList.remove(
+                    "hidden"
+                );
 
 
-                if (
-                    placeholderTitle
-                ) {
-
-                    placeholderTitle.textContent =
-                        settingsSectionTitles[
-                            section
-                        ]
-                        ||
-                        "הגדרות";
-
-                }
+                placeholderTitle.textContent =
+                    settingsSectionTitles[
+                        section
+                    ]
+                    ||
+                    "הגדרות";
 
             }
 
@@ -2271,7 +2084,7 @@ settingsNavItems.forEach(
 
 
 // =========================================================
-// INITIALIZE SETTINGS
+// INITIALIZE
 // =========================================================
 
 async function initializeSettingsPage() {
@@ -2285,7 +2098,6 @@ async function initializeSettingsPage() {
     ) {
 
         return;
-
     }
 
 
@@ -2298,7 +2110,6 @@ async function initializeSettingsPage() {
     ) {
 
         return;
-
     }
 
 
@@ -2314,7 +2125,6 @@ async function initializeSettingsPage() {
     ) {
 
         return;
-
     }
 
 
@@ -2322,7 +2132,6 @@ async function initializeSettingsPage() {
 
 
     renderSettingsUsersTable();
-
 }
 
 
