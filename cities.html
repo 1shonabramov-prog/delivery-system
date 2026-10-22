@@ -1,0 +1,500 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
+
+    <title>
+        ערים ואזורים | Delivery
+    </title>
+
+    <link
+        rel="stylesheet"
+        href="style.css?v=20261022-6"
+    >
+
+</head>
+
+
+<body>
+
+
+    <!-- ===================================================== -->
+    <!-- SIDEBAR -->
+    <!-- ===================================================== -->
+
+    <aside class="sidebar">
+
+
+        <div class="logo">
+
+            <div class="logo-icon">
+                D
+            </div>
+
+
+            <div class="logo-text">
+
+                <h2>
+                    Delivery
+                </h2>
+
+                <span>
+                    מערכת ניהול משלוחים
+                </span>
+
+            </div>
+
+        </div>
+
+
+
+        <nav class="menu">
+
+
+            <a
+                href="index.html"
+                class="menu-item"
+            >
+                <span class="menu-icon">
+                    🏠
+                </span>
+
+                <span>
+                    לוח בקרה
+                </span>
+            </a>
+
+
+            <a
+                href="warehouse.html"
+                class="menu-item"
+            >
+                <span class="menu-icon">
+                    📥
+                </span>
+
+                <span>
+                    קליטת משלוחים
+                </span>
+            </a>
+
+
+            <a
+                href="shipments.html"
+                class="menu-item"
+            >
+                <span class="menu-icon">
+                    📦
+                </span>
+
+                <span>
+                    משלוחים
+                </span>
+            </a>
+
+
+            <a
+                href="drivers.html"
+                class="menu-item"
+            >
+                <span class="menu-icon">
+                    🚚
+                </span>
+
+                <span>
+                    שליחים
+                </span>
+            </a>
+
+
+            <a
+                href="cities.html"
+                class="menu-item active"
+            >
+                <span class="menu-icon">
+                    📍
+                </span>
+
+                <span>
+                    ערים ואזורים
+                </span>
+            </a>
+
+
+            <a
+                href="cities.html"
+                class="menu-item"
+            >
+                <span class="menu-icon">
+                    🗺️
+                </span>
+
+                <span>
+                    מפת פעילות
+                </span>
+            </a>
+
+
+            <a
+                href="reports.html"
+                class="menu-item"
+            >
+                <span class="menu-icon">
+                    📊
+                </span>
+
+                <span>
+                    דוחות
+                </span>
+            </a>
+
+
+            <a
+                href="settings.html"
+                class="menu-item"
+            >
+                <span class="menu-icon">
+                    ⚙️
+                </span>
+
+                <span>
+                    הגדרות
+                </span>
+            </a>
+
+
+        </nav>
+
+
+
+        <div class="sidebar-user">
+
+            <div
+                id="citiesUserAvatar"
+                class="user-avatar"
+            >
+                מ
+            </div>
+
+
+            <div class="user-details">
+
+                <strong id="citiesUserName">
+                    מנהל מערכת
+                </strong>
+
+                <span id="citiesUserRole">
+                    Administrator
+                </span>
+
+            </div>
+
+        </div>
+
+
+    </aside>
+
+
+
+    <!-- ===================================================== -->
+    <!-- MAIN -->
+    <!-- ===================================================== -->
+
+    <main class="main-content">
+
+
+        <!-- ================================================= -->
+        <!-- HEADER -->
+        <!-- ================================================= -->
+
+        <header class="topbar">
+
+
+            <div class="page-title">
+
+                <h1>
+                    ערים ואזורים
+                </h1>
+
+                <p>
+                    תמונת מצב של המשלוחים לפי עיר
+                </p>
+
+            </div>
+
+
+            <div class="topbar-actions">
+
+                <input
+                    id="citiesSearchInput"
+                    type="text"
+                    placeholder="חיפוש עיר..."
+                >
+
+            </div>
+
+
+        </header>
+
+
+
+        <!-- ================================================= -->
+        <!-- STATS -->
+        <!-- ================================================= -->
+
+        <section class="stats-grid">
+
+
+            <div class="stat-card">
+
+                <div class="stat-header">
+
+                    <span>
+                        ערים פעילות
+                    </span>
+
+                    <span class="stat-icon">
+                        📍
+                    </span>
+
+                </div>
+
+
+                <div
+                    id="citiesTotalCount"
+                    class="stat-number"
+                >
+                    0
+                </div>
+
+
+                <div class="stat-footer">
+                    ערים עם משלוחים
+                </div>
+
+            </div>
+
+
+
+            <div class="stat-card">
+
+                <div class="stat-header">
+
+                    <span>
+                        סה"כ משלוחים
+                    </span>
+
+                    <span class="stat-icon">
+                        📦
+                    </span>
+
+                </div>
+
+
+                <div
+                    id="citiesShipmentsCount"
+                    class="stat-number"
+                >
+                    0
+                </div>
+
+
+                <div class="stat-footer">
+                    בכל הערים
+                </div>
+
+            </div>
+
+
+
+            <div class="stat-card">
+
+                <div class="stat-header">
+
+                    <span>
+                        ממתינים לשיוך
+                    </span>
+
+                    <span class="stat-icon">
+                        ⏳
+                    </span>
+
+                </div>
+
+
+                <div
+                    id="citiesUnassignedCount"
+                    class="stat-number"
+                >
+                    0
+                </div>
+
+
+                <div class="stat-footer warning">
+                    ללא שליח
+                </div>
+
+            </div>
+
+
+
+            <div class="stat-card">
+
+                <div class="stat-header">
+
+                    <span>
+                        נמסרו
+                    </span>
+
+                    <span class="stat-icon">
+                        ✅
+                    </span>
+
+                </div>
+
+
+                <div
+                    id="citiesDeliveredCount"
+                    class="stat-number"
+                >
+                    0
+                </div>
+
+
+                <div class="stat-footer success">
+                    משלוחים שהושלמו
+                </div>
+
+            </div>
+
+
+        </section>
+
+
+
+        <!-- ================================================= -->
+        <!-- CITIES TABLE -->
+        <!-- ================================================= -->
+
+        <section class="panel">
+
+
+            <div class="panel-header">
+
+                <div>
+
+                    <h2>
+                        פעילות לפי עיר
+                    </h2>
+
+                    <p>
+                        הנתונים מחושבים בזמן אמת מתוך Supabase
+                    </p>
+
+                </div>
+
+            </div>
+
+
+
+            <div class="table-wrapper">
+
+
+                <table>
+
+
+                    <thead>
+
+                        <tr>
+
+                            <th>
+                                עיר
+                            </th>
+
+                            <th>
+                                סה"כ
+                            </th>
+
+                            <th>
+                                ממתינים
+                            </th>
+
+                            <th>
+                                משויכים
+                            </th>
+
+                            <th>
+                                בדרך
+                            </th>
+
+                            <th>
+                                נמסרו
+                            </th>
+
+                            <th>
+                                לא נמסרו
+                            </th>
+
+                            <th>
+                                אחוז מסירה
+                            </th>
+
+                        </tr>
+
+                    </thead>
+
+
+                    <tbody id="citiesTableBody">
+
+                        <tr>
+
+                            <td
+                                colspan="8"
+                                style="
+                                    text-align:center;
+                                    padding:35px;
+                                    color:#64748b;
+                                "
+                            >
+                                טוען נתוני ערים...
+                            </td>
+
+                        </tr>
+
+                    </tbody>
+
+
+                </table>
+
+
+            </div>
+
+
+        </section>
+
+
+    </main>
+
+
+
+    <!-- ===================================================== -->
+    <!-- SUPABASE -->
+    <!-- ===================================================== -->
+
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+    <script src="supabase-config.js"></script>
+
+    <script src="cities.js?v=20261022-1"></script>
+
+
+</body>
+
+</html>
