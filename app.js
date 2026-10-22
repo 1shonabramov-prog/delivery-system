@@ -782,6 +782,53 @@ function getStatusClass(
 
 
 // =========================================================
+// TODAY HELPER
+// =========================================================
+
+function shipmentCreatedToday(
+    shipment
+) {
+
+    if (
+        !shipment.created_at
+    ) {
+
+        return false;
+
+    }
+
+
+    const shipmentDate =
+        new Date(
+            shipment.created_at
+        );
+
+
+    const today =
+        new Date();
+
+
+    return (
+
+        shipmentDate.getFullYear() ===
+            today.getFullYear()
+
+        &&
+
+        shipmentDate.getMonth() ===
+            today.getMonth()
+
+        &&
+
+        shipmentDate.getDate() ===
+            today.getDate()
+
+    );
+
+}
+
+
+// =========================================================
 // =========================================================
 // WAREHOUSE
 // =========================================================
@@ -817,6 +864,18 @@ const receivedTodayCount =
     );
 
 
+const warehouseUnassignedCount =
+    document.getElementById(
+        "warehouseUnassignedCount"
+    );
+
+
+const warehouseAssignedCount =
+    document.getElementById(
+        "warehouseAssignedCount"
+    );
+
+
 const duplicateCount =
     document.getElementById(
         "duplicateCount"
@@ -835,12 +894,58 @@ const scannerStatus =
 
 function updateWarehouseCounters() {
 
+    const receivedToday =
+        shipmentsCache.filter(
+            shipmentCreatedToday
+        ).length;
+
+
+    const unassigned =
+        shipmentsCache.filter(
+
+            shipment =>
+                !shipment.driver_id
+
+        ).length;
+
+
+    const assigned =
+        shipmentsCache.filter(
+
+            shipment =>
+                Boolean(
+                    shipment.driver_id
+                )
+
+        ).length;
+
+
     if (
         receivedTodayCount
     ) {
 
         receivedTodayCount.textContent =
-            shipmentsCache.length;
+            receivedToday;
+
+    }
+
+
+    if (
+        warehouseUnassignedCount
+    ) {
+
+        warehouseUnassignedCount.textContent =
+            unassigned;
+
+    }
+
+
+    if (
+        warehouseAssignedCount
+    ) {
+
+        warehouseAssignedCount.textContent =
+            assigned;
 
     }
 
@@ -1194,7 +1299,14 @@ function addWarehouseShipmentToTable(
 
         <td>
 
-            <span class="status waiting">
+            <span
+                class="
+                    status
+                    ${getStatusClass(
+                        shipment.status
+                    )}
+                "
+            >
                 ${shipment.status}
             </span>
 
@@ -1211,7 +1323,7 @@ function addWarehouseShipmentToTable(
 
 
 // =========================================================
-// RENDER WAREHOUSE RECENT SHIPMENTS
+// RENDER RECENT SHIPMENTS
 // =========================================================
 
 function renderWarehouseRecentShipments() {
@@ -1227,6 +1339,36 @@ function renderWarehouseRecentShipments() {
 
     recentShipmentsTable.innerHTML =
         "";
+
+
+    if (
+        shipmentsCache.length ===
+        0
+    ) {
+
+        recentShipmentsTable.innerHTML = `
+
+            <tr>
+
+                <td
+                    colspan="8"
+                    style="
+                        text-align:center;
+                        padding:30px;
+                        color:#64748b;
+                    "
+                >
+                    עדיין אין משלוחים במערכת
+                </td>
+
+            </tr>
+
+        `;
+
+
+        return;
+
+    }
 
 
     shipmentsCache
@@ -1439,9 +1581,7 @@ async function processBarcode() {
     updateWarehouseCounters();
 
 
-    addWarehouseShipmentToTable(
-        data
-    );
+    renderWarehouseRecentShipments();
 
 
     showScanSuccess(
@@ -1808,9 +1948,7 @@ if (
             updateWarehouseCounters();
 
 
-            addWarehouseShipmentToTable(
-                data
-            );
+            renderWarehouseRecentShipments();
 
 
             showScanSuccess(
@@ -2433,7 +2571,7 @@ function renderShipments() {
                 if (
                     selectedStatus &&
                     shipment.status !==
-                    selectedStatus
+                        selectedStatus
                 ) {
 
                     return false;
