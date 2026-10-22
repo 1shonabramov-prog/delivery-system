@@ -1,0 +1,656 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
+
+    <title>
+        דוחות | Delivery
+    </title>
+
+    <link
+        rel="stylesheet"
+        href="style.css?v=20261022-7"
+    >
+
+</head>
+
+
+<body>
+
+
+    <!-- ===================================================== -->
+    <!-- SIDEBAR -->
+    <!-- ===================================================== -->
+
+    <aside class="sidebar">
+
+
+        <div class="logo">
+
+            <div class="logo-icon">
+                D
+            </div>
+
+
+            <div class="logo-text">
+
+                <h2>
+                    Delivery
+                </h2>
+
+                <span>
+                    מערכת ניהול משלוחים
+                </span>
+
+            </div>
+
+        </div>
+
+
+
+        <nav class="menu">
+
+
+            <a
+                href="index.html"
+                class="menu-item"
+            >
+                <span class="menu-icon">
+                    🏠
+                </span>
+
+                <span>
+                    לוח בקרה
+                </span>
+            </a>
+
+
+            <a
+                href="warehouse.html"
+                class="menu-item"
+            >
+                <span class="menu-icon">
+                    📥
+                </span>
+
+                <span>
+                    קליטת משלוחים
+                </span>
+            </a>
+
+
+            <a
+                href="shipments.html"
+                class="menu-item"
+            >
+                <span class="menu-icon">
+                    📦
+                </span>
+
+                <span>
+                    משלוחים
+                </span>
+            </a>
+
+
+            <a
+                href="drivers.html"
+                class="menu-item"
+            >
+                <span class="menu-icon">
+                    🚚
+                </span>
+
+                <span>
+                    שליחים
+                </span>
+            </a>
+
+
+            <a
+                href="cities.html"
+                class="menu-item"
+            >
+                <span class="menu-icon">
+                    📍
+                </span>
+
+                <span>
+                    ערים ואזורים
+                </span>
+            </a>
+
+
+            <a
+                href="cities.html"
+                class="menu-item"
+            >
+                <span class="menu-icon">
+                    🗺️
+                </span>
+
+                <span>
+                    מפת פעילות
+                </span>
+            </a>
+
+
+            <a
+                href="reports.html"
+                class="menu-item active"
+            >
+                <span class="menu-icon">
+                    📊
+                </span>
+
+                <span>
+                    דוחות
+                </span>
+            </a>
+
+
+            <a
+                href="settings.html"
+                class="menu-item"
+            >
+                <span class="menu-icon">
+                    ⚙️
+                </span>
+
+                <span>
+                    הגדרות
+                </span>
+            </a>
+
+
+        </nav>
+
+
+
+        <div class="sidebar-user">
+
+            <div
+                id="reportsUserAvatar"
+                class="user-avatar"
+            >
+                מ
+            </div>
+
+
+            <div class="user-details">
+
+                <strong id="reportsUserName">
+                    מנהל מערכת
+                </strong>
+
+                <span id="reportsUserRole">
+                    Administrator
+                </span>
+
+            </div>
+
+        </div>
+
+
+    </aside>
+
+
+
+    <!-- ===================================================== -->
+    <!-- MAIN -->
+    <!-- ===================================================== -->
+
+    <main class="main-content">
+
+
+        <!-- ================================================= -->
+        <!-- HEADER -->
+        <!-- ================================================= -->
+
+        <header class="topbar">
+
+
+            <div class="page-title">
+
+                <h1>
+                    דוחות
+                </h1>
+
+                <p>
+                    ניתוח פעילות, ביצועים והכנסות
+                </p>
+
+            </div>
+
+
+        </header>
+
+
+
+        <!-- ================================================= -->
+        <!-- DATE FILTER -->
+        <!-- ================================================= -->
+
+        <section class="panel">
+
+
+            <div class="panel-header">
+
+                <div>
+
+                    <h2>
+                        טווח דוח
+                    </h2>
+
+                    <p>
+                        סנן את הנתונים לפי תאריך
+                    </p>
+
+                </div>
+
+            </div>
+
+
+
+            <div class="shipments-toolbar">
+
+
+                <div>
+
+                    <label for="reportsFromDate">
+                        מתאריך
+                    </label>
+
+                    <input
+                        type="date"
+                        id="reportsFromDate"
+                    >
+
+                </div>
+
+
+                <div>
+
+                    <label for="reportsToDate">
+                        עד תאריך
+                    </label>
+
+                    <input
+                        type="date"
+                        id="reportsToDate"
+                    >
+
+                </div>
+
+
+                <button
+                    type="button"
+                    class="primary-btn"
+                    id="reportsApplyFilterButton"
+                >
+                    החל סינון
+                </button>
+
+
+                <button
+                    type="button"
+                    class="secondary-btn"
+                    id="reportsResetFilterButton"
+                >
+                    נקה סינון
+                </button>
+
+
+            </div>
+
+
+        </section>
+
+
+
+        <!-- ================================================= -->
+        <!-- STATS -->
+        <!-- ================================================= -->
+
+        <section class="stats-grid">
+
+
+            <div class="stat-card">
+
+                <div class="stat-header">
+
+                    <span>
+                        סה"כ משלוחים
+                    </span>
+
+                    <span class="stat-icon">
+                        📦
+                    </span>
+
+                </div>
+
+
+                <div
+                    id="reportsTotalShipments"
+                    class="stat-number"
+                >
+                    0
+                </div>
+
+
+                <div class="stat-footer">
+                    בטווח שנבחר
+                </div>
+
+            </div>
+
+
+
+            <div class="stat-card">
+
+                <div class="stat-header">
+
+                    <span>
+                        נמסרו
+                    </span>
+
+                    <span class="stat-icon">
+                        ✅
+                    </span>
+
+                </div>
+
+
+                <div
+                    id="reportsDeliveredShipments"
+                    class="stat-number"
+                >
+                    0
+                </div>
+
+
+                <div class="stat-footer success">
+                    משלוחים שהושלמו
+                </div>
+
+            </div>
+
+
+
+            <div class="stat-card">
+
+                <div class="stat-header">
+
+                    <span>
+                        לא נמסרו
+                    </span>
+
+                    <span class="stat-icon">
+                        ❌
+                    </span>
+
+                </div>
+
+
+                <div
+                    id="reportsFailedShipments"
+                    class="stat-number"
+                >
+                    0
+                </div>
+
+
+                <div class="stat-footer danger">
+                    ניסיונות שלא הושלמו
+                </div>
+
+            </div>
+
+
+
+            <div class="stat-card">
+
+                <div class="stat-header">
+
+                    <span>
+                        הכנסה לשליחים
+                    </span>
+
+                    <span class="stat-icon">
+                        💰
+                    </span>
+
+                </div>
+
+
+                <div
+                    id="reportsTotalIncome"
+                    class="stat-number"
+                >
+                    ₪0
+                </div>
+
+
+                <div class="stat-footer success">
+                    תשלום עבור משלוחים שנמסרו
+                </div>
+
+            </div>
+
+
+        </section>
+
+
+
+        <!-- ================================================= -->
+        <!-- DRIVER REPORT -->
+        <!-- ================================================= -->
+
+        <section class="panel">
+
+
+            <div class="panel-header">
+
+                <div>
+
+                    <h2>
+                        ביצועים לפי שליח
+                    </h2>
+
+                    <p>
+                        כמות משלוחים, הצלחות והכנסה
+                    </p>
+
+                </div>
+
+            </div>
+
+
+
+            <div class="table-wrapper">
+
+
+                <table>
+
+
+                    <thead>
+
+                        <tr>
+
+                            <th>
+                                שליח
+                            </th>
+
+                            <th>
+                                סה"כ
+                            </th>
+
+                            <th>
+                                נמסרו
+                            </th>
+
+                            <th>
+                                לא נמסרו
+                            </th>
+
+                            <th>
+                                נשארו
+                            </th>
+
+                            <th>
+                                אחוז הצלחה
+                            </th>
+
+                            <th>
+                                הכנסה
+                            </th>
+
+                        </tr>
+
+                    </thead>
+
+
+                    <tbody id="reportsDriversTableBody">
+
+                        <tr>
+
+                            <td
+                                colspan="7"
+                                style="
+                                    text-align:center;
+                                    padding:35px;
+                                    color:#64748b;
+                                "
+                            >
+                                טוען נתונים...
+                            </td>
+
+                        </tr>
+
+                    </tbody>
+
+
+                </table>
+
+
+            </div>
+
+
+        </section>
+
+
+
+        <!-- ================================================= -->
+        <!-- CITY REPORT -->
+        <!-- ================================================= -->
+
+        <section class="panel">
+
+
+            <div class="panel-header">
+
+                <div>
+
+                    <h2>
+                        ביצועים לפי עיר
+                    </h2>
+
+                    <p>
+                        תמונת מצב לפי אזור פעילות
+                    </p>
+
+                </div>
+
+            </div>
+
+
+
+            <div class="table-wrapper">
+
+
+                <table>
+
+
+                    <thead>
+
+                        <tr>
+
+                            <th>
+                                עיר
+                            </th>
+
+                            <th>
+                                סה"כ
+                            </th>
+
+                            <th>
+                                נמסרו
+                            </th>
+
+                            <th>
+                                לא נמסרו
+                            </th>
+
+                            <th>
+                                אחוז הצלחה
+                            </th>
+
+                        </tr>
+
+                    </thead>
+
+
+                    <tbody id="reportsCitiesTableBody">
+
+                        <tr>
+
+                            <td
+                                colspan="5"
+                                style="
+                                    text-align:center;
+                                    padding:35px;
+                                    color:#64748b;
+                                "
+                            >
+                                טוען נתונים...
+                            </td>
+
+                        </tr>
+
+                    </tbody>
+
+
+                </table>
+
+
+            </div>
+
+
+        </section>
+
+
+    </main>
+
+
+
+    <!-- ===================================================== -->
+    <!-- SUPABASE -->
+    <!-- ===================================================== -->
+
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+    <script src="supabase-config.js"></script>
+
+    <script src="reports.js?v=20261022-1"></script>
+
+
+</body>
+
+</html>
