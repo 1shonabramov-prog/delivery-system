@@ -1,162 +1,374 @@
 <!DOCTYPE html>
 <html lang="he" dir="rtl">
+
 <head>
+
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-    <title>Delivery System</title>
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
 
-    <link rel="stylesheet" href="style.css">
+    <title>
+        Delivery System
+    </title>
+
+    <link
+        rel="stylesheet"
+        href="style.css?v=20261022-1"
+    >
+
 </head>
+
 
 <body>
 
+
+    <!-- ===================================================== -->
+    <!-- SIDEBAR -->
+    <!-- ===================================================== -->
+
     <aside class="sidebar">
 
+
+        <!-- LOGO -->
+
         <div class="logo">
-            <div class="logo-icon">D</div>
+
+            <div class="logo-icon">
+                D
+            </div>
+
 
             <div class="logo-text">
-                <h2>Delivery</h2>
-                <span>מערכת ניהול משלוחים</span>
+
+                <h2>
+                    Delivery
+                </h2>
+
+                <span>
+                    מערכת ניהול משלוחים
+                </span>
+
             </div>
+
         </div>
 
 
+
+        <!-- ================================================= -->
+        <!-- MENU -->
+        <!-- ================================================= -->
+
         <nav class="menu">
 
-            <a href="#" class="menu-item active">
-                <span class="menu-icon">🏠</span>
-                <span>לוח בקרה</span>
+
+            <a
+                href="index.html"
+                class="menu-item active"
+            >
+
+                <span class="menu-icon">
+                    🏠
+                </span>
+
+                <span>
+                    לוח בקרה
+                </span>
+
             </a>
 
-            <a href="#" class="menu-item">
-                <span class="menu-icon">📦</span>
-                <span>משלוחים</span>
+
+            <a
+                href="shipments.html"
+                class="menu-item"
+            >
+
+                <span class="menu-icon">
+                    📦
+                </span>
+
+                <span>
+                    משלוחים
+                </span>
+
             </a>
 
-            <a href="#" class="menu-item">
-                <span class="menu-icon">🚚</span>
-                <span>שליחים</span>
+
+            <a
+                href="drivers.html"
+                class="menu-item"
+            >
+
+                <span class="menu-icon">
+                    🚚
+                </span>
+
+                <span>
+                    שליחים
+                </span>
+
             </a>
 
-            <a href="#" class="menu-item">
-                <span class="menu-icon">📍</span>
-                <span>ערים ואזורים</span>
+
+            <a
+                href="cities.html"
+                class="menu-item"
+            >
+
+                <span class="menu-icon">
+                    📍
+                </span>
+
+                <span>
+                    ערים ואזורים
+                </span>
+
             </a>
 
-            <a href="#" class="menu-item">
-                <span class="menu-icon">🗺️</span>
-                <span>מפת פעילות</span>
+
+            <a
+                href="cities.html"
+                class="menu-item"
+            >
+
+                <span class="menu-icon">
+                    🗺️
+                </span>
+
+                <span>
+                    מפת פעילות
+                </span>
+
             </a>
 
-            <a href="#" class="menu-item">
-                <span class="menu-icon">📊</span>
-                <span>דוחות</span>
+
+            <a
+                href="reports.html"
+                class="menu-item"
+            >
+
+                <span class="menu-icon">
+                    📊
+                </span>
+
+                <span>
+                    דוחות
+                </span>
+
             </a>
 
-            <a href="#" class="menu-item">
-                <span class="menu-icon">⚙️</span>
-                <span>הגדרות</span>
+
+            <a
+                href="settings.html"
+                class="menu-item"
+            >
+
+                <span class="menu-icon">
+                    ⚙️
+                </span>
+
+                <span>
+                    הגדרות
+                </span>
+
             </a>
+
 
         </nav>
 
 
+
+        <!-- ================================================= -->
+        <!-- CURRENT USER -->
+        <!-- ================================================= -->
+
         <div class="sidebar-user">
 
-            <div class="user-avatar">
-                ש
+
+            <div
+                id="sidebarUserAvatar"
+                class="user-avatar"
+            >
+                מ
             </div>
+
 
             <div class="user-details">
-                <strong>מנהל עבודה</strong>
-                <span>Administrator</span>
+
+                <strong id="sidebarUserName">
+                    מנהל מערכת
+                </strong>
+
+                <span id="sidebarUserRole">
+                    Administrator
+                </span>
+
             </div>
 
+
         </div>
+
 
     </aside>
 
 
 
+    <!-- ===================================================== -->
+    <!-- MAIN CONTENT -->
+    <!-- ===================================================== -->
+
     <main class="main-content">
+
+
+        <!-- ================================================= -->
+        <!-- TOP BAR -->
+        <!-- ================================================= -->
 
         <header class="topbar">
 
+
             <div class="page-title">
-                <h1>לוח בקרה</h1>
-                <p>תמונת מצב של מערך המשלוחים</p>
+
+                <h1>
+                    לוח בקרה
+                </h1>
+
+                <p>
+                    תמונת מצב של מערך המשלוחים
+                </p>
+
             </div>
+
 
 
             <div class="topbar-actions">
 
+
                 <input
+                    id="dashboardSearch"
                     type="text"
                     placeholder="חיפוש משלוח / לקוח / עיר"
                 >
 
-                <button class="new-delivery-btn">
+
+                <button
+                    class="new-delivery-btn"
+                    type="button"
+                    onclick="window.location.href='shipments.html'"
+                >
                     + משלוח חדש
                 </button>
 
+
             </div>
+
 
         </header>
 
 
 
+        <!-- ================================================= -->
+        <!-- STATISTICS -->
+        <!-- ================================================= -->
+
         <section class="stats-grid">
 
+
+            <!-- TOTAL -->
+
             <div class="stat-card">
 
                 <div class="stat-header">
-                    <span>סה"כ משלוחים</span>
-                    <span class="stat-icon">📦</span>
+
+                    <span>
+                        סה"כ משלוחים
+                    </span>
+
+                    <span class="stat-icon">
+                        📦
+                    </span>
+
                 </div>
 
-                <div class="stat-number">
-                    326
+
+                <div
+                    id="dashboardTotalShipments"
+                    class="stat-number"
+                >
+                    0
                 </div>
+
 
                 <div class="stat-footer">
-                    משלוחים להיום
+                    משלוחים במערכת
                 </div>
 
             </div>
 
 
 
+            <!-- DELIVERED -->
+
             <div class="stat-card">
 
                 <div class="stat-header">
-                    <span>נמסרו</span>
-                    <span class="stat-icon">✅</span>
+
+                    <span>
+                        נמסרו
+                    </span>
+
+                    <span class="stat-icon">
+                        ✅
+                    </span>
+
                 </div>
 
-                <div class="stat-number">
-                    271
+
+                <div
+                    id="dashboardDeliveredShipments"
+                    class="stat-number"
+                >
+                    0
                 </div>
 
-                <div class="stat-footer success">
-                    83% מהמשלוחים
+
+                <div
+                    id="dashboardDeliveredPercent"
+                    class="stat-footer success"
+                >
+                    0% מהמשלוחים
                 </div>
 
             </div>
 
 
 
+            <!-- ON ROUTE -->
+
             <div class="stat-card">
 
                 <div class="stat-header">
-                    <span>בדרך</span>
-                    <span class="stat-icon">🚚</span>
+
+                    <span>
+                        בדרך
+                    </span>
+
+                    <span class="stat-icon">
+                        🚚
+                    </span>
+
                 </div>
 
-                <div class="stat-number">
-                    31
+
+                <div
+                    id="dashboardOnRouteShipments"
+                    class="stat-number"
+                >
+                    0
                 </div>
+
 
                 <div class="stat-footer warning">
                     משלוחים פעילים
@@ -166,16 +378,30 @@
 
 
 
+            <!-- UNASSIGNED -->
+
             <div class="stat-card">
 
                 <div class="stat-header">
-                    <span>ללא שיוך</span>
-                    <span class="stat-icon">⚠️</span>
+
+                    <span>
+                        ללא שיוך
+                    </span>
+
+                    <span class="stat-icon">
+                        ⚠️
+                    </span>
+
                 </div>
 
-                <div class="stat-number">
-                    24
+
+                <div
+                    id="dashboardUnassignedShipments"
+                    class="stat-number"
+                >
+                    0
                 </div>
+
 
                 <div class="stat-footer danger">
                     ממתינים לשליח
@@ -183,161 +409,194 @@
 
             </div>
 
+
         </section>
 
 
 
+        <!-- ================================================= -->
+        <!-- DASHBOARD PANELS -->
+        <!-- ================================================= -->
+
         <section class="dashboard-grid">
+
+
+            <!-- ================================================= -->
+            <!-- DRIVERS -->
+            <!-- ================================================= -->
 
             <div class="panel">
 
+
                 <div class="panel-header">
 
+
                     <div>
-                        <h2>מצב שליחים</h2>
-                        <p>סטטוס פעילות בזמן אמת</p>
+
+                        <h2>
+                            מצב שליחים
+                        </h2>
+
+                        <p>
+                            סטטוס פעילות בזמן אמת
+                        </p>
+
                     </div>
 
-                    <button>
+
+                    <button
+                        type="button"
+                        onclick="window.location.href='drivers.html'"
+                    >
                         הצג הכל
                     </button>
+
 
                 </div>
 
 
+
                 <div class="table-wrapper">
 
+
                     <table>
+
 
                         <thead>
 
                             <tr>
-                                <th>שליח</th>
-                                <th>סה"כ</th>
-                                <th>נמסרו</th>
-                                <th>נשארו</th>
-                                <th>סטטוס</th>
+
+                                <th>
+                                    שליח
+                                </th>
+
+                                <th>
+                                    סה"כ
+                                </th>
+
+                                <th>
+                                    נמסרו
+                                </th>
+
+                                <th>
+                                    נשארו
+                                </th>
+
+                                <th>
+                                    סטטוס
+                                </th>
+
                             </tr>
 
                         </thead>
 
 
-                        <tbody>
+                        <tbody id="dashboardDriversTable">
 
                             <tr>
-                                <td>שון</td>
-                                <td>34</td>
-                                <td>12</td>
-                                <td>22</td>
-                                <td>
-                                    <span class="status active">
-                                        במסלול
-                                    </span>
+
+                                <td
+                                    colspan="5"
+                                    style="
+                                        text-align:center;
+                                        padding:30px;
+                                        color:#64748b;
+                                    "
+                                >
+                                    טוען נתונים...
                                 </td>
-                            </tr>
 
-
-                            <tr>
-                                <td>דניאל</td>
-                                <td>27</td>
-                                <td>27</td>
-                                <td>0</td>
-                                <td>
-                                    <span class="status completed">
-                                        סיים
-                                    </span>
-                                </td>
-                            </tr>
-
-
-                            <tr>
-                                <td>אבי</td>
-                                <td>41</td>
-                                <td>18</td>
-                                <td>23</td>
-                                <td>
-                                    <span class="status active">
-                                        במסלול
-                                    </span>
-                                </td>
-                            </tr>
-
-
-                            <tr>
-                                <td>רועי</td>
-                                <td>0</td>
-                                <td>0</td>
-                                <td>0</td>
-                                <td>
-                                    <span class="status waiting">
-                                        לא התחיל
-                                    </span>
-                                </td>
                             </tr>
 
                         </tbody>
 
+
                     </table>
 
+
                 </div>
+
 
             </div>
 
 
+
+            <!-- ================================================= -->
+            <!-- CITIES -->
+            <!-- ================================================= -->
 
             <div class="panel">
 
+
                 <div class="panel-header">
 
+
                     <div>
-                        <h2>משלוחים לפי עיר</h2>
-                        <p>כמות משלוחים פעילים</p>
+
+                        <h2>
+                            משלוחים לפי עיר
+                        </h2>
+
+                        <p>
+                            כמות משלוחים במערכת
+                        </p>
+
                     </div>
 
-                    <button>
+
+                    <button
+                        type="button"
+                        onclick="window.location.href='cities.html'"
+                    >
                         הצג הכל
                     </button>
 
+
                 </div>
 
 
-                <div class="city-list">
+
+                <div
+                    id="dashboardCitiesList"
+                    class="city-list"
+                >
 
                     <div class="city-row">
-                        <span>ראשון לציון</span>
-                        <strong>54</strong>
-                    </div>
 
-                    <div class="city-row">
-                        <span>תל אביב</span>
-                        <strong>48</strong>
-                    </div>
+                        <span>
+                            טוען נתונים...
+                        </span>
 
-                    <div class="city-row">
-                        <span>חולון</span>
-                        <strong>37</strong>
-                    </div>
+                        <strong>
+                            -
+                        </strong>
 
-                    <div class="city-row">
-                        <span>פתח תקווה</span>
-                        <strong>31</strong>
-                    </div>
-
-                    <div class="city-row">
-                        <span>רמת גן</span>
-                        <strong>29</strong>
                     </div>
 
                 </div>
+
 
             </div>
 
+
         </section>
+
 
     </main>
 
 
-    <script src="app.js"></script>
+
+    <!-- ===================================================== -->
+    <!-- SUPABASE -->
+    <!-- ===================================================== -->
+
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+    <script src="supabase-config.js"></script>
+
+    <script src="dashboard.js?v=20261022-1"></script>
+
 
 </body>
+
 </html>
