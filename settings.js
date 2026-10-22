@@ -1,1640 +1,64 @@
 // =========================================================
 // DELIVERY SYSTEM
-// SETTINGS / USERS & PERMISSIONS
+// SETTINGS / USERS MANAGEMENT - SUPABASE
 // =========================================================
 
 
 // =========================================================
-// STORAGE KEYS
+// SUPABASE CLIENT
 // =========================================================
 
-const USERS_STORAGE_KEY =
-    "delivery_system_users";
-
-const DRIVERS_STORAGE_KEY =
-    "delivery_system_drivers";
-
-
-// =========================================================
-// GET USERS
-// =========================================================
-
-function getUsers() {
-
-    const saved =
-        localStorage.getItem(
-            USERS_STORAGE_KEY
-        );
-
-
-    if (!saved) {
-
-        return [];
-
-    }
-
-
-    try {
-
-        return JSON.parse(
-            saved
-        );
-
-    }
-
-    catch (error) {
-
-        console.error(
-            "Failed loading users",
-            error
-        );
-
-        return [];
-
-    }
-
-}
-
-
-// =========================================================
-// SAVE USERS
-// =========================================================
-
-function saveUsers(users) {
-
-    localStorage.setItem(
-
-        USERS_STORAGE_KEY,
-
-        JSON.stringify(
-            users
-        )
-
+const settingsSupabase =
+    supabase.createClient(
+        SUPABASE_URL,
+        SUPABASE_PUBLISHABLE_KEY
     );
 
-}
+
+// =========================================================
+// GLOBAL STATE
+// =========================================================
+
+let settingsAuthUser =
+    null;
+
+let settingsCurrentProfile =
+    null;
+
+let settingsProfiles =
+    [];
+
+let editingProfile =
+    null;
 
 
 // =========================================================
-// GET DRIVERS
+// DOM - CURRENT USER
 // =========================================================
 
-function getDrivers() {
-
-    const saved =
-        localStorage.getItem(
-            DRIVERS_STORAGE_KEY
-        );
-
-
-    if (!saved) {
-
-        return [];
-
-    }
-
-
-    try {
-
-        return JSON.parse(
-            saved
-        );
-
-    }
-
-    catch (error) {
-
-        console.error(
-            "Failed loading drivers",
-            error
-        );
-
-        return [];
-
-    }
-
-}
-
-
-// =========================================================
-// SAVE DRIVERS
-// =========================================================
-
-function saveDrivers(drivers) {
-
-    localStorage.setItem(
-
-        DRIVERS_STORAGE_KEY,
-
-        JSON.stringify(
-            drivers
-        )
-
-    );
-
-}
-
-
-// =========================================================
-// CREATE ID
-// =========================================================
-
-function createId(prefix) {
-
-    return (
-
-        prefix +
-        "_" +
-        Date.now() +
-        "_" +
-        Math.floor(
-            Math.random() * 100000
-        )
-
-    );
-
-}
-
-
-// =========================================================
-// INITIAL ADMIN
-// =========================================================
-
-function initializeUsers() {
-
-    const users =
-        getUsers();
-
-
-    if (
-        users.length > 0
-    ) {
-
-        return;
-
-    }
-
-
-    const defaultAdmin = {
-
-        id:
-            createId(
-                "user"
-            ),
-
-        fullName:
-            "מנהל מערכת",
-
-        phone:
-            "050-0000000",
-
-        email:
-            "",
-
-        username:
-            "admin",
-
-        password:
-            "1234",
-
-        role:
-            "ADMIN",
-
-        deliveryRate:
-            0,
-
-        status:
-            "פעיל",
-
-        notes:
-            "",
-
-        driverId:
-            null,
-
-        createdAt:
-            new Date()
-                .toISOString()
-
-    };
-
-
-    saveUsers(
-        [
-            defaultAdmin
-        ]
-    );
-
-}
-
-
-// =========================================================
-// DOM
-// =========================================================
-
-const usersTableBody =
+const settingsUserAvatar =
     document.getElementById(
-        "usersTableBody"
+        "settingsUserAvatar"
     );
 
 
-const newUserButton =
+const settingsUserName =
     document.getElementById(
-        "newUserButton"
+        "settingsUserName"
     );
 
 
-const userModal =
+const settingsUserRole =
     document.getElementById(
-        "userModal"
-    );
-
-
-const userForm =
-    document.getElementById(
-        "userForm"
-    );
-
-
-const closeUserModal =
-    document.getElementById(
-        "closeUserModal"
-    );
-
-
-const cancelUserButton =
-    document.getElementById(
-        "cancelUserButton"
-    );
-
-
-const userSearchInput =
-    document.getElementById(
-        "userSearchInput"
-    );
-
-
-const userRoleFilter =
-    document.getElementById(
-        "userRoleFilter"
-    );
-
-
-const userStatusFilter =
-    document.getElementById(
-        "userStatusFilter"
-    );
-
-
-const userRole =
-    document.getElementById(
-        "userRole"
-    );
-
-
-const driverRateGroup =
-    document.getElementById(
-        "driverRateGroup"
+        "settingsUserRole"
     );
 
 
 // =========================================================
-// ROLE NAME
+// DOM - SETTINGS NAVIGATION
 // =========================================================
 
-function getRoleName(role) {
-
-    switch (role) {
-
-        case "ADMIN":
-
-            return "מנהל מערכת";
-
-
-        case "WAREHOUSE":
-
-            return "עובד מחסן";
-
-
-        case "DRIVER":
-
-            return "שליח";
-
-
-        default:
-
-            return role;
-
-    }
-
-}
-
-
-// =========================================================
-// ROLE CLASS
-// =========================================================
-
-function getRoleClass(role) {
-
-    switch (role) {
-
-        case "ADMIN":
-
-            return "role-admin";
-
-
-        case "WAREHOUSE":
-
-            return "role-warehouse";
-
-
-        case "DRIVER":
-
-            return "role-driver";
-
-
-        default:
-
-            return "";
-
-    }
-
-}
-
-
-// =========================================================
-// FORMAT MONEY
-// =========================================================
-
-function formatMoney(value) {
-
-    return (
-
-        "₪" +
-
-        Number(
-            value || 0
-        )
-            .toLocaleString(
-                "he-IL",
-                {
-                    maximumFractionDigits:
-                        2
-                }
-            )
-
-    );
-
-}
-
-
-// =========================================================
-// COUNTERS
-// =========================================================
-
-function updateUserCounters() {
-
-    const users =
-        getUsers();
-
-
-    const totalUsers =
-        users.length;
-
-
-    const activeUsers =
-        users.filter(
-
-            user =>
-                user.status ===
-                "פעיל"
-
-        ).length;
-
-
-    const activeDrivers =
-        users.filter(
-
-            user =>
-
-                user.role ===
-                    "DRIVER"
-
-                &&
-
-                user.status ===
-                    "פעיל"
-
-        ).length;
-
-
-    const inactiveUsers =
-        users.filter(
-
-            user =>
-                user.status ===
-                "לא פעיל"
-
-        ).length;
-
-
-    const totalUsersCount =
-        document.getElementById(
-            "totalUsersCount"
-        );
-
-
-    const activeUsersCount =
-        document.getElementById(
-            "activeUsersCount"
-        );
-
-
-    const activeDriverUsersCount =
-        document.getElementById(
-            "activeDriverUsersCount"
-        );
-
-
-    const inactiveUsersCount =
-        document.getElementById(
-            "inactiveUsersCount"
-        );
-
-
-    if (totalUsersCount) {
-
-        totalUsersCount.textContent =
-            totalUsers;
-
-    }
-
-
-    if (activeUsersCount) {
-
-        activeUsersCount.textContent =
-            activeUsers;
-
-    }
-
-
-    if (activeDriverUsersCount) {
-
-        activeDriverUsersCount.textContent =
-            activeDrivers;
-
-    }
-
-
-    if (inactiveUsersCount) {
-
-        inactiveUsersCount.textContent =
-            inactiveUsers;
-
-    }
-
-}
-
-
-// =========================================================
-// RENDER USERS
-// =========================================================
-
-function renderUsers() {
-
-    if (
-        !usersTableBody
-    ) {
-
-        return;
-
-    }
-
-
-    const users =
-        getUsers();
-
-
-    const search =
-        userSearchInput
-            .value
-            .trim()
-            .toLowerCase();
-
-
-    const selectedRole =
-        userRoleFilter.value;
-
-
-    const selectedStatus =
-        userStatusFilter.value;
-
-
-    const filtered =
-        users.filter(
-
-            user => {
-
-
-                const searchable = [
-
-                    user.fullName,
-
-                    user.phone,
-
-                    user.email,
-
-                    user.username
-
-                ]
-                    .join(" ")
-                    .toLowerCase();
-
-
-                if (
-
-                    search &&
-
-                    !searchable.includes(
-                        search
-                    )
-
-                ) {
-
-                    return false;
-
-                }
-
-
-                if (
-
-                    selectedRole &&
-
-                    user.role !==
-                        selectedRole
-
-                ) {
-
-                    return false;
-
-                }
-
-
-                if (
-
-                    selectedStatus &&
-
-                    user.status !==
-                        selectedStatus
-
-                ) {
-
-                    return false;
-
-                }
-
-
-                return true;
-
-            }
-
-        );
-
-
-    usersTableBody.innerHTML =
-        "";
-
-
-    if (
-        filtered.length === 0
-    ) {
-
-        usersTableBody.innerHTML = `
-
-            <tr>
-
-                <td
-                    colspan="7"
-                    style="
-                        text-align:center;
-                        padding:45px;
-                        color:#64748b;
-                    "
-                >
-
-                    לא נמצאו משתמשים
-
-                </td>
-
-            </tr>
-
-        `;
-
-
-        return;
-
-    }
-
-
-    filtered.forEach(
-
-        user => {
-
-
-            const row =
-                document.createElement(
-                    "tr"
-                );
-
-
-            const rate =
-
-                user.role ===
-                "DRIVER"
-
-                    ?
-
-                    formatMoney(
-                        user.deliveryRate
-                    )
-
-                    :
-
-                    "-";
-
-
-            row.innerHTML = `
-
-
-                <td>
-
-                    <strong>
-                        ${user.fullName}
-                    </strong>
-
-                    ${
-                        user.email
-
-                            ?
-
-                            `
-                            <br>
-
-                            <small
-                                style="color:#64748b;"
-                            >
-                                ${user.email}
-                            </small>
-                            `
-
-                            :
-
-                            ""
-                    }
-
-                </td>
-
-
-                <td>
-                    ${user.phone}
-                </td>
-
-
-                <td>
-
-                    <strong>
-                        ${user.username}
-                    </strong>
-
-                </td>
-
-
-                <td>
-
-                    <span
-                        class="
-                            role-badge
-                            ${getRoleClass(
-                                user.role
-                            )}
-                        "
-                    >
-
-                        ${getRoleName(
-                            user.role
-                        )}
-
-                    </span>
-
-                </td>
-
-
-                <td>
-                    ${rate}
-                </td>
-
-
-                <td>
-
-                    <span
-                        class="
-                            status
-                            ${
-                                user.status ===
-                                "פעיל"
-
-                                    ?
-
-                                    "completed"
-
-                                    :
-
-                                    "waiting"
-                            }
-                        "
-                    >
-
-                        ${user.status}
-
-                    </span>
-
-                </td>
-
-
-                <td>
-
-                    <button
-                        class="table-btn"
-                        onclick="
-                            editUser(
-                                '${user.id}'
-                            )
-                        "
-                    >
-
-                        עריכה
-
-                    </button>
-
-                </td>
-
-
-            `;
-
-
-            usersTableBody
-                .appendChild(
-                    row
-                );
-
-        }
-
-    );
-
-}
-
-
-// =========================================================
-// RATE FIELD VISIBILITY
-// =========================================================
-
-function updateRateVisibility() {
-
-    if (
-        userRole.value ===
-        "DRIVER"
-    ) {
-
-        driverRateGroup
-            .classList
-            .remove(
-                "hidden"
-            );
-
-    }
-
-    else {
-
-        driverRateGroup
-            .classList
-            .add(
-                "hidden"
-            );
-
-    }
-
-}
-
-
-userRole
-    .addEventListener(
-
-        "change",
-
-        updateRateVisibility
-
-    );
-
-
-// =========================================================
-// NEW USER
-// =========================================================
-
-newUserButton
-    .addEventListener(
-
-        "click",
-
-        function () {
-
-
-            userForm.reset();
-
-
-            document
-                .getElementById(
-                    "editingUserId"
-                )
-                .value =
-                "";
-
-
-            document
-                .getElementById(
-                    "userModalTitle"
-                )
-                .textContent =
-                "משתמש חדש";
-
-
-            userRole.value =
-                "DRIVER";
-
-
-            document
-                .getElementById(
-                    "userDeliveryRate"
-                )
-                .value =
-                "13";
-
-
-            document
-                .getElementById(
-                    "userStatus"
-                )
-                .value =
-                "פעיל";
-
-
-            updateRateVisibility();
-
-
-            userModal
-                .classList
-                .remove(
-                    "hidden"
-                );
-
-        }
-
-    );
-
-
-// =========================================================
-// CLOSE MODAL
-// =========================================================
-
-function closeUserManagementModal() {
-
-    userModal
-        .classList
-        .add(
-            "hidden"
-        );
-
-}
-
-
-closeUserModal
-    .addEventListener(
-
-        "click",
-
-        closeUserManagementModal
-
-    );
-
-
-cancelUserButton
-    .addEventListener(
-
-        "click",
-
-        closeUserManagementModal
-
-    );
-
-
-// =========================================================
-// EDIT USER
-// =========================================================
-
-function editUser(userId) {
-
-    const users =
-        getUsers();
-
-
-    const user =
-        users.find(
-
-            item =>
-                item.id ===
-                userId
-
-        );
-
-
-    if (!user) {
-
-        return;
-
-    }
-
-
-    document
-        .getElementById(
-            "editingUserId"
-        )
-        .value =
-        user.id;
-
-
-    document
-        .getElementById(
-            "userFullName"
-        )
-        .value =
-        user.fullName;
-
-
-    document
-        .getElementById(
-            "userPhone"
-        )
-        .value =
-        user.phone;
-
-
-    document
-        .getElementById(
-            "userEmail"
-        )
-        .value =
-        user.email || "";
-
-
-    document
-        .getElementById(
-            "userRole"
-        )
-        .value =
-        user.role;
-
-
-    document
-        .getElementById(
-            "userUsername"
-        )
-        .value =
-        user.username;
-
-
-    document
-        .getElementById(
-            "userPassword"
-        )
-        .value =
-        user.password;
-
-
-    document
-        .getElementById(
-            "userDeliveryRate"
-        )
-        .value =
-        user.deliveryRate || 0;
-
-
-    document
-        .getElementById(
-            "userStatus"
-        )
-        .value =
-        user.status;
-
-
-    document
-        .getElementById(
-            "userNotes"
-        )
-        .value =
-        user.notes || "";
-
-
-    document
-        .getElementById(
-            "userModalTitle"
-        )
-        .textContent =
-        "עריכת משתמש";
-
-
-    updateRateVisibility();
-
-
-    userModal
-        .classList
-        .remove(
-            "hidden"
-        );
-
-}
-
-
-// =========================================================
-// SAVE USER
-// =========================================================
-
-userForm
-    .addEventListener(
-
-        "submit",
-
-        function (event) {
-
-
-            event.preventDefault();
-
-
-            const users =
-                getUsers();
-
-
-            const editingId =
-                document
-                    .getElementById(
-                        "editingUserId"
-                    )
-                    .value;
-
-
-            const fullName =
-                document
-                    .getElementById(
-                        "userFullName"
-                    )
-                    .value
-                    .trim();
-
-
-            const phone =
-                document
-                    .getElementById(
-                        "userPhone"
-                    )
-                    .value
-                    .trim();
-
-
-            const email =
-                document
-                    .getElementById(
-                        "userEmail"
-                    )
-                    .value
-                    .trim();
-
-
-            const role =
-                document
-                    .getElementById(
-                        "userRole"
-                    )
-                    .value;
-
-
-            const username =
-                document
-                    .getElementById(
-                        "userUsername"
-                    )
-                    .value
-                    .trim();
-
-
-            const password =
-                document
-                    .getElementById(
-                        "userPassword"
-                    )
-                    .value;
-
-
-            const deliveryRate =
-
-                role ===
-                "DRIVER"
-
-                    ?
-
-                    Number(
-
-                        document
-                            .getElementById(
-                                "userDeliveryRate"
-                            )
-                            .value
-
-                    )
-
-                    :
-
-                    0;
-
-
-            const status =
-                document
-                    .getElementById(
-                        "userStatus"
-                    )
-                    .value;
-
-
-            const notes =
-                document
-                    .getElementById(
-                        "userNotes"
-                    )
-                    .value
-                    .trim();
-
-
-            // =================================================
-            // USERNAME MUST BE UNIQUE
-            // =================================================
-
-            const usernameExists =
-                users.some(
-
-                    user =>
-
-                        user.username
-                            .toLowerCase()
-
-                        ===
-
-                        username
-                            .toLowerCase()
-
-                        &&
-
-                        user.id !==
-                            editingId
-
-                );
-
-
-            if (
-                usernameExists
-            ) {
-
-                alert(
-                    "שם המשתמש כבר קיים במערכת."
-                );
-
-                return;
-
-            }
-
-
-            // =================================================
-            // EDIT
-            // =================================================
-
-            if (
-                editingId
-            ) {
-
-
-                const index =
-                    users.findIndex(
-
-                        user =>
-                            user.id ===
-                            editingId
-
-                    );
-
-
-                if (
-                    index === -1
-                ) {
-
-                    return;
-
-                }
-
-
-                const oldRole =
-                    users[
-                        index
-                    ].role;
-
-
-                const oldDriverId =
-                    users[
-                        index
-                    ].driverId;
-
-
-                users[
-                    index
-                ] = {
-
-                    ...users[
-                        index
-                    ],
-
-                    fullName:
-                        fullName,
-
-                    phone:
-                        phone,
-
-                    email:
-                        email,
-
-                    username:
-                        username,
-
-                    password:
-                        password,
-
-                    role:
-                        role,
-
-                    deliveryRate:
-                        deliveryRate,
-
-                    status:
-                        status,
-
-                    notes:
-                        notes
-
-                };
-
-
-                // =============================================
-                // DRIVER USER
-                // =============================================
-
-                if (
-                    role ===
-                    "DRIVER"
-                ) {
-
-
-                    let drivers =
-                        getDrivers();
-
-
-                    let driverId =
-                        oldDriverId;
-
-
-                    let driverIndex =
-                        drivers.findIndex(
-
-                            driver =>
-                                driver.id ===
-                                driverId
-
-                        );
-
-
-                    if (
-                        driverIndex === -1
-                    ) {
-
-
-                        driverId =
-                            createId(
-                                "driver"
-                            );
-
-
-                        drivers.push({
-
-                            id:
-                                driverId,
-
-                            userId:
-                                editingId,
-
-                            fullName:
-                                fullName,
-
-                            phone:
-                                phone,
-
-                            email:
-                                email,
-
-                            username:
-                                username,
-
-                            rate:
-                                deliveryRate,
-
-                            status:
-                                status,
-
-                            notes:
-                                notes,
-
-                            createdAt:
-                                new Date()
-                                    .toISOString()
-
-                        });
-
-
-                        users[
-                            index
-                        ].driverId =
-                            driverId;
-
-                    }
-
-                    else {
-
-
-                        drivers[
-                            driverIndex
-                        ] = {
-
-                            ...drivers[
-                                driverIndex
-                            ],
-
-                            fullName:
-                                fullName,
-
-                            phone:
-                                phone,
-
-                            email:
-                                email,
-
-                            username:
-                                username,
-
-                            rate:
-                                deliveryRate,
-
-                            status:
-                                status,
-
-                            notes:
-                                notes
-
-                        };
-
-                    }
-
-
-                    saveDrivers(
-                        drivers
-                    );
-
-                }
-
-
-                else if (
-                    oldRole ===
-                    "DRIVER"
-                ) {
-
-
-                    let drivers =
-                        getDrivers();
-
-
-                    drivers =
-                        drivers.filter(
-
-                            driver =>
-                                driver.id !==
-                                oldDriverId
-
-                        );
-
-
-                    saveDrivers(
-                        drivers
-                    );
-
-
-                    users[
-                        index
-                    ].driverId =
-                        null;
-
-                }
-
-            }
-
-
-            // =================================================
-            // NEW USER
-            // =================================================
-
-            else {
-
-
-                const userId =
-                    createId(
-                        "user"
-                    );
-
-
-                let driverId =
-                    null;
-
-
-                if (
-                    role ===
-                    "DRIVER"
-                ) {
-
-
-                    driverId =
-                        createId(
-                            "driver"
-                        );
-
-
-                    const drivers =
-                        getDrivers();
-
-
-                    drivers.push({
-
-                        id:
-                            driverId,
-
-                        userId:
-                            userId,
-
-                        fullName:
-                            fullName,
-
-                        phone:
-                            phone,
-
-                        email:
-                            email,
-
-                        username:
-                            username,
-
-                        rate:
-                            deliveryRate,
-
-                        status:
-                            status,
-
-                        notes:
-                            notes,
-
-                        createdAt:
-                            new Date()
-                                .toISOString()
-
-                    });
-
-
-                    saveDrivers(
-                        drivers
-                    );
-
-                }
-
-
-                users.push({
-
-                    id:
-                        userId,
-
-                    fullName:
-                        fullName,
-
-                    phone:
-                        phone,
-
-                    email:
-                        email,
-
-                    username:
-                        username,
-
-                    password:
-                        password,
-
-                    role:
-                        role,
-
-                    deliveryRate:
-                        deliveryRate,
-
-                    status:
-                        status,
-
-                    notes:
-                        notes,
-
-                    driverId:
-                        driverId,
-
-                    createdAt:
-                        new Date()
-                            .toISOString()
-
-                });
-
-            }
-
-
-            saveUsers(
-                users
-            );
-
-
-            closeUserManagementModal();
-
-
-            updateUserCounters();
-
-
-            renderUsers();
-
-        }
-
-    );
-
-
-// =========================================================
-// FILTERS
-// =========================================================
-
-userSearchInput
-    .addEventListener(
-
-        "input",
-
-        renderUsers
-
-    );
-
-
-userRoleFilter
-    .addEventListener(
-
-        "change",
-
-        renderUsers
-
-    );
-
-
-userStatusFilter
-    .addEventListener(
-
-        "change",
-
-        renderUsers
-
-    );
-
-
-// =========================================================
-// SETTINGS MENU
-// =========================================================
-
-const navButtons =
+const settingsNavItems =
     document.querySelectorAll(
         ".settings-nav-item"
     );
@@ -1658,7 +82,2058 @@ const placeholderTitle =
     );
 
 
-const sectionTitles = {
+// =========================================================
+// DOM - USERS
+// =========================================================
+
+const totalUsersCount =
+    document.getElementById(
+        "totalUsersCount"
+    );
+
+
+const activeUsersCount =
+    document.getElementById(
+        "activeUsersCount"
+    );
+
+
+const activeDriverUsersCount =
+    document.getElementById(
+        "activeDriverUsersCount"
+    );
+
+
+const inactiveUsersCount =
+    document.getElementById(
+        "inactiveUsersCount"
+    );
+
+
+const userSearchInput =
+    document.getElementById(
+        "userSearchInput"
+    );
+
+
+const userRoleFilter =
+    document.getElementById(
+        "userRoleFilter"
+    );
+
+
+const userStatusFilter =
+    document.getElementById(
+        "userStatusFilter"
+    );
+
+
+const usersTableBody =
+    document.getElementById(
+        "usersTableBody"
+    );
+
+
+const newUserButton =
+    document.getElementById(
+        "newUserButton"
+    );
+
+
+// =========================================================
+// DOM - MODAL
+// =========================================================
+
+const userModal =
+    document.getElementById(
+        "userModal"
+    );
+
+
+const userModalTitle =
+    document.getElementById(
+        "userModalTitle"
+    );
+
+
+const userModalSubtitle =
+    document.getElementById(
+        "userModalSubtitle"
+    );
+
+
+const closeUserModal =
+    document.getElementById(
+        "closeUserModal"
+    );
+
+
+const cancelUserButton =
+    document.getElementById(
+        "cancelUserButton"
+    );
+
+
+const userForm =
+    document.getElementById(
+        "userForm"
+    );
+
+
+const editingUserId =
+    document.getElementById(
+        "editingUserId"
+    );
+
+
+const userFullName =
+    document.getElementById(
+        "userFullName"
+    );
+
+
+const userPhone =
+    document.getElementById(
+        "userPhone"
+    );
+
+
+const userEmail =
+    document.getElementById(
+        "userEmail"
+    );
+
+
+const userEmailGroup =
+    document.getElementById(
+        "userEmailGroup"
+    );
+
+
+const userRole =
+    document.getElementById(
+        "userRole"
+    );
+
+
+const userUsername =
+    document.getElementById(
+        "userUsername"
+    );
+
+
+const userPassword =
+    document.getElementById(
+        "userPassword"
+    );
+
+
+const userPasswordGroup =
+    document.getElementById(
+        "userPasswordGroup"
+    );
+
+
+const driverRateGroup =
+    document.getElementById(
+        "driverRateGroup"
+    );
+
+
+const userDeliveryRate =
+    document.getElementById(
+        "userDeliveryRate"
+    );
+
+
+const userStatus =
+    document.getElementById(
+        "userStatus"
+    );
+
+
+const userNotes =
+    document.getElementById(
+        "userNotes"
+    );
+
+
+const userSecurityMessage =
+    document.getElementById(
+        "userSecurityMessage"
+    );
+
+
+const saveUserButton =
+    document.getElementById(
+        "saveUserButton"
+    );
+
+
+// =========================================================
+// REDIRECT
+// =========================================================
+
+function settingsRedirectToLogin() {
+
+    sessionStorage.removeItem(
+        "delivery_system_current_user"
+    );
+
+
+    window.location.href =
+        "login.html";
+
+}
+
+
+// =========================================================
+// AUTH SESSION
+// =========================================================
+
+async function loadSettingsSession() {
+
+    const {
+        data,
+        error
+    } =
+        await settingsSupabase
+            .auth
+            .getSession();
+
+
+    if (
+        error
+    ) {
+
+        console.error(
+            "Failed loading settings session:",
+            error
+        );
+
+
+        settingsRedirectToLogin();
+
+        return false;
+
+    }
+
+
+    if (
+        !data.session ||
+        !data.session.user
+    ) {
+
+        settingsRedirectToLogin();
+
+        return false;
+
+    }
+
+
+    settingsAuthUser =
+        data.session.user;
+
+
+    return true;
+
+}
+
+
+// =========================================================
+// LOAD CURRENT PROFILE
+// =========================================================
+
+async function loadSettingsCurrentProfile() {
+
+    if (
+        !settingsAuthUser
+    ) {
+
+        return false;
+
+    }
+
+
+    const {
+        data,
+        error
+    } =
+        await settingsSupabase
+            .from(
+                "profiles"
+            )
+            .select(
+                `
+                id,
+                username,
+                full_name,
+                phone,
+                role,
+                status,
+                driver_rate,
+                notes
+                `
+            )
+            .eq(
+                "id",
+                settingsAuthUser.id
+            )
+            .single();
+
+
+    if (
+        error
+    ) {
+
+        console.error(
+            "Failed loading current profile:",
+            error
+        );
+
+
+        return false;
+
+    }
+
+
+    settingsCurrentProfile =
+        data;
+
+
+    if (
+        !settingsCurrentProfile ||
+        settingsCurrentProfile.status !==
+            "פעיל"
+    ) {
+
+        await settingsSupabase
+            .auth
+            .signOut();
+
+
+        settingsRedirectToLogin();
+
+        return false;
+
+    }
+
+
+    // Settings / user management is ADMIN only
+
+    if (
+        settingsCurrentProfile.role !==
+        "ADMIN"
+    ) {
+
+        if (
+            settingsCurrentProfile.role ===
+            "DRIVER"
+        ) {
+
+            window.location.href =
+                "driver.html";
+
+        }
+
+        else {
+
+            window.location.href =
+                "index.html";
+
+        }
+
+
+        return false;
+
+    }
+
+
+    return true;
+
+}
+
+
+// =========================================================
+// CURRENT USER DISPLAY
+// =========================================================
+
+function renderSettingsCurrentUser() {
+
+    if (
+        !settingsCurrentProfile
+    ) {
+
+        return;
+
+    }
+
+
+    const fullName =
+        settingsCurrentProfile.full_name ||
+        settingsCurrentProfile.username ||
+        "מנהל מערכת";
+
+
+    if (
+        settingsUserName
+    ) {
+
+        settingsUserName.textContent =
+            fullName;
+
+    }
+
+
+    if (
+        settingsUserAvatar
+    ) {
+
+        settingsUserAvatar.textContent =
+            fullName
+                .trim()
+                .charAt(
+                    0
+                )
+            ||
+            "מ";
+
+    }
+
+
+    if (
+        settingsUserRole
+    ) {
+
+        settingsUserRole.textContent =
+            "Administrator";
+
+    }
+
+}
+
+
+// =========================================================
+// LOAD ALL PROFILES
+// =========================================================
+
+async function loadSettingsProfiles() {
+
+    const {
+        data,
+        error
+    } =
+        await settingsSupabase
+            .from(
+                "profiles"
+            )
+            .select(
+                `
+                id,
+                username,
+                full_name,
+                phone,
+                role,
+                status,
+                driver_rate,
+                notes,
+                created_at
+                `
+            )
+            .order(
+                "full_name",
+                {
+                    ascending:
+                        true
+                }
+            );
+
+
+    if (
+        error
+    ) {
+
+        console.error(
+            "Failed loading profiles:",
+            error
+        );
+
+
+        settingsProfiles =
+            [];
+
+
+        showSettingsTableError(
+            "לא ניתן לטעון את המשתמשים."
+        );
+
+
+        return false;
+
+    }
+
+
+    settingsProfiles =
+        data ||
+        [];
+
+
+    return true;
+
+}
+
+
+// =========================================================
+// TABLE ERROR
+// =========================================================
+
+function showSettingsTableError(
+    message
+) {
+
+    if (
+        !usersTableBody
+    ) {
+
+        return;
+
+    }
+
+
+    usersTableBody.innerHTML = `
+
+        <tr>
+
+            <td
+                colspan="7"
+                style="
+                    text-align:center;
+                    padding:35px;
+                    color:#b91c1c;
+                "
+            >
+                ${message}
+            </td>
+
+        </tr>
+
+    `;
+
+}
+
+
+// =========================================================
+// ROLE NAME
+// =========================================================
+
+function getSettingsRoleName(
+    role
+) {
+
+    switch (
+        role
+    ) {
+
+        case "ADMIN":
+
+            return "מנהל מערכת";
+
+
+        case "WAREHOUSE":
+
+            return "עובד מחסן";
+
+
+        case "DRIVER":
+
+            return "שליח";
+
+
+        default:
+
+            return role ||
+                "-";
+
+    }
+
+}
+
+
+// =========================================================
+// ROLE BADGE
+// =========================================================
+
+function getSettingsRoleBadge(
+    role
+) {
+
+    const roleName =
+        getSettingsRoleName(
+            role
+        );
+
+
+    let className =
+        "waiting";
+
+
+    if (
+        role ===
+        "ADMIN"
+    ) {
+
+        className =
+            "active";
+
+    }
+
+
+    if (
+        role ===
+        "DRIVER"
+    ) {
+
+        className =
+            "completed";
+
+    }
+
+
+    return `
+
+        <span class="status ${className}">
+            ${roleName}
+        </span>
+
+    `;
+
+}
+
+
+// =========================================================
+// STATUS BADGE
+// =========================================================
+
+function getSettingsStatusBadge(
+    status
+) {
+
+    if (
+        status ===
+        "פעיל"
+    ) {
+
+        return `
+
+            <span class="status completed">
+                פעיל
+            </span>
+
+        `;
+
+    }
+
+
+    return `
+
+        <span class="status failed">
+            לא פעיל
+        </span>
+
+    `;
+
+}
+
+
+// =========================================================
+// MONEY FORMAT
+// =========================================================
+
+function settingsFormatMoney(
+    value
+) {
+
+    if (
+        value ===
+        null ||
+        value ===
+        undefined ||
+        value ===
+        ""
+    ) {
+
+        return "-";
+
+    }
+
+
+    return (
+
+        "₪" +
+
+        Number(
+            value
+        )
+            .toLocaleString(
+                "he-IL",
+                {
+                    minimumFractionDigits:
+                        0,
+
+                    maximumFractionDigits:
+                        2
+                }
+            )
+
+    );
+
+}
+
+
+// =========================================================
+// COUNTERS
+// =========================================================
+
+function renderSettingsCounters() {
+
+    const total =
+        settingsProfiles.length;
+
+
+    const active =
+        settingsProfiles.filter(
+
+            profile =>
+                profile.status ===
+                "פעיל"
+
+        ).length;
+
+
+    const activeDrivers =
+        settingsProfiles.filter(
+
+            profile =>
+
+                profile.role ===
+                    "DRIVER"
+
+                &&
+
+                profile.status ===
+                    "פעיל"
+
+        ).length;
+
+
+    const inactive =
+        settingsProfiles.filter(
+
+            profile =>
+                profile.status !==
+                "פעיל"
+
+        ).length;
+
+
+    if (
+        totalUsersCount
+    ) {
+
+        totalUsersCount.textContent =
+            total;
+
+    }
+
+
+    if (
+        activeUsersCount
+    ) {
+
+        activeUsersCount.textContent =
+            active;
+
+    }
+
+
+    if (
+        activeDriverUsersCount
+    ) {
+
+        activeDriverUsersCount.textContent =
+            activeDrivers;
+
+    }
+
+
+    if (
+        inactiveUsersCount
+    ) {
+
+        inactiveUsersCount.textContent =
+            inactive;
+
+    }
+
+}
+
+
+// =========================================================
+// FILTER USERS
+// =========================================================
+
+function getFilteredSettingsProfiles() {
+
+    const search =
+        userSearchInput
+
+            ? userSearchInput
+                .value
+                .trim()
+                .toLowerCase()
+
+            : "";
+
+
+    const selectedRole =
+        userRoleFilter
+
+            ? userRoleFilter.value
+
+            : "";
+
+
+    const selectedStatus =
+        userStatusFilter
+
+            ? userStatusFilter.value
+
+            : "";
+
+
+    return settingsProfiles.filter(
+
+        profile => {
+
+            if (
+                selectedRole &&
+                profile.role !==
+                    selectedRole
+            ) {
+
+                return false;
+
+            }
+
+
+            if (
+                selectedStatus &&
+                profile.status !==
+                    selectedStatus
+            ) {
+
+                return false;
+
+            }
+
+
+            if (
+                search
+            ) {
+
+                const searchText =
+                    [
+
+                        profile.full_name,
+
+                        profile.phone,
+
+                        profile.username,
+
+                        profile.role,
+
+                        profile.status
+
+                    ]
+                        .filter(
+                            Boolean
+                        )
+                        .join(
+                            " "
+                        )
+                        .toLowerCase();
+
+
+                if (
+                    !searchText.includes(
+                        search
+                    )
+                ) {
+
+                    return false;
+
+                }
+
+            }
+
+
+            return true;
+
+        }
+
+    );
+
+}
+
+
+// =========================================================
+// RENDER USERS TABLE
+// =========================================================
+
+function renderSettingsUsersTable() {
+
+    if (
+        !usersTableBody
+    ) {
+
+        return;
+
+    }
+
+
+    const profiles =
+        getFilteredSettingsProfiles();
+
+
+    usersTableBody.innerHTML =
+        "";
+
+
+    if (
+        profiles.length ===
+        0
+    ) {
+
+        usersTableBody.innerHTML = `
+
+            <tr>
+
+                <td
+                    colspan="7"
+                    style="
+                        text-align:center;
+                        padding:35px;
+                        color:#64748b;
+                    "
+                >
+                    לא נמצאו משתמשים
+                </td>
+
+            </tr>
+
+        `;
+
+
+        return;
+
+    }
+
+
+    profiles.forEach(
+
+        profile => {
+
+            const row =
+                document.createElement(
+                    "tr"
+                );
+
+
+            const displayName =
+                profile.full_name ||
+                profile.username ||
+                "משתמש";
+
+
+            const rate =
+                profile.role ===
+                    "DRIVER"
+
+                    ? settingsFormatMoney(
+                        profile.driver_rate
+                    )
+
+                    : "-";
+
+
+            const isCurrentUser =
+                settingsCurrentProfile
+
+                &&
+
+                String(
+                    profile.id
+                )
+
+                ===
+
+                String(
+                    settingsCurrentProfile.id
+                );
+
+
+            row.innerHTML = `
+
+                <td>
+
+                    <div>
+
+                        <strong>
+                            ${displayName}
+                        </strong>
+
+                        ${
+                            isCurrentUser
+
+                                ? `
+                                    <div
+                                        style="
+                                            margin-top:4px;
+                                            font-size:11px;
+                                            color:#2563eb;
+                                            font-weight:700;
+                                        "
+                                    >
+                                        המשתמש שלך
+                                    </div>
+                                `
+
+                                : ""
+                        }
+
+                    </div>
+
+                </td>
+
+
+                <td>
+                    ${profile.phone || "-"}
+                </td>
+
+
+                <td>
+                    ${profile.username || "-"}
+                </td>
+
+
+                <td>
+                    ${getSettingsRoleBadge(
+                        profile.role
+                    )}
+                </td>
+
+
+                <td>
+                    ${rate}
+                </td>
+
+
+                <td>
+                    ${getSettingsStatusBadge(
+                        profile.status
+                    )}
+                </td>
+
+
+                <td>
+
+                    <button
+                        type="button"
+                        class="table-btn"
+                        onclick="
+                            openSettingsEditUser(
+                                '${profile.id}'
+                            )
+                        "
+                    >
+                        עריכה
+                    </button>
+
+                </td>
+
+            `;
+
+
+            usersTableBody.appendChild(
+                row
+            );
+
+        }
+
+    );
+
+}
+
+
+// =========================================================
+// FILTER EVENTS
+// =========================================================
+
+if (
+    userSearchInput
+) {
+
+    userSearchInput.addEventListener(
+
+        "input",
+
+        renderSettingsUsersTable
+
+    );
+
+}
+
+
+if (
+    userRoleFilter
+) {
+
+    userRoleFilter.addEventListener(
+
+        "change",
+
+        renderSettingsUsersTable
+
+    );
+
+}
+
+
+if (
+    userStatusFilter
+) {
+
+    userStatusFilter.addEventListener(
+
+        "change",
+
+        renderSettingsUsersTable
+
+    );
+
+}
+
+
+// =========================================================
+// DRIVER RATE VISIBILITY
+// =========================================================
+
+function updateDriverRateVisibility() {
+
+    if (
+        !driverRateGroup ||
+        !userRole
+    ) {
+
+        return;
+
+    }
+
+
+    if (
+        userRole.value ===
+        "DRIVER"
+    ) {
+
+        driverRateGroup.style.display =
+            "";
+
+    }
+
+    else {
+
+        driverRateGroup.style.display =
+            "none";
+
+    }
+
+}
+
+
+if (
+    userRole
+) {
+
+    userRole.addEventListener(
+
+        "change",
+
+        updateDriverRateVisibility
+
+    );
+
+}
+
+
+// =========================================================
+// CLOSE USER MODAL
+// =========================================================
+
+function closeSettingsUserModal() {
+
+    if (
+        !userModal
+    ) {
+
+        return;
+
+    }
+
+
+    userModal.classList
+        .add(
+            "hidden"
+        );
+
+
+    editingProfile =
+        null;
+
+
+    if (
+        userForm
+    ) {
+
+        userForm.reset();
+
+    }
+
+}
+
+
+// =========================================================
+// OPEN EDIT USER
+// =========================================================
+
+function openSettingsEditUser(
+    profileId
+) {
+
+    const profile =
+        settingsProfiles.find(
+
+            item =>
+                String(
+                    item.id
+                )
+
+                ===
+
+                String(
+                    profileId
+                )
+
+        );
+
+
+    if (
+        !profile ||
+        !userModal
+    ) {
+
+        return;
+
+    }
+
+
+    editingProfile =
+        profile;
+
+
+    if (
+        editingUserId
+    ) {
+
+        editingUserId.value =
+            profile.id;
+
+    }
+
+
+    if (
+        userFullName
+    ) {
+
+        userFullName.value =
+            profile.full_name ||
+            "";
+
+    }
+
+
+    if (
+        userPhone
+    ) {
+
+        userPhone.value =
+            profile.phone ||
+            "";
+
+    }
+
+
+    if (
+        userUsername
+    ) {
+
+        userUsername.value =
+            profile.username ||
+            "";
+
+    }
+
+
+    if (
+        userRole
+    ) {
+
+        userRole.value =
+            profile.role;
+
+    }
+
+
+    if (
+        userStatus
+    ) {
+
+        userStatus.value =
+            profile.status;
+
+    }
+
+
+    if (
+        userDeliveryRate
+    ) {
+
+        userDeliveryRate.value =
+            profile.driver_rate ??
+            13;
+
+    }
+
+
+    if (
+        userNotes
+    ) {
+
+        userNotes.value =
+            profile.notes ||
+            "";
+
+    }
+
+
+    // Email lives in Supabase Auth, not profiles.
+    // We are not editing Auth email from frontend.
+
+    if (
+        userEmail
+    ) {
+
+        userEmail.value =
+            "";
+
+    }
+
+
+    if (
+        userEmailGroup
+    ) {
+
+        userEmailGroup.style.display =
+            "none";
+
+    }
+
+
+    if (
+        userPasswordGroup
+    ) {
+
+        userPasswordGroup.style.display =
+            "none";
+
+    }
+
+
+    if (
+        userModalTitle
+    ) {
+
+        userModalTitle.textContent =
+            "עריכת משתמש";
+
+    }
+
+
+    if (
+        userModalSubtitle
+    ) {
+
+        userModalSubtitle.textContent =
+            profile.full_name ||
+            profile.username ||
+            "משתמש";
+
+    }
+
+
+    if (
+        userSecurityMessage
+    ) {
+
+        userSecurityMessage.textContent =
+            "השינויים יישמרו ישירות בפרופיל המשתמש ב-Supabase.";
+
+    }
+
+
+    const editingSelf =
+        settingsCurrentProfile
+
+        &&
+
+        String(
+            profile.id
+        )
+
+        ===
+
+        String(
+            settingsCurrentProfile.id
+        );
+
+
+    /*
+        Safety:
+        The logged-in admin may edit their name / phone / username /
+        notes, but cannot accidentally deactivate themselves or change
+        their own ADMIN role and lock themselves out.
+    */
+
+    if (
+        editingSelf
+    ) {
+
+        if (
+            userRole
+        ) {
+
+            userRole.disabled =
+                true;
+
+        }
+
+
+        if (
+            userStatus
+        ) {
+
+            userStatus.disabled =
+                true;
+
+        }
+
+
+        if (
+            userSecurityMessage
+        ) {
+
+            userSecurityMessage.textContent =
+                "זה המשתמש שמחובר כרגע. ניתן לערוך פרטים, אך לא ניתן לשנות לעצמך תפקיד או להפוך את החשבון ללא פעיל.";
+
+        }
+
+    }
+
+    else {
+
+        if (
+            userRole
+        ) {
+
+            userRole.disabled =
+                false;
+
+        }
+
+
+        if (
+            userStatus
+        ) {
+
+            userStatus.disabled =
+                false;
+
+        }
+
+    }
+
+
+    updateDriverRateVisibility();
+
+
+    userModal.classList
+        .remove(
+            "hidden"
+        );
+
+}
+
+
+// Make function available to inline button
+
+window.openSettingsEditUser =
+    openSettingsEditUser;
+
+
+// =========================================================
+// NEW USER BUTTON
+// =========================================================
+
+function openSettingsNewUserModal() {
+
+    editingProfile =
+        null;
+
+
+    if (
+        userForm
+    ) {
+
+        userForm.reset();
+
+    }
+
+
+    if (
+        editingUserId
+    ) {
+
+        editingUserId.value =
+            "";
+
+    }
+
+
+    if (
+        userModalTitle
+    ) {
+
+        userModalTitle.textContent =
+            "משתמש חדש";
+
+    }
+
+
+    if (
+        userModalSubtitle
+    ) {
+
+        userModalSubtitle.textContent =
+            "יצירת עובד חדש במערכת";
+
+    }
+
+
+    if (
+        userEmailGroup
+    ) {
+
+        userEmailGroup.style.display =
+            "";
+
+    }
+
+
+    if (
+        userPasswordGroup
+    ) {
+
+        userPasswordGroup.style.display =
+            "";
+
+    }
+
+
+    if (
+        userEmail
+    ) {
+
+        userEmail.value =
+            "";
+
+        userEmail.required =
+            true;
+
+    }
+
+
+    if (
+        userPassword
+    ) {
+
+        userPassword.value =
+            "";
+
+        userPassword.required =
+            true;
+
+    }
+
+
+    if (
+        userRole
+    ) {
+
+        userRole.disabled =
+            false;
+
+        userRole.value =
+            "DRIVER";
+
+    }
+
+
+    if (
+        userStatus
+    ) {
+
+        userStatus.disabled =
+            false;
+
+        userStatus.value =
+            "פעיל";
+
+    }
+
+
+    if (
+        userDeliveryRate
+    ) {
+
+        userDeliveryRate.value =
+            13;
+
+    }
+
+
+    if (
+        userSecurityMessage
+    ) {
+
+        userSecurityMessage.textContent =
+            "יצירת משתמש חדש תחובר בשלב הבא ל-Supabase Auth באמצעות פונקציית Backend מאובטחת.";
+
+    }
+
+
+    updateDriverRateVisibility();
+
+
+    if (
+        userModal
+    ) {
+
+        userModal.classList
+            .remove(
+                "hidden"
+            );
+
+    }
+
+}
+
+
+if (
+    newUserButton
+) {
+
+    newUserButton.addEventListener(
+
+        "click",
+
+        openSettingsNewUserModal
+
+    );
+
+}
+
+
+// =========================================================
+// MODAL CLOSE EVENTS
+// =========================================================
+
+if (
+    closeUserModal
+) {
+
+    closeUserModal.addEventListener(
+
+        "click",
+
+        closeSettingsUserModal
+
+    );
+
+}
+
+
+if (
+    cancelUserButton
+) {
+
+    cancelUserButton.addEventListener(
+
+        "click",
+
+        closeSettingsUserModal
+
+    );
+
+}
+
+
+// =========================================================
+// SAVE USER
+// =========================================================
+
+if (
+    userForm
+) {
+
+    userForm.addEventListener(
+
+        "submit",
+
+        async function (
+            event
+        ) {
+
+            event.preventDefault();
+
+
+            const profileId =
+                editingUserId
+                    ? editingUserId.value
+                    : "";
+
+
+            // =================================================
+            // NEW USER
+            // =================================================
+
+            if (
+                !profileId
+            ) {
+
+                alert(
+                    "יצירת משתמש חדש עדיין לא הופעלה. בשלב הבא נחבר את הכפתור ל-Supabase Auth באמצעות Edge Function מאובטחת."
+                );
+
+
+                return;
+
+            }
+
+
+            // =================================================
+            // EXISTING USER
+            // =================================================
+
+            const existingProfile =
+                settingsProfiles.find(
+
+                    profile =>
+                        String(
+                            profile.id
+                        )
+
+                        ===
+
+                        String(
+                            profileId
+                        )
+
+                );
+
+
+            if (
+                !existingProfile
+            ) {
+
+                alert(
+                    "המשתמש לא נמצא."
+                );
+
+
+                return;
+
+            }
+
+
+            const editingSelf =
+                settingsCurrentProfile
+
+                &&
+
+                String(
+                    profileId
+                )
+
+                ===
+
+                String(
+                    settingsCurrentProfile.id
+                );
+
+
+            let role =
+                userRole.value;
+
+
+            let status =
+                userStatus.value;
+
+
+            if (
+                editingSelf
+            ) {
+
+                role =
+                    settingsCurrentProfile.role;
+
+
+                status =
+                    settingsCurrentProfile.status;
+
+            }
+
+
+            const updateData = {
+
+                full_name:
+                    userFullName.value
+                        .trim(),
+
+                phone:
+                    userPhone.value
+                        .trim()
+                    ||
+                    null,
+
+                username:
+                    userUsername.value
+                        .trim(),
+
+                role:
+                    role,
+
+                status:
+                    status,
+
+                notes:
+                    userNotes.value
+                        .trim()
+                    ||
+                    null,
+
+                driver_rate:
+                    role ===
+                        "DRIVER"
+
+                        ? Number(
+                            userDeliveryRate.value ||
+                            0
+                        )
+
+                        : null
+
+            };
+
+
+            if (
+                !updateData.full_name
+            ) {
+
+                alert(
+                    "יש להזין שם מלא."
+                );
+
+
+                return;
+
+            }
+
+
+            if (
+                !updateData.username
+            ) {
+
+                alert(
+                    "יש להזין שם משתמש."
+                );
+
+
+                return;
+
+            }
+
+
+            if (
+                saveUserButton
+            ) {
+
+                saveUserButton.disabled =
+                    true;
+
+
+                saveUserButton.textContent =
+                    "שומר...";
+
+            }
+
+
+            const {
+                data,
+                error
+            } =
+                await settingsSupabase
+                    .from(
+                        "profiles"
+                    )
+                    .update(
+                        updateData
+                    )
+                    .eq(
+                        "id",
+                        profileId
+                    )
+                    .select(
+                        `
+                        id,
+                        username,
+                        full_name,
+                        phone,
+                        role,
+                        status,
+                        driver_rate,
+                        notes,
+                        created_at
+                        `
+                    )
+                    .single();
+
+
+            if (
+                saveUserButton
+            ) {
+
+                saveUserButton.disabled =
+                    false;
+
+
+                saveUserButton.textContent =
+                    "שמור משתמש";
+
+            }
+
+
+            if (
+                error
+            ) {
+
+                console.error(
+                    "Profile update failed:",
+                    error
+                );
+
+
+                alert(
+                    "לא ניתן היה לעדכן את המשתמש."
+                );
+
+
+                return;
+
+            }
+
+
+            const index =
+                settingsProfiles.findIndex(
+
+                    profile =>
+                        String(
+                            profile.id
+                        )
+
+                        ===
+
+                        String(
+                            profileId
+                        )
+
+                );
+
+
+            if (
+                index !==
+                -1
+            ) {
+
+                settingsProfiles[
+                    index
+                ] =
+                    data;
+
+            }
+
+
+            if (
+                editingSelf
+            ) {
+
+                settingsCurrentProfile =
+                    data;
+
+
+                renderSettingsCurrentUser();
+
+            }
+
+
+            renderSettingsCounters();
+
+
+            renderSettingsUsersTable();
+
+
+            closeSettingsUserModal();
+
+        }
+
+    );
+
+}
+
+
+// =========================================================
+// SETTINGS NAVIGATION
+// =========================================================
+
+const settingsSectionTitles = {
 
     business:
         "פרטי העסק",
@@ -1667,13 +2142,13 @@ const sectionTitles = {
         "תעריפים ושכר",
 
     barcode:
-        "הגדרות ברקודים",
+        "ברקודים",
 
     routes:
-        "הגדרות מסלולים",
+        "מסלולים",
 
     notifications:
-        "התראות ללקוחות",
+        "התראות",
 
     integrations:
         "אינטגרציות"
@@ -1681,38 +2156,38 @@ const sectionTitles = {
 };
 
 
-navButtons.forEach(
+settingsNavItems.forEach(
 
-    button => {
+    item => {
 
-
-        button.addEventListener(
+        item.addEventListener(
 
             "click",
 
             function () {
 
+                const section =
+                    this.dataset.section;
 
-                navButtons.forEach(
 
-                    item =>
+                settingsNavItems.forEach(
 
-                        item.classList
+                    navItem => {
+
+                        navItem.classList
                             .remove(
                                 "active"
-                            )
+                            );
+
+                    }
 
                 );
 
 
-                button.classList
+                this.classList
                     .add(
                         "active"
                     );
-
-
-                const section =
-                    button.dataset.section;
 
 
                 if (
@@ -1720,48 +2195,68 @@ navButtons.forEach(
                     "users"
                 ) {
 
+                    if (
+                        usersSection
+                    ) {
 
+                        usersSection.classList
+                            .remove(
+                                "hidden"
+                            );
+
+                    }
+
+
+                    if (
+                        placeholderSection
+                    ) {
+
+                        placeholderSection.classList
+                            .add(
+                                "hidden"
+                            );
+
+                    }
+
+
+                    return;
+
+                }
+
+
+                if (
                     usersSection
-                        .classList
-                        .remove(
-                            "hidden"
-                        );
+                ) {
 
-
-                    placeholderSection
-                        .classList
+                    usersSection.classList
                         .add(
                             "hidden"
                         );
 
                 }
 
-                else {
 
-
-                    usersSection
-                        .classList
-                        .add(
-                            "hidden"
-                        );
-
-
+                if (
                     placeholderSection
-                        .classList
+                ) {
+
+                    placeholderSection.classList
                         .remove(
                             "hidden"
                         );
 
+                }
 
+
+                if (
                     placeholderTitle
-                        .textContent =
+                ) {
 
-                        sectionTitles[
+                    placeholderTitle.textContent =
+                        settingsSectionTitles[
                             section
                         ]
-
                         ||
-
                         "הגדרות";
 
                 }
@@ -1776,13 +2271,63 @@ navButtons.forEach(
 
 
 // =========================================================
-// INITIALIZE
+// INITIALIZE SETTINGS
 // =========================================================
 
-initializeUsers();
+async function initializeSettingsPage() {
 
-updateRateVisibility();
+    const authenticated =
+        await loadSettingsSession();
 
-updateUserCounters();
 
-renderUsers();
+    if (
+        !authenticated
+    ) {
+
+        return;
+
+    }
+
+
+    const profileLoaded =
+        await loadSettingsCurrentProfile();
+
+
+    if (
+        !profileLoaded
+    ) {
+
+        return;
+
+    }
+
+
+    renderSettingsCurrentUser();
+
+
+    const profilesLoaded =
+        await loadSettingsProfiles();
+
+
+    if (
+        !profilesLoaded
+    ) {
+
+        return;
+
+    }
+
+
+    renderSettingsCounters();
+
+
+    renderSettingsUsersTable();
+
+}
+
+
+// =========================================================
+// START
+// =========================================================
+
+initializeSettingsPage();

@@ -16,12 +16,12 @@
 
     <link
         rel="stylesheet"
-        href="style.css"
+        href="style.css?v=20261022-4"
     >
 
     <link
         rel="stylesheet"
-        href="settings.css"
+        href="settings.css?v=20261022-2"
     >
 
 </head>
@@ -30,9 +30,9 @@
 <body>
 
 
-    <!-- =====================================================
-         SIDEBAR
-    ====================================================== -->
+    <!-- ===================================================== -->
+    <!-- SIDEBAR -->
+    <!-- ===================================================== -->
 
     <aside class="sidebar">
 
@@ -62,131 +62,51 @@
         <nav class="menu">
 
 
-            <a
-                href="index.html"
-                class="menu-item"
-            >
-
-                <span class="menu-icon">
-                    🏠
-                </span>
-
-                <span>
-                    לוח בקרה
-                </span>
-
+            <a href="index.html" class="menu-item">
+                <span class="menu-icon">🏠</span>
+                <span>לוח בקרה</span>
             </a>
 
 
-            <a
-                href="warehouse.html"
-                class="menu-item"
-            >
-
-                <span class="menu-icon">
-                    📥
-                </span>
-
-                <span>
-                    קליטת משלוחים
-                </span>
-
+            <a href="warehouse.html" class="menu-item">
+                <span class="menu-icon">📥</span>
+                <span>קליטת משלוחים</span>
             </a>
 
 
-            <a
-                href="shipments.html"
-                class="menu-item"
-            >
-
-                <span class="menu-icon">
-                    📦
-                </span>
-
-                <span>
-                    משלוחים
-                </span>
-
+            <a href="shipments.html" class="menu-item">
+                <span class="menu-icon">📦</span>
+                <span>משלוחים</span>
             </a>
 
 
-            <a
-                href="drivers.html"
-                class="menu-item"
-            >
-
-                <span class="menu-icon">
-                    🚚
-                </span>
-
-                <span>
-                    שליחים
-                </span>
-
+            <a href="drivers.html" class="menu-item">
+                <span class="menu-icon">🚚</span>
+                <span>שליחים</span>
             </a>
 
 
-            <a
-                href="cities.html"
-                class="menu-item"
-            >
-
-                <span class="menu-icon">
-                    📍
-                </span>
-
-                <span>
-                    ערים ואזורים
-                </span>
-
+            <a href="cities.html" class="menu-item">
+                <span class="menu-icon">📍</span>
+                <span>ערים ואזורים</span>
             </a>
 
 
-            <a
-                href="#"
-                class="menu-item"
-            >
-
-                <span class="menu-icon">
-                    🗺️
-                </span>
-
-                <span>
-                    מפת פעילות
-                </span>
-
+            <a href="cities.html" class="menu-item">
+                <span class="menu-icon">🗺️</span>
+                <span>מפת פעילות</span>
             </a>
 
 
-            <a
-                href="reports.html"
-                class="menu-item"
-            >
-
-                <span class="menu-icon">
-                    📊
-                </span>
-
-                <span>
-                    דוחות
-                </span>
-
+            <a href="reports.html" class="menu-item">
+                <span class="menu-icon">📊</span>
+                <span>דוחות</span>
             </a>
 
 
-            <a
-                href="settings.html"
-                class="menu-item active"
-            >
-
-                <span class="menu-icon">
-                    ⚙️
-                </span>
-
-                <span>
-                    הגדרות
-                </span>
-
+            <a href="settings.html" class="menu-item active">
+                <span class="menu-icon">⚙️</span>
+                <span>הגדרות</span>
             </a>
 
 
@@ -196,17 +116,20 @@
 
         <div class="sidebar-user">
 
-            <div class="user-avatar">
-                ש
+            <div
+                id="settingsUserAvatar"
+                class="user-avatar"
+            >
+                מ
             </div>
 
             <div class="user-details">
 
-                <strong>
-                    מנהל עבודה
+                <strong id="settingsUserName">
+                    מנהל מערכת
                 </strong>
 
-                <span>
+                <span id="settingsUserRole">
                     Administrator
                 </span>
 
@@ -219,9 +142,9 @@
 
 
 
-    <!-- =====================================================
-         MAIN
-    ====================================================== -->
+    <!-- ===================================================== -->
+    <!-- MAIN -->
+    <!-- ===================================================== -->
 
     <main class="main-content">
 
@@ -247,9 +170,9 @@
         <section class="settings-layout">
 
 
-            <!-- =============================================
-                 SETTINGS NAVIGATION
-            ============================================== -->
+            <!-- ================================================= -->
+            <!-- SETTINGS NAV -->
+            <!-- ================================================= -->
 
             <aside class="settings-navigation">
 
@@ -257,11 +180,10 @@
                 <button
                     class="settings-nav-item"
                     data-section="business"
+                    type="button"
                 >
 
-                    <span>
-                        🏢
-                    </span>
+                    <span>🏢</span>
 
                     <div>
 
@@ -278,14 +200,14 @@
                 </button>
 
 
+
                 <button
                     class="settings-nav-item active"
                     data-section="users"
+                    type="button"
                 >
 
-                    <span>
-                        👥
-                    </span>
+                    <span>👥</span>
 
                     <div>
 
@@ -302,14 +224,14 @@
                 </button>
 
 
+
                 <button
                     class="settings-nav-item"
                     data-section="salary"
+                    type="button"
                 >
 
-                    <span>
-                        💰
-                    </span>
+                    <span>💰</span>
 
                     <div>
 
@@ -326,14 +248,14 @@
                 </button>
 
 
+
                 <button
                     class="settings-nav-item"
                     data-section="barcode"
+                    type="button"
                 >
 
-                    <span>
-                        📦
-                    </span>
+                    <span>📦</span>
 
                     <div>
 
@@ -350,14 +272,14 @@
                 </button>
 
 
+
                 <button
                     class="settings-nav-item"
                     data-section="routes"
+                    type="button"
                 >
 
-                    <span>
-                        🗺️
-                    </span>
+                    <span>🗺️</span>
 
                     <div>
 
@@ -374,14 +296,14 @@
                 </button>
 
 
+
                 <button
                     class="settings-nav-item"
                     data-section="notifications"
+                    type="button"
                 >
 
-                    <span>
-                        🔔
-                    </span>
+                    <span>🔔</span>
 
                     <div>
 
@@ -398,14 +320,14 @@
                 </button>
 
 
+
                 <button
                     class="settings-nav-item"
                     data-section="integrations"
+                    type="button"
                 >
 
-                    <span>
-                        🔌
-                    </span>
+                    <span>🔌</span>
 
                     <div>
 
@@ -426,12 +348,16 @@
 
 
 
-            <!-- =============================================
-                 CONTENT
-            ============================================== -->
+            <!-- ================================================= -->
+            <!-- CONTENT -->
+            <!-- ================================================= -->
 
             <div class="settings-content">
 
+
+                <!-- ================================================= -->
+                <!-- USERS -->
+                <!-- ================================================= -->
 
                 <section
                     id="usersSection"
@@ -441,6 +367,7 @@
 
                     <div class="settings-section-header">
 
+
                         <div>
 
                             <h2>
@@ -448,7 +375,7 @@
                             </h2>
 
                             <p>
-                                יצירת חשבונות למנהלים, עובדי מחסן ושליחים
+                                ניהול מנהלים, עובדי מחסן ושליחים
                             </p>
 
                         </div>
@@ -457,17 +384,19 @@
                         <button
                             class="primary-btn"
                             id="newUserButton"
+                            type="button"
                         >
                             + משתמש חדש
                         </button>
+
 
                     </div>
 
 
 
-                    <!-- =====================================
-                         COUNTERS
-                    ====================================== -->
+                    <!-- ================================================= -->
+                    <!-- COUNTERS -->
+                    <!-- ================================================= -->
 
                     <div class="settings-stats">
 
@@ -478,13 +407,12 @@
                                 סה"כ משתמשים
                             </span>
 
-                            <strong
-                                id="totalUsersCount"
-                            >
+                            <strong id="totalUsersCount">
                                 0
                             </strong>
 
                         </div>
+
 
 
                         <div class="settings-stat">
@@ -493,13 +421,12 @@
                                 משתמשים פעילים
                             </span>
 
-                            <strong
-                                id="activeUsersCount"
-                            >
+                            <strong id="activeUsersCount">
                                 0
                             </strong>
 
                         </div>
+
 
 
                         <div class="settings-stat">
@@ -508,13 +435,12 @@
                                 שליחים פעילים
                             </span>
 
-                            <strong
-                                id="activeDriverUsersCount"
-                            >
+                            <strong id="activeDriverUsersCount">
                                 0
                             </strong>
 
                         </div>
+
 
 
                         <div class="settings-stat">
@@ -523,9 +449,7 @@
                                 משתמשים לא פעילים
                             </span>
 
-                            <strong
-                                id="inactiveUsersCount"
-                            >
+                            <strong id="inactiveUsersCount">
                                 0
                             </strong>
 
@@ -536,9 +460,9 @@
 
 
 
-                    <!-- =====================================
-                         FILTERS
-                    ====================================== -->
+                    <!-- ================================================= -->
+                    <!-- FILTERS -->
+                    <!-- ================================================= -->
 
                     <div class="users-toolbar">
 
@@ -592,9 +516,9 @@
 
 
 
-                    <!-- =====================================
-                         USERS TABLE
-                    ====================================== -->
+                    <!-- ================================================= -->
+                    <!-- USERS TABLE -->
+                    <!-- ================================================= -->
 
                     <div class="table-wrapper">
 
@@ -641,6 +565,21 @@
 
                             <tbody id="usersTableBody">
 
+                                <tr>
+
+                                    <td
+                                        colspan="7"
+                                        style="
+                                            text-align:center;
+                                            padding:35px;
+                                            color:#64748b;
+                                        "
+                                    >
+                                        טוען משתמשים...
+                                    </td>
+
+                                </tr>
+
                             </tbody>
 
 
@@ -653,6 +592,10 @@
                 </section>
 
 
+
+                <!-- ================================================= -->
+                <!-- PLACEHOLDER -->
+                <!-- ================================================= -->
 
                 <section
                     id="placeholderSection"
@@ -688,9 +631,9 @@
 
 
 
-    <!-- =====================================================
-         USER MODAL
-    ====================================================== -->
+    <!-- ===================================================== -->
+    <!-- USER MODAL -->
+    <!-- ===================================================== -->
 
     <div
         id="userModal"
@@ -707,11 +650,11 @@
                 <div>
 
                     <h2 id="userModalTitle">
-                        משתמש חדש
+                        משתמש
                     </h2>
 
-                    <p>
-                        יצירת משתמש חדש במערכת
+                    <p id="userModalSubtitle">
+                        ניהול פרטי משתמש
                     </p>
 
                 </div>
@@ -739,12 +682,13 @@
                 >
 
 
+
                 <div class="form-grid">
 
 
                     <div class="form-group">
 
-                        <label>
+                        <label for="userFullName">
                             שם מלא
                         </label>
 
@@ -757,24 +701,28 @@
                     </div>
 
 
+
                     <div class="form-group">
 
-                        <label>
+                        <label for="userPhone">
                             טלפון
                         </label>
 
                         <input
                             type="tel"
                             id="userPhone"
-                            required
                         >
 
                     </div>
 
 
-                    <div class="form-group">
 
-                        <label>
+                    <div
+                        class="form-group"
+                        id="userEmailGroup"
+                    >
+
+                        <label for="userEmail">
                             אימייל
                         </label>
 
@@ -786,9 +734,10 @@
                     </div>
 
 
+
                     <div class="form-group">
 
-                        <label>
+                        <label for="userRole">
                             תפקיד
                         </label>
 
@@ -814,9 +763,10 @@
                     </div>
 
 
+
                     <div class="form-group">
 
-                        <label>
+                        <label for="userUsername">
                             שם משתמש
                         </label>
 
@@ -830,9 +780,13 @@
                     </div>
 
 
-                    <div class="form-group">
 
-                        <label>
+                    <div
+                        class="form-group"
+                        id="userPasswordGroup"
+                    >
+
+                        <label for="userPassword">
                             סיסמה
                         </label>
 
@@ -840,10 +794,10 @@
                             type="password"
                             id="userPassword"
                             autocomplete="new-password"
-                            required
                         >
 
                     </div>
+
 
 
                     <div
@@ -851,7 +805,7 @@
                         id="driverRateGroup"
                     >
 
-                        <label>
+                        <label for="userDeliveryRate">
                             תעריף למשלוח (₪)
                         </label>
 
@@ -866,9 +820,10 @@
                     </div>
 
 
+
                     <div class="form-group">
 
-                        <label>
+                        <label for="userStatus">
                             סטטוס
                         </label>
 
@@ -899,7 +854,7 @@
                     style="margin-top:18px;"
                 >
 
-                    <label>
+                    <label for="userNotes">
                         הערה פנימית
                     </label>
 
@@ -913,26 +868,18 @@
 
 
 
-                <div class="login-preview">
-
+                <div
+                    id="editUserNotice"
+                    class="login-preview"
+                >
 
                     <strong>
-                        פרטי התחברות
+                        ניהול משתמש
                     </strong>
 
-
-                    <p>
-                        המשתמש יוכל להתחבר באמצעות שם המשתמש והסיסמה שהוגדרו כאן.
+                    <p id="userSecurityMessage">
+                        עריכת פרטי המשתמש תתעדכן ישירות ב-Supabase.
                     </p>
-
-
-                    <div class="security-note">
-
-                        ⚠️ כרגע זו סביבת פיתוח בדפדפן בלבד.
-                        בהמשך הסיסמאות יישמרו בצורה מאובטחת בצד השרת.
-
-                    </div>
-
 
                 </div>
 
@@ -953,6 +900,7 @@
                     <button
                         type="submit"
                         class="primary-btn"
+                        id="saveUserButton"
                     >
                         שמור משתמש
                     </button>
@@ -971,7 +919,15 @@
 
 
 
-    <script src="settings.js"></script>
+    <!-- ===================================================== -->
+    <!-- SUPABASE -->
+    <!-- ===================================================== -->
+
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+    <script src="supabase-config.js"></script>
+
+    <script src="settings.js?v=20261022-2"></script>
 
 
 </body>
