@@ -1,0 +1,526 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
+
+    <title>
+        שליחים | Delivery
+    </title>
+
+    <link
+        rel="stylesheet"
+        href="style.css?v=20261022-3"
+    >
+
+</head>
+
+
+<body>
+
+
+    <!-- ===================================================== -->
+    <!-- SIDEBAR -->
+    <!-- ===================================================== -->
+
+    <aside class="sidebar">
+
+
+        <div class="logo">
+
+            <div class="logo-icon">
+                D
+            </div>
+
+
+            <div class="logo-text">
+
+                <h2>
+                    Delivery
+                </h2>
+
+                <span>
+                    מערכת ניהול משלוחים
+                </span>
+
+            </div>
+
+        </div>
+
+
+
+        <nav class="menu">
+
+
+            <a
+                href="index.html"
+                class="menu-item"
+            >
+
+                <span class="menu-icon">
+                    🏠
+                </span>
+
+                <span>
+                    לוח בקרה
+                </span>
+
+            </a>
+
+
+            <a
+                href="warehouse.html"
+                class="menu-item"
+            >
+
+                <span class="menu-icon">
+                    📥
+                </span>
+
+                <span>
+                    קליטת משלוחים
+                </span>
+
+            </a>
+
+
+            <a
+                href="shipments.html"
+                class="menu-item"
+            >
+
+                <span class="menu-icon">
+                    📦
+                </span>
+
+                <span>
+                    משלוחים
+                </span>
+
+            </a>
+
+
+            <a
+                href="drivers.html"
+                class="menu-item active"
+            >
+
+                <span class="menu-icon">
+                    🚚
+                </span>
+
+                <span>
+                    שליחים
+                </span>
+
+            </a>
+
+
+            <a
+                href="cities.html"
+                class="menu-item"
+            >
+
+                <span class="menu-icon">
+                    📍
+                </span>
+
+                <span>
+                    ערים ואזורים
+                </span>
+
+            </a>
+
+
+            <a
+                href="cities.html"
+                class="menu-item"
+            >
+
+                <span class="menu-icon">
+                    🗺️
+                </span>
+
+                <span>
+                    מפת פעילות
+                </span>
+
+            </a>
+
+
+            <a
+                href="reports.html"
+                class="menu-item"
+            >
+
+                <span class="menu-icon">
+                    📊
+                </span>
+
+                <span>
+                    דוחות
+                </span>
+
+            </a>
+
+
+            <a
+                href="settings.html"
+                class="menu-item"
+            >
+
+                <span class="menu-icon">
+                    ⚙️
+                </span>
+
+                <span>
+                    הגדרות
+                </span>
+
+            </a>
+
+
+        </nav>
+
+
+
+        <div class="sidebar-user">
+
+            <div
+                id="driversUserAvatar"
+                class="user-avatar"
+            >
+                מ
+            </div>
+
+
+            <div class="user-details">
+
+                <strong id="driversUserName">
+                    מנהל מערכת
+                </strong>
+
+                <span id="driversUserRole">
+                    Administrator
+                </span>
+
+            </div>
+
+        </div>
+
+
+    </aside>
+
+
+
+    <!-- ===================================================== -->
+    <!-- MAIN -->
+    <!-- ===================================================== -->
+
+    <main class="main-content">
+
+
+        <!-- ================================================= -->
+        <!-- HEADER -->
+        <!-- ================================================= -->
+
+        <header class="topbar">
+
+
+            <div class="page-title">
+
+                <h1>
+                    שליחים
+                </h1>
+
+                <p>
+                    ניהול ומעקב אחר פעילות השליחים
+                </p>
+
+            </div>
+
+
+            <div class="topbar-actions">
+
+                <input
+                    id="driversSearchInput"
+                    type="text"
+                    placeholder="חיפוש שליח..."
+                >
+
+                <button
+                    class="new-delivery-btn"
+                    type="button"
+                    onclick="window.location.href='settings.html'"
+                >
+                    + הוסף שליח
+                </button>
+
+            </div>
+
+
+        </header>
+
+
+
+        <!-- ================================================= -->
+        <!-- STATS -->
+        <!-- ================================================= -->
+
+        <section class="stats-grid">
+
+
+            <div class="stat-card">
+
+                <div class="stat-header">
+
+                    <span>
+                        סה"כ שליחים
+                    </span>
+
+                    <span class="stat-icon">
+                        🚚
+                    </span>
+
+                </div>
+
+
+                <div
+                    id="driversTotalCount"
+                    class="stat-number"
+                >
+                    0
+                </div>
+
+
+                <div class="stat-footer">
+                    כל השליחים במערכת
+                </div>
+
+            </div>
+
+
+
+            <div class="stat-card">
+
+                <div class="stat-header">
+
+                    <span>
+                        פעילים
+                    </span>
+
+                    <span class="stat-icon">
+                        ✅
+                    </span>
+
+                </div>
+
+
+                <div
+                    id="driversActiveCount"
+                    class="stat-number"
+                >
+                    0
+                </div>
+
+
+                <div class="stat-footer success">
+                    שליחים פעילים
+                </div>
+
+            </div>
+
+
+
+            <div class="stat-card">
+
+                <div class="stat-header">
+
+                    <span>
+                        לא פעילים
+                    </span>
+
+                    <span class="stat-icon">
+                        ⚠️
+                    </span>
+
+                </div>
+
+
+                <div
+                    id="driversInactiveCount"
+                    class="stat-number"
+                >
+                    0
+                </div>
+
+
+                <div class="stat-footer danger">
+                    שליחים לא פעילים
+                </div>
+
+            </div>
+
+
+
+            <div class="stat-card">
+
+                <div class="stat-header">
+
+                    <span>
+                        משלוחים משויכים
+                    </span>
+
+                    <span class="stat-icon">
+                        📦
+                    </span>
+
+                </div>
+
+
+                <div
+                    id="driversAssignedShipmentsCount"
+                    class="stat-number"
+                >
+                    0
+                </div>
+
+
+                <div class="stat-footer warning">
+                    משלוחים עם שליח
+                </div>
+
+            </div>
+
+
+        </section>
+
+
+
+        <!-- ================================================= -->
+        <!-- DRIVERS TABLE -->
+        <!-- ================================================= -->
+
+        <section class="panel">
+
+
+            <div class="panel-header">
+
+
+                <div>
+
+                    <h2>
+                        רשימת שליחים
+                    </h2>
+
+                    <p>
+                        נתונים חיים מ-Supabase
+                    </p>
+
+                </div>
+
+
+            </div>
+
+
+
+            <div class="table-wrapper">
+
+
+                <table>
+
+
+                    <thead>
+
+                        <tr>
+
+                            <th>
+                                שליח
+                            </th>
+
+                            <th>
+                                סטטוס
+                            </th>
+
+                            <th>
+                                תעריף
+                            </th>
+
+                            <th>
+                                סה"כ משלוחים
+                            </th>
+
+                            <th>
+                                נמסרו
+                            </th>
+
+                            <th>
+                                נשארו
+                            </th>
+
+                            <th>
+                                לא נמסרו
+                            </th>
+
+                            <th>
+                                הכנסה
+                            </th>
+
+                        </tr>
+
+                    </thead>
+
+
+                    <tbody id="driversTableBody">
+
+                        <tr>
+
+                            <td
+                                colspan="8"
+                                style="
+                                    text-align:center;
+                                    padding:35px;
+                                    color:#64748b;
+                                "
+                            >
+                                טוען שליחים...
+                            </td>
+
+                        </tr>
+
+                    </tbody>
+
+
+                </table>
+
+
+            </div>
+
+
+        </section>
+
+
+    </main>
+
+
+
+    <!-- ===================================================== -->
+    <!-- SUPABASE -->
+    <!-- ===================================================== -->
+
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+    <script src="supabase-config.js"></script>
+
+    <script src="drivers.js?v=20261022-1"></script>
+
+
+</body>
+
+</html>
