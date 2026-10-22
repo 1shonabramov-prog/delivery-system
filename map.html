@@ -1,0 +1,462 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
+
+    <title>
+        מפת פעילות | Delivery
+    </title>
+
+    <link
+        rel="stylesheet"
+        href="style.css?v=20261022-8"
+    >
+
+</head>
+
+
+<body>
+
+
+    <aside class="sidebar">
+
+        <div class="logo">
+
+            <div class="logo-icon">
+                D
+            </div>
+
+            <div class="logo-text">
+
+                <h2>
+                    Delivery
+                </h2>
+
+                <span>
+                    מערכת ניהול משלוחים
+                </span>
+
+            </div>
+
+        </div>
+
+
+        <nav class="menu">
+
+            <a href="index.html" class="menu-item">
+                <span class="menu-icon">🏠</span>
+                <span>לוח בקרה</span>
+            </a>
+
+            <a href="warehouse.html" class="menu-item">
+                <span class="menu-icon">📥</span>
+                <span>קליטת משלוחים</span>
+            </a>
+
+            <a href="shipments.html" class="menu-item">
+                <span class="menu-icon">📦</span>
+                <span>משלוחים</span>
+            </a>
+
+            <a href="drivers.html" class="menu-item">
+                <span class="menu-icon">🚚</span>
+                <span>שליחים</span>
+            </a>
+
+            <a href="cities.html" class="menu-item">
+                <span class="menu-icon">📍</span>
+                <span>ערים ואזורים</span>
+            </a>
+
+            <a href="map.html" class="menu-item active">
+                <span class="menu-icon">🗺️</span>
+                <span>מפת פעילות</span>
+            </a>
+
+            <a href="reports.html" class="menu-item">
+                <span class="menu-icon">📊</span>
+                <span>דוחות</span>
+            </a>
+
+            <a href="settings.html" class="menu-item">
+                <span class="menu-icon">⚙️</span>
+                <span>הגדרות</span>
+            </a>
+
+        </nav>
+
+
+        <div class="sidebar-user">
+
+            <div
+                id="mapUserAvatar"
+                class="user-avatar"
+            >
+                מ
+            </div>
+
+            <div class="user-details">
+
+                <strong id="mapUserName">
+                    מנהל מערכת
+                </strong>
+
+                <span id="mapUserRole">
+                    Administrator
+                </span>
+
+            </div>
+
+        </div>
+
+    </aside>
+
+
+
+    <main class="main-content">
+
+
+        <header class="topbar">
+
+            <div class="page-title">
+
+                <h1>
+                    מפת פעילות
+                </h1>
+
+                <p>
+                    צפייה במשלוחים ובפעילות לפי מיקום
+                </p>
+
+            </div>
+
+        </header>
+
+
+
+        <section class="stats-grid">
+
+            <div class="stat-card">
+
+                <div class="stat-header">
+
+                    <span>
+                        סה"כ משלוחים
+                    </span>
+
+                    <span class="stat-icon">
+                        📦
+                    </span>
+
+                </div>
+
+                <div
+                    id="mapTotalShipments"
+                    class="stat-number"
+                >
+                    0
+                </div>
+
+                <div class="stat-footer">
+                    במערכת
+                </div>
+
+            </div>
+
+
+            <div class="stat-card">
+
+                <div class="stat-header">
+
+                    <span>
+                        משויכים
+                    </span>
+
+                    <span class="stat-icon">
+                        🚚
+                    </span>
+
+                </div>
+
+                <div
+                    id="mapAssignedShipments"
+                    class="stat-number"
+                >
+                    0
+                </div>
+
+                <div class="stat-footer success">
+                    עם שליח
+                </div>
+
+            </div>
+
+
+            <div class="stat-card">
+
+                <div class="stat-header">
+
+                    <span>
+                        בדרך
+                    </span>
+
+                    <span class="stat-icon">
+                        🛣️
+                    </span>
+
+                </div>
+
+                <div
+                    id="mapOnRouteShipments"
+                    class="stat-number"
+                >
+                    0
+                </div>
+
+                <div class="stat-footer warning">
+                    משלוחים פעילים
+                </div>
+
+            </div>
+
+
+            <div class="stat-card">
+
+                <div class="stat-header">
+
+                    <span>
+                        ללא מיקום
+                    </span>
+
+                    <span class="stat-icon">
+                        📍
+                    </span>
+
+                </div>
+
+                <div
+                    id="mapMissingLocationCount"
+                    class="stat-number"
+                >
+                    0
+                </div>
+
+                <div class="stat-footer danger">
+                    טרם עברו Geocoding
+                </div>
+
+            </div>
+
+        </section>
+
+
+
+        <section class="panel">
+
+            <div class="panel-header">
+
+                <div>
+
+                    <h2>
+                        מפה
+                    </h2>
+
+                    <p>
+                        בשלב הבא נחבר כאן את Google Maps
+                    </p>
+
+                </div>
+
+            </div>
+
+
+            <div
+                id="activityMap"
+                style="
+                    min-height:420px;
+                    border:1px dashed #cbd5e1;
+                    border-radius:16px;
+                    display:flex;
+                    align-items:center;
+                    justify-content:center;
+                    text-align:center;
+                    padding:30px;
+                    background:#f8fafc;
+                    color:#64748b;
+                "
+            >
+
+                <div>
+
+                    <div
+                        style="
+                            font-size:50px;
+                            margin-bottom:12px;
+                        "
+                    >
+                        🗺️
+                    </div>
+
+                    <strong>
+                        Google Maps עדיין לא מחובר
+                    </strong>
+
+                    <p>
+                        קודם נטען את המשלוחים מ-Supabase,
+                        ואז נחבר Geocoding ומפה אמיתית.
+                    </p>
+
+                </div>
+
+            </div>
+
+        </section>
+
+
+
+        <section class="panel">
+
+            <div class="panel-header">
+
+                <div>
+
+                    <h2>
+                        משלוחים למפה
+                    </h2>
+
+                    <p>
+                        כתובות שייטענו למפה
+                    </p>
+
+                </div>
+
+            </div>
+
+
+            <div class="shipments-toolbar">
+
+                <input
+                    type="text"
+                    id="mapSearchInput"
+                    placeholder="חיפוש עיר / רחוב / לקוח..."
+                >
+
+                <select id="mapStatusFilter">
+
+                    <option value="">
+                        כל הסטטוסים
+                    </option>
+
+                    <option value="ממתין לשיוך">
+                        ממתין לשיוך
+                    </option>
+
+                    <option value="משויך">
+                        משויך
+                    </option>
+
+                    <option value="בדרך">
+                        בדרך
+                    </option>
+
+                    <option value="נמסר">
+                        נמסר
+                    </option>
+
+                    <option value="לא נמסר">
+                        לא נמסר
+                    </option>
+
+                </select>
+
+            </div>
+
+
+            <div class="table-wrapper">
+
+                <table>
+
+                    <thead>
+
+                        <tr>
+
+                            <th>
+                                משלוח
+                            </th>
+
+                            <th>
+                                לקוח
+                            </th>
+
+                            <th>
+                                עיר
+                            </th>
+
+                            <th>
+                                כתובת
+                            </th>
+
+                            <th>
+                                שליח
+                            </th>
+
+                            <th>
+                                סטטוס
+                            </th>
+
+                            <th>
+                                מצב מיקום
+                            </th>
+
+                        </tr>
+
+                    </thead>
+
+
+                    <tbody id="mapShipmentsTableBody">
+
+                        <tr>
+
+                            <td
+                                colspan="7"
+                                style="
+                                    text-align:center;
+                                    padding:35px;
+                                    color:#64748b;
+                                "
+                            >
+                                טוען משלוחים...
+                            </td>
+
+                        </tr>
+
+                    </tbody>
+
+                </table>
+
+            </div>
+
+        </section>
+
+
+    </main>
+
+
+
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+    <script src="supabase-config.js"></script>
+
+    <script src="map.js?v=20261022-1"></script>
+
+
+</body>
+
+</html>
