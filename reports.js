@@ -245,7 +245,7 @@ async function loadReportsCurrentProfile() {
     if (
         !reportsCurrentProfile ||
         reportsCurrentProfile.status !==
-        "פעיל"
+            "פעיל"
     ) {
 
         await reportsSupabase
@@ -353,7 +353,7 @@ function renderReportsCurrentUser() {
 
 
 // =========================================================
-// LOAD PROFILES
+// LOAD DRIVER PROFILES
 // =========================================================
 
 async function loadReportsProfiles() {
@@ -379,6 +379,13 @@ async function loadReportsProfiles() {
             .eq(
                 "role",
                 "DRIVER"
+            )
+            .order(
+                "full_name",
+                {
+                    ascending:
+                        true
+                }
             );
 
 
@@ -522,13 +529,9 @@ function getStartOfDate(
     }
 
 
-    const date =
-        new Date(
-            `${value}T00:00:00`
-        );
-
-
-    return date;
+    return new Date(
+        `${value}T00:00:00`
+    );
 }
 
 
@@ -544,13 +547,9 @@ function getEndOfDate(
     }
 
 
-    const date =
-        new Date(
-            `${value}T23:59:59.999`
-        );
-
-
-    return date;
+    return new Date(
+        `${value}T23:59:59.999`
+    );
 }
 
 
@@ -714,45 +713,6 @@ function renderReportsSummary() {
 
 
 // =========================================================
-// DRIVER NAME
-// =========================================================
-
-function getReportDriverName(
-    driverId
-) {
-
-    const profile =
-        reportsProfiles.find(
-
-            driver =>
-                String(
-                    driver.id
-                )
-                ===
-                String(
-                    driverId
-                )
-
-        );
-
-
-    if (
-        profile
-    ) {
-
-        return (
-            profile.full_name ||
-            profile.username ||
-            "שליח"
-        );
-    }
-
-
-    return "שליח";
-}
-
-
-// =========================================================
 // DRIVER SUMMARY
 // =========================================================
 
@@ -762,12 +722,20 @@ function buildDriversReport() {
         new Map();
 
 
+    /*
+        Important:
+        Every driver from profiles is inserted first.
+        This means drivers with ZERO shipments will still appear.
+    */
+
     reportsProfiles.forEach(
 
         driver => {
 
             map.set(
-                driver.id,
+                String(
+                    driver.id
+                ),
                 {
                     id:
                         driver.id,
@@ -776,6 +744,15 @@ function buildDriversReport() {
                         driver.full_name ||
                         driver.username ||
                         "שליח",
+
+                    status:
+                        driver.status,
+
+                    rate:
+                        Number(
+                            driver.driver_rate ||
+                            0
+                        ),
 
                     total:
                         0,
@@ -799,6 +776,10 @@ function buildDriversReport() {
     );
 
 
+    /*
+        Add shipment activity to the drivers.
+    */
+
     reportsFilteredShipments.forEach(
 
         shipment => {
@@ -811,22 +792,41 @@ function buildDriversReport() {
             }
 
 
+            const driverId =
+                String(
+                    shipment.driver_id
+                );
+
+
+            /*
+                In case an old shipment belongs to a driver
+                whose profile no longer exists, keep the
+                historical driver in the report as well.
+            */
+
             if (
                 !map.has(
-                    shipment.driver_id
+                    driverId
                 )
             ) {
 
                 map.set(
-                    shipment.driver_id,
+                    driverId,
                     {
                         id:
                             shipment.driver_id,
 
                         name:
                             shipment.driver_name ||
-                            getReportDriverName(
-                                shipment.driver_id
+                            "שליח לא קיים",
+
+                        status:
+                            "לא פעיל",
+
+                        rate:
+                            Number(
+                                shipment.delivery_rate ||
+                                0
                             ),
 
                         total:
@@ -850,7 +850,7 @@ function buildDriversReport() {
 
             const driver =
                 map.get(
-                    shipment.driver_id
+                    driverId
                 );
 
 
@@ -869,6 +869,7 @@ function buildDriversReport() {
                     Number(
                         shipment.delivery_amount ||
                         shipment.delivery_rate ||
+                        driver.rate ||
                         0
                     );
             }
@@ -894,12 +895,6 @@ function buildDriversReport() {
     return Array.from(
         map.values()
     )
-        .filter(
-
-            driver =>
-                driver.total > 0
-
-        )
         .map(
 
             driver => {
@@ -938,9 +933,49 @@ function buildDriversReport() {
             (
                 a,
                 b
-            ) =>
-                b.delivered -
-                a.delivered
+            ) => {
+
+                /*
+                    Active drivers first,
+                    then by delivered count,
+                    then alphabetically.
+                */
+
+                if (
+                    a.status === "פעיל" &&
+                    b.status !== "פעיל"
+                ) {
+
+                    return -1;
+                }
+
+
+                if (
+                    a.status !== "פעיל" &&
+                    b.status === "פעיל"
+                ) {
+
+                    return 1;
+                }
+
+
+                if (
+                    b.delivered !==
+                    a.delivered
+                ) {
+
+                    return (
+                        b.delivered -
+                        a.delivered
+                    );
+                }
+
+
+                return a.name.localeCompare(
+                    b.name,
+                    "he"
+                );
+            }
 
         );
 
@@ -995,6 +1030,55 @@ function getReportsSuccessBadge(
 
 
 // =========================================================
+// DRIVER STATUS
+// =========================================================
+
+function getReportDriverStatusBadge(
+    status
+) {
+
+    if (
+        status ===
+        "פעיל"
+    ) {
+
+        return `
+
+            <span
+                style="
+                    display:inline-block;
+                    margin-right:6px;
+                    font-size:11px;
+                    color:#15803d;
+                    font-weight:700;
+                "
+            >
+                פעיל
+            </span>
+
+        `;
+    }
+
+
+    return `
+
+        <span
+            style="
+                display:inline-block;
+                margin-right:6px;
+                font-size:11px;
+                color:#b91c1c;
+                font-weight:700;
+            "
+        >
+            לא פעיל
+        </span>
+
+    `;
+}
+
+
+// =========================================================
 // RENDER DRIVER TABLE
 // =========================================================
 
@@ -1025,7 +1109,7 @@ function renderReportsDriversTable() {
                         color:#64748b;
                     "
                 >
-                    אין נתוני שליחים בטווח שנבחר
+                    לא קיימים שליחים במערכת
                 </td>
 
             </tr>
@@ -1054,6 +1138,10 @@ function renderReportsDriversTable() {
                     <strong>
                         ${driver.name}
                     </strong>
+
+                    ${getReportDriverStatusBadge(
+                        driver.status
+                    )}
 
                 </td>
 
