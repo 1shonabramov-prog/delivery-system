@@ -1,203 +1,77 @@
 // =========================================================
 // DELIVERY SYSTEM
-// Main JavaScript
+// WAREHOUSE + SHIPMENTS - SUPABASE
 // =========================================================
 
 
 // =========================================================
-// STORAGE
+// SUPABASE CLIENT
 // =========================================================
 
-const STORAGE_KEY =
-    "delivery_system_shipments";
-
-const USERS_STORAGE_KEY =
-    "delivery_system_users";
+let supabaseClient =
+    null;
 
 
-// =========================================================
-// USERS / DRIVERS
-// =========================================================
-
-function getSystemUsers() {
-
-    const saved =
-        localStorage.getItem(
-            USERS_STORAGE_KEY
-        );
-
-
-    if (!saved) {
-
-        return [];
-
-    }
-
-
-    try {
-
-        return JSON.parse(
-            saved
-        );
-
-    }
-
-    catch (error) {
-
-        console.error(
-            "Failed loading system users",
-            error
-        );
-
-        return [];
-
-    }
-
-}
-
-
-// =========================================================
-// ACTIVE DRIVERS
-// =========================================================
-
-function getActiveDrivers() {
-
-    return getSystemUsers()
-        .filter(
-
-            user =>
-
-                user.role ===
-                    "DRIVER"
-
-                &&
-
-                user.status ===
-                    "פעיל"
-
-        );
-
-}
-
-
-// =========================================================
-// FIND ACTIVE DRIVER BY ID
-// =========================================================
-
-function findActiveDriverById(
-    driverId
+if (
+    typeof supabase !== "undefined" &&
+    typeof SUPABASE_URL !== "undefined" &&
+    typeof SUPABASE_PUBLISHABLE_KEY !== "undefined"
 ) {
 
-    return getActiveDrivers()
-        .find(
-
-            driver =>
-
-                String(
-                    driver.driverId ||
-                    driver.id
-                )
-
-                ===
-
-                String(
-                    driverId
-                )
-
+    supabaseClient =
+        supabase.createClient(
+            SUPABASE_URL,
+            SUPABASE_PUBLISHABLE_KEY
         );
 
 }
 
 
 // =========================================================
-// FIND ACTIVE DRIVER BY NAME
+// GLOBAL STATE
 // =========================================================
 
-function findActiveDriverByName(
-    driverName
-) {
+let currentAuthUser =
+    null;
 
-    return getActiveDrivers()
-        .find(
+let currentProfile =
+    null;
 
-            driver =>
+let systemProfiles =
+    [];
 
-                driver.fullName ===
-                    driverName
+let shipmentsCache =
+    [];
 
-        );
-
-}
-
-
-// =========================================================
-// FIND DRIVER INCLUDING INACTIVE BY ID
-// =========================================================
-
-function findSystemDriverById(
-    driverId
-) {
-
-    return getSystemUsers()
-        .find(
-
-            user =>
-
-                user.role ===
-                    "DRIVER"
-
-                &&
-
-                String(
-                    user.driverId ||
-                    user.id
-                )
-
-                ===
-
-                String(
-                    driverId
-                )
-
-        );
-
-}
+let duplicateScans =
+    0;
 
 
 // =========================================================
-// FIND DRIVER INCLUDING INACTIVE BY NAME
+// PAGE DETECTION
 // =========================================================
 
-function findSystemDriverByName(
-    driverName
-) {
+const isWarehousePage =
+    Boolean(
+        document.getElementById(
+            "barcodeInput"
+        )
+    );
 
-    return getSystemUsers()
-        .find(
 
-            user =>
-
-                user.role ===
-                    "DRIVER"
-
-                &&
-
-                user.fullName ===
-                    driverName
-
-        );
-
-}
+const isShipmentsPage =
+    Boolean(
+        document.getElementById(
+            "shipmentsTableBody"
+        )
+    );
 
 
 // =========================================================
 // MOCK BARCODE DATABASE
-//
-// בעתיד יוחלף ב-API אמיתי
 // =========================================================
 
 const mockShipmentsDatabase = {
-
 
     "72900100001": {
 
@@ -392,78 +266,394 @@ const mockShipmentsDatabase = {
 
 
 // =========================================================
-// LOCAL STORAGE - SHIPMENTS
+// AUTH
 // =========================================================
 
-function getShipments() {
+async function loadAuthenticatedUser() {
 
-    const saved =
-        localStorage.getItem(
-            STORAGE_KEY
-        );
-
-
-    if (!saved) {
-
-        return [];
-
-    }
-
-
-    try {
-
-        return JSON.parse(
-            saved
-        );
-
-    }
-
-    catch (error) {
+    if (
+        !supabaseClient
+    ) {
 
         console.error(
-            "Failed loading shipments",
+            "Supabase client is not available."
+        );
+
+        return false;
+
+    }
+
+
+    const {
+        data,
+        error
+    } =
+        await supabaseClient
+            .auth
+            .getSession();
+
+
+    if (
+        error
+    ) {
+
+        console.error(
+            "Failed loading session:",
             error
         );
 
-        return [];
+        return false;
 
     }
 
+
+    if (
+        !data.session ||
+        !data.session.user
+    ) {
+
+        window.location.href =
+            "login.html";
+
+        return false;
+
+    }
+
+
+    currentAuthUser =
+        data.session.user;
+
+
+    return true;
+
 }
 
 
-function saveShipments(
-    shipments
+// =========================================================
+// LOAD CURRENT PROFILE
+// =========================================================
+
+async function loadCurrentProfile() {
+
+    if (
+        !currentAuthUser
+    ) {
+
+        return false;
+
+    }
+
+
+    const {
+        data,
+        error
+    } =
+        await supabaseClient
+            .from(
+                "profiles"
+            )
+            .select(
+                `
+                id,
+                username,
+                full_name,
+                phone,
+                role,
+                status,
+                driver_rate,
+                notes
+                `
+            )
+            .eq(
+                "id",
+                currentAuthUser.id
+            )
+            .single();
+
+
+    if (
+        error
+    ) {
+
+        console.error(
+            "Failed loading profile:",
+            error
+        );
+
+        return false;
+
+    }
+
+
+    currentProfile =
+        data;
+
+
+    if (
+        currentProfile.status !==
+        "פעיל"
+    ) {
+
+        await supabaseClient.auth
+            .signOut();
+
+
+        window.location.href =
+            "login.html";
+
+
+        return false;
+
+    }
+
+
+    return true;
+
+}
+
+
+// =========================================================
+// MANAGEMENT AUTHORIZATION
+// =========================================================
+
+function authorizeManagementPage() {
+
+    if (
+        !currentProfile
+    ) {
+
+        return false;
+
+    }
+
+
+    const allowed =
+        currentProfile.role ===
+            "ADMIN"
+
+        ||
+
+        currentProfile.role ===
+            "WAREHOUSE";
+
+
+    if (
+        !allowed
+    ) {
+
+        if (
+            currentProfile.role ===
+            "DRIVER"
+        ) {
+
+            window.location.href =
+                "driver.html";
+
+        }
+
+        else {
+
+            window.location.href =
+                "login.html";
+
+        }
+
+
+        return false;
+
+    }
+
+
+    return true;
+
+}
+
+
+// =========================================================
+// LOAD SYSTEM PROFILES
+// =========================================================
+
+async function loadSystemProfiles() {
+
+    const {
+        data,
+        error
+    } =
+        await supabaseClient
+            .from(
+                "profiles"
+            )
+            .select(
+                `
+                id,
+                username,
+                full_name,
+                phone,
+                role,
+                status,
+                driver_rate,
+                notes
+                `
+            )
+            .order(
+                "full_name",
+                {
+                    ascending:
+                        true
+                }
+            );
+
+
+    if (
+        error
+    ) {
+
+        console.error(
+            "Failed loading profiles:",
+            error
+        );
+
+        systemProfiles =
+            [];
+
+        return;
+
+    }
+
+
+    systemProfiles =
+        data ||
+        [];
+
+}
+
+
+// =========================================================
+// DRIVERS
+// =========================================================
+
+function getSystemDrivers() {
+
+    return systemProfiles
+        .filter(
+
+            profile =>
+                profile.role ===
+                "DRIVER"
+
+        );
+
+}
+
+
+function getActiveDrivers() {
+
+    return getSystemDrivers()
+        .filter(
+
+            profile =>
+                profile.status ===
+                "פעיל"
+
+        );
+
+}
+
+
+function findSystemDriverById(
+    driverId
 ) {
 
-    localStorage.setItem(
+    return getSystemDrivers()
+        .find(
 
-        STORAGE_KEY,
+            driver =>
+                String(
+                    driver.id
+                )
+                ===
+                String(
+                    driverId
+                )
 
-        JSON.stringify(
-            shipments
-        )
-
-    );
+        ) || null;
 
 }
 
 
 // =========================================================
-// CREATE UNIQUE SHIPMENT ID
+// LOAD SHIPMENTS
 // =========================================================
 
-function createShipmentId() {
+async function loadShipments() {
 
-    return (
-        "shipment_" +
-        Date.now() +
-        "_" +
-        Math.floor(
-            Math.random() *
-            100000
-        )
-    );
+    const {
+        data,
+        error
+    } =
+        await supabaseClient
+            .from(
+                "shipments"
+            )
+            .select(
+                `
+                id,
+                shipment_number,
+                barcode,
+                customer,
+                phone,
+                city,
+                street,
+                house_number,
+                entrance,
+                floor,
+                apartment,
+                address_type,
+                notes,
+                driver_id,
+                driver_name,
+                status,
+                created_at,
+                delivered_at,
+                failed_at,
+                failed_reason,
+                delivery_rate,
+                delivery_amount,
+                created_by
+                `
+            )
+            .order(
+                "created_at",
+                {
+                    ascending:
+                        true
+                }
+            );
+
+
+    if (
+        error
+    ) {
+
+        console.error(
+            "Failed loading shipments:",
+            error
+        );
+
+        shipmentsCache =
+            [];
+
+        return false;
+
+    }
+
+
+    shipmentsCache =
+        data ||
+        [];
+
+
+    return true;
 
 }
 
@@ -478,9 +668,14 @@ function getMainAddress(
 
     return (
 
-        `${shipment.street || ""} ${shipment.houseNumber || ""}`
+        `${shipment.street || ""} ${shipment.house_number || ""}`
 
-    ).trim();
+    )
+        .replace(
+            /\s+/g,
+            " "
+        )
+        .trim();
 
 }
 
@@ -494,11 +689,13 @@ function getBuildingDetails(
 
 
     if (
-        shipment.addressType
+        shipment.address_type &&
+        shipment.address_type !==
+        "אחר"
     ) {
 
         parts.push(
-            shipment.addressType
+            shipment.address_type
         );
 
     }
@@ -538,7 +735,10 @@ function getBuildingDetails(
 
 
     return (
-        parts.join(" • ") ||
+        parts.join(
+            " • "
+        )
+        ||
         "-"
     );
 
@@ -579,12 +779,13 @@ function getStatusClass(
     }
 
 }
-// =========================================================
-// =========================================================
-// WAREHOUSE PAGE
-// =========================================================
-// =========================================================
 
+
+// =========================================================
+// =========================================================
+// WAREHOUSE
+// =========================================================
+// =========================================================
 
 const barcodeInput =
     document.getElementById(
@@ -628,567 +829,30 @@ const scannerStatus =
     );
 
 
-let duplicateScans = 0;
-
-
 // =========================================================
-// UPDATE WAREHOUSE COUNTERS
+// WAREHOUSE COUNTERS
 // =========================================================
 
 function updateWarehouseCounters() {
 
     if (
-        !receivedTodayCount
+        receivedTodayCount
     ) {
 
-        return;
+        receivedTodayCount.textContent =
+            shipmentsCache.length;
 
     }
-
-
-    const shipments =
-        getShipments();
-
-
-    receivedTodayCount.textContent =
-        shipments.length;
-
-}
-
-
-// =========================================================
-// BARCODE EVENTS
-// =========================================================
-
-if (
-    barcodeInput
-) {
-
-    updateWarehouseCounters();
-
-
-    barcodeInput.focus();
-
-
-    barcodeInput.addEventListener(
-
-        "keydown",
-
-        function (
-            event
-        ) {
-
-            if (
-                event.key ===
-                "Enter"
-            ) {
-
-                event.preventDefault();
-
-                processBarcode();
-
-            }
-
-        }
-
-    );
-
-}
-
-
-if (
-    scanButton
-) {
-
-    scanButton.addEventListener(
-
-        "click",
-
-        processBarcode
-
-    );
-
-}
-
-
-// =========================================================
-// PROCESS BARCODE
-// =========================================================
-
-function processBarcode() {
-
-    if (
-        !barcodeInput
-    ) {
-
-        return;
-
-    }
-
-
-    const barcode =
-        barcodeInput
-            .value
-            .trim();
 
 
     if (
-        barcode === ""
+        duplicateCount
     ) {
 
-        showScanError(
-            "יש לסרוק או להזין ברקוד."
-        );
-
-
-        barcodeInput.focus();
-
-        return;
+        duplicateCount.textContent =
+            duplicateScans;
 
     }
-
-
-    setScannerWorking();
-
-
-    const shipments =
-        getShipments();
-
-
-    const alreadyExists =
-        shipments.some(
-
-            shipment =>
-                shipment.barcode ===
-                barcode
-
-        );
-
-
-    if (
-        alreadyExists
-    ) {
-
-        duplicateScans++;
-
-
-        if (
-            duplicateCount
-        ) {
-
-            duplicateCount.textContent =
-                duplicateScans;
-
-        }
-
-
-        showDuplicateBarcode(
-            barcode
-        );
-
-
-        resetScanner();
-
-        return;
-
-    }
-
-
-    const shipmentData =
-        mockShipmentsDatabase[
-            barcode
-        ];
-
-
-    if (
-        !shipmentData
-    ) {
-
-        showUnknownBarcode(
-            barcode
-        );
-
-
-        resetScanner();
-
-        return;
-
-    }
-
-
-    const shipment = {
-
-        id:
-            createShipmentId(),
-
-        barcode:
-            barcode,
-
-        shipmentNumber:
-            shipmentData.shipmentNumber,
-
-        customer:
-            shipmentData.customer,
-
-        phone:
-            shipmentData.phone,
-
-        city:
-            shipmentData.city,
-
-        street:
-            shipmentData.street,
-
-        houseNumber:
-            shipmentData.houseNumber,
-
-        entrance:
-            shipmentData.entrance,
-
-        floor:
-            shipmentData.floor,
-
-        apartment:
-            shipmentData.apartment,
-
-        addressType:
-            shipmentData.addressType,
-
-        notes:
-            shipmentData.notes,
-
-        driver:
-            "",
-
-        driverId:
-            "",
-
-        driverName:
-            "",
-
-        status:
-            "ממתין לשיוך",
-
-        createdAt:
-            new Date()
-                .toISOString(),
-
-        deliveredAt:
-            null,
-
-        assignmentHistory:
-            []
-
-    };
-
-
-    shipments.push(
-        shipment
-    );
-
-
-    saveShipments(
-        shipments
-    );
-
-
-    updateWarehouseCounters();
-
-
-    addWarehouseShipmentToTable(
-        shipment
-    );
-
-
-    showScanSuccess(
-        shipment
-    );
-
-
-    resetScanner();
-
-}
-
-
-// =========================================================
-// SCAN SUCCESS
-// =========================================================
-
-function showScanSuccess(
-    shipment
-) {
-
-    if (
-        !scanResult
-    ) {
-
-        return;
-
-    }
-
-
-    scanResult.className =
-        "scan-result scan-success";
-
-
-    scanResult.innerHTML = `
-
-        <div class="scan-result-icon">
-            ✓
-        </div>
-
-        <div>
-
-            <h3>
-                המשלוח נקלט בהצלחה
-            </h3>
-
-            <p>
-                משלוח #${shipment.shipmentNumber}
-                •
-                ${shipment.customer}
-                •
-                ${getMainAddress(shipment)},
-                ${shipment.city}
-            </p>
-
-            <small>
-                ברקוד:
-                ${shipment.barcode}
-            </small>
-
-        </div>
-
-    `;
-
-}
-
-
-// =========================================================
-// DUPLICATE BARCODE
-// =========================================================
-
-function showDuplicateBarcode(
-    barcode
-) {
-
-    if (
-        !scanResult
-    ) {
-
-        return;
-
-    }
-
-
-    scanResult.className =
-        "scan-result scan-warning";
-
-
-    scanResult.innerHTML = `
-
-        <div class="scan-result-icon">
-            ⚠️
-        </div>
-
-        <div>
-
-            <h3>
-                המשלוח כבר קיים במערכת
-            </h3>
-
-            <p>
-                הברקוד ${barcode}
-                כבר נקלט.
-            </p>
-
-            <small>
-                המערכת מנעה יצירת משלוח כפול.
-            </small>
-
-        </div>
-
-    `;
-
-}
-
-
-// =========================================================
-// UNKNOWN BARCODE
-// =========================================================
-
-function showUnknownBarcode(
-    barcode
-) {
-
-    if (
-        !scanResult
-    ) {
-
-        return;
-
-    }
-
-
-    scanResult.className =
-        "scan-result scan-error";
-
-
-    scanResult.innerHTML = `
-
-        <div class="scan-result-icon">
-            ✕
-        </div>
-
-        <div>
-
-            <h3>
-                הברקוד לא נמצא
-            </h3>
-
-            <p>
-                לא נמצאו פרטי משלוח עבור
-                ${barcode}.
-            </p>
-
-            <small>
-                בעתיד תתבצע כאן פנייה ל-API של מערכת המשלוחים.
-            </small>
-
-        </div>
-
-    `;
-
-}
-
-
-// =========================================================
-// GENERIC ERROR
-// =========================================================
-
-function showScanError(
-    message
-) {
-
-    if (
-        !scanResult
-    ) {
-
-        return;
-
-    }
-
-
-    scanResult.className =
-        "scan-result scan-error";
-
-
-    scanResult.innerHTML = `
-
-        <div class="scan-result-icon">
-            ✕
-        </div>
-
-        <div>
-
-            <h3>
-                לא ניתן לבצע קליטה
-            </h3>
-
-            <p>
-                ${message}
-            </p>
-
-        </div>
-
-    `;
-
-}
-
-
-// =========================================================
-// WAREHOUSE TABLE
-// =========================================================
-
-function addWarehouseShipmentToTable(
-    shipment
-) {
-
-    if (
-        !recentShipmentsTable
-    ) {
-
-        return;
-
-    }
-
-
-    const row =
-        document.createElement(
-            "tr"
-        );
-
-
-    const time =
-        new Date(
-            shipment.createdAt
-        )
-            .toLocaleTimeString(
-                "he-IL",
-                {
-                    hour:
-                        "2-digit",
-
-                    minute:
-                        "2-digit"
-                }
-            );
-
-
-    row.innerHTML = `
-
-        <td>
-            ${time}
-        </td>
-
-        <td>
-            #${shipment.shipmentNumber}
-        </td>
-
-        <td>
-            ${shipment.barcode}
-        </td>
-
-        <td>
-            ${shipment.customer}
-        </td>
-
-        <td>
-            ${shipment.phone}
-        </td>
-
-        <td>
-            ${shipment.city}
-        </td>
-
-        <td>
-            ${getMainAddress(shipment)}
-        </td>
-
-        <td>
-
-            <span class="status waiting">
-                ${shipment.status}
-            </span>
-
-        </td>
-
-    `;
-
-
-    recentShipmentsTable.prepend(
-        row
-    );
 
 }
 
@@ -1270,7 +934,569 @@ function resetScanner() {
 
         },
 
-        300
+        250
+
+    );
+
+}
+
+
+// =========================================================
+// SCAN MESSAGES
+// =========================================================
+
+function showScanSuccess(
+    shipment
+) {
+
+    if (
+        !scanResult
+    ) {
+
+        return;
+
+    }
+
+
+    scanResult.className =
+        "scan-result scan-success";
+
+
+    scanResult.innerHTML = `
+
+        <div class="scan-result-icon">
+            ✓
+        </div>
+
+        <div>
+
+            <h3>
+                המשלוח נקלט בהצלחה
+            </h3>
+
+            <p>
+                משלוח #${shipment.shipment_number || ""}
+                •
+                ${shipment.customer || ""}
+                •
+                ${getMainAddress(shipment)},
+                ${shipment.city || ""}
+            </p>
+
+            <small>
+                ברקוד:
+                ${shipment.barcode || ""}
+            </small>
+
+        </div>
+
+    `;
+
+}
+
+
+function showDuplicateBarcode(
+    barcode
+) {
+
+    if (
+        !scanResult
+    ) {
+
+        return;
+
+    }
+
+
+    scanResult.className =
+        "scan-result scan-warning";
+
+
+    scanResult.innerHTML = `
+
+        <div class="scan-result-icon">
+            ⚠️
+        </div>
+
+        <div>
+
+            <h3>
+                המשלוח כבר קיים במערכת
+            </h3>
+
+            <p>
+                הברקוד ${barcode}
+                כבר נקלט.
+            </p>
+
+            <small>
+                המערכת מנעה יצירת משלוח כפול.
+            </small>
+
+        </div>
+
+    `;
+
+}
+
+
+function showUnknownBarcode(
+    barcode
+) {
+
+    if (
+        !scanResult
+    ) {
+
+        return;
+
+    }
+
+
+    scanResult.className =
+        "scan-result scan-error";
+
+
+    scanResult.innerHTML = `
+
+        <div class="scan-result-icon">
+            ✕
+        </div>
+
+        <div>
+
+            <h3>
+                הברקוד לא נמצא
+            </h3>
+
+            <p>
+                לא נמצאו פרטי משלוח עבור
+                ${barcode}.
+            </p>
+
+        </div>
+
+    `;
+
+}
+
+
+function showScanError(
+    message
+) {
+
+    if (
+        !scanResult
+    ) {
+
+        return;
+
+    }
+
+
+    scanResult.className =
+        "scan-result scan-error";
+
+
+    scanResult.innerHTML = `
+
+        <div class="scan-result-icon">
+            ✕
+        </div>
+
+        <div>
+
+            <h3>
+                לא ניתן לבצע קליטה
+            </h3>
+
+            <p>
+                ${message}
+            </p>
+
+        </div>
+
+    `;
+
+}
+
+
+// =========================================================
+// WAREHOUSE TABLE
+// =========================================================
+
+function addWarehouseShipmentToTable(
+    shipment
+) {
+
+    if (
+        !recentShipmentsTable
+    ) {
+
+        return;
+
+    }
+
+
+    const row =
+        document.createElement(
+            "tr"
+        );
+
+
+    const time =
+        new Date(
+            shipment.created_at
+        )
+            .toLocaleTimeString(
+                "he-IL",
+                {
+                    hour:
+                        "2-digit",
+
+                    minute:
+                        "2-digit"
+                }
+            );
+
+
+    row.innerHTML = `
+
+        <td>
+            ${time}
+        </td>
+
+        <td>
+            #${shipment.shipment_number || ""}
+        </td>
+
+        <td>
+            ${shipment.barcode || ""}
+        </td>
+
+        <td>
+            ${shipment.customer || ""}
+        </td>
+
+        <td>
+            ${shipment.phone || ""}
+        </td>
+
+        <td>
+            ${shipment.city || ""}
+        </td>
+
+        <td>
+            ${getMainAddress(
+                shipment
+            )}
+        </td>
+
+        <td>
+
+            <span class="status waiting">
+                ${shipment.status}
+            </span>
+
+        </td>
+
+    `;
+
+
+    recentShipmentsTable.prepend(
+        row
+    );
+
+}
+
+
+// =========================================================
+// RENDER WAREHOUSE RECENT SHIPMENTS
+// =========================================================
+
+function renderWarehouseRecentShipments() {
+
+    if (
+        !recentShipmentsTable
+    ) {
+
+        return;
+
+    }
+
+
+    recentShipmentsTable.innerHTML =
+        "";
+
+
+    shipmentsCache
+        .slice()
+        .reverse()
+        .slice(
+            0,
+            20
+        )
+        .forEach(
+            addWarehouseShipmentToTable
+        );
+
+}
+
+
+// =========================================================
+// PROCESS BARCODE
+// =========================================================
+
+async function processBarcode() {
+
+    if (
+        !barcodeInput
+    ) {
+
+        return;
+
+    }
+
+
+    const barcode =
+        barcodeInput.value
+            .trim();
+
+
+    if (
+        !barcode
+    ) {
+
+        showScanError(
+            "יש לסרוק או להזין ברקוד."
+        );
+
+        return;
+
+    }
+
+
+    setScannerWorking();
+
+
+    const alreadyExists =
+        shipmentsCache.some(
+
+            shipment =>
+                shipment.barcode ===
+                barcode
+
+        );
+
+
+    if (
+        alreadyExists
+    ) {
+
+        duplicateScans++;
+
+
+        updateWarehouseCounters();
+
+
+        showDuplicateBarcode(
+            barcode
+        );
+
+
+        resetScanner();
+
+
+        return;
+
+    }
+
+
+    const source =
+        mockShipmentsDatabase[
+            barcode
+        ];
+
+
+    if (
+        !source
+    ) {
+
+        showUnknownBarcode(
+            barcode
+        );
+
+
+        resetScanner();
+
+
+        return;
+
+    }
+
+
+    const newShipment = {
+
+        shipment_number:
+            source.shipmentNumber,
+
+        barcode:
+            barcode,
+
+        customer:
+            source.customer,
+
+        phone:
+            source.phone,
+
+        city:
+            source.city,
+
+        street:
+            source.street,
+
+        house_number:
+            source.houseNumber,
+
+        entrance:
+            source.entrance ||
+            null,
+
+        floor:
+            source.floor ||
+            null,
+
+        apartment:
+            source.apartment ||
+            null,
+
+        address_type:
+            source.addressType ||
+            "אחר",
+
+        notes:
+            source.notes ||
+            null,
+
+        driver_id:
+            null,
+
+        driver_name:
+            null,
+
+        status:
+            "ממתין לשיוך",
+
+        created_by:
+            currentProfile.id
+
+    };
+
+
+    const {
+        data,
+        error
+    } =
+        await supabaseClient
+            .from(
+                "shipments"
+            )
+            .insert(
+                newShipment
+            )
+            .select()
+            .single();
+
+
+    if (
+        error
+    ) {
+
+        console.error(
+            "Barcode insert failed:",
+            error
+        );
+
+
+        showScanError(
+            "לא ניתן לשמור את המשלוח."
+        );
+
+
+        resetScanner();
+
+
+        return;
+
+    }
+
+
+    shipmentsCache.push(
+        data
+    );
+
+
+    updateWarehouseCounters();
+
+
+    addWarehouseShipmentToTable(
+        data
+    );
+
+
+    showScanSuccess(
+        data
+    );
+
+
+    resetScanner();
+
+}
+
+
+// =========================================================
+// BARCODE EVENTS
+// =========================================================
+
+if (
+    barcodeInput
+) {
+
+    barcodeInput.addEventListener(
+
+        "keydown",
+
+        function (
+            event
+        ) {
+
+            if (
+                event.key ===
+                "Enter"
+            ) {
+
+                event.preventDefault();
+
+                processBarcode();
+
+            }
+
+        }
+
+    );
+
+}
+
+
+if (
+    scanButton
+) {
+
+    scanButton.addEventListener(
+
+        "click",
+
+        processBarcode
 
     );
 
@@ -1311,27 +1537,43 @@ const manualDeliveryForm =
     );
 
 
+function closeWarehouseManualModal() {
+
+    if (
+        manualDeliveryModal
+    ) {
+
+        manualDeliveryModal
+            .classList
+            .add(
+                "hidden"
+            );
+
+    }
+
+}
+
+
 if (
     manualDeliveryButton &&
     manualDeliveryModal
 ) {
 
-    manualDeliveryButton
-        .addEventListener(
+    manualDeliveryButton.addEventListener(
 
-            "click",
+        "click",
 
-            function () {
+        function () {
 
-                manualDeliveryModal
-                    .classList
-                    .remove(
-                        "hidden"
-                    );
+            manualDeliveryModal
+                .classList
+                .remove(
+                    "hidden"
+                );
 
-            }
+        }
 
-        );
+    );
 
 }
 
@@ -1340,14 +1582,13 @@ if (
     closeManualModal
 ) {
 
-    closeManualModal
-        .addEventListener(
+    closeManualModal.addEventListener(
 
-            "click",
+        "click",
 
-            closeWarehouseManualModal
+        closeWarehouseManualModal
 
-        );
+    );
 
 }
 
@@ -1356,246 +1597,244 @@ if (
     cancelManualDelivery
 ) {
 
-    cancelManualDelivery
-        .addEventListener(
+    cancelManualDelivery.addEventListener(
 
-            "click",
+        "click",
 
-            closeWarehouseManualModal
+        closeWarehouseManualModal
 
-        );
-
-}
-
-
-function closeWarehouseManualModal() {
-
-    if (
-        !manualDeliveryModal
-    ) {
-
-        return;
-
-    }
-
-
-    manualDeliveryModal
-        .classList
-        .add(
-            "hidden"
-        );
+    );
 
 }
 
 
 // =========================================================
-// MANUAL WAREHOUSE SUBMIT
+// MANUAL WAREHOUSE INSERT
 // =========================================================
 
 if (
     manualDeliveryForm
 ) {
 
-    manualDeliveryForm
-        .addEventListener(
+    manualDeliveryForm.addEventListener(
 
-            "submit",
+        "submit",
 
-            function (
-                event
+        async function (
+            event
+        ) {
+
+            event.preventDefault();
+
+
+            const barcode =
+                document
+                    .getElementById(
+                        "manualBarcode"
+                    )
+                    .value
+                    .trim();
+
+
+            const duplicate =
+                shipmentsCache.some(
+
+                    shipment =>
+                        shipment.barcode ===
+                        barcode
+
+                );
+
+
+            if (
+                duplicate
             ) {
 
-                event.preventDefault();
-
-
-                const barcode =
-                    document
-                        .getElementById(
-                            "manualBarcode"
-                        )
-                        .value
-                        .trim();
-
-
-                const shipments =
-                    getShipments();
-
-
-                const exists =
-                    shipments.some(
-
-                        shipment =>
-                            shipment.barcode ===
-                            barcode
-
-                    );
-
-
-                if (
-                    exists
-                ) {
-
-                    showDuplicateBarcode(
-                        barcode
-                    );
-
-
-                    closeWarehouseManualModal();
-
-                    return;
-
-                }
-
-
-                const address =
-                    document
-                        .getElementById(
-                            "manualAddress"
-                        )
-                        .value
-                        .trim();
-
-
-                const addressParts =
-                    address.split(" ");
-
-
-                const houseNumber =
-                    addressParts.pop() ||
-                    "";
-
-
-                const street =
-                    addressParts.join(
-                        " "
-                    );
-
-
-                const shipment = {
-
-                    id:
-                        createShipmentId(),
-
-                    barcode:
-                        barcode,
-
-                    shipmentNumber:
-                        document
-                            .getElementById(
-                                "manualShipmentNumber"
-                            )
-                            .value
-                            .trim(),
-
-                    customer:
-                        document
-                            .getElementById(
-                                "manualCustomer"
-                            )
-                            .value
-                            .trim(),
-
-                    phone:
-                        document
-                            .getElementById(
-                                "manualPhone"
-                            )
-                            .value
-                            .trim(),
-
-                    city:
-                        document
-                            .getElementById(
-                                "manualCity"
-                            )
-                            .value
-                            .trim(),
-
-                    street:
-                        street,
-
-                    houseNumber:
-                        houseNumber,
-
-                    entrance:
-                        "",
-
-                    floor:
-                        "",
-
-                    apartment:
-                        "",
-
-                    addressType:
-                        "אחר",
-
-                    notes:
-                        "",
-
-                    driver:
-                        "",
-
-                    driverId:
-                        "",
-
-                    driverName:
-                        "",
-
-                    status:
-                        "ממתין לשיוך",
-
-                    createdAt:
-                        new Date()
-                            .toISOString(),
-
-                    deliveredAt:
-                        null,
-
-                    assignmentHistory:
-                        []
-
-                };
-
-
-                shipments.push(
-                    shipment
+                showDuplicateBarcode(
+                    barcode
                 );
-
-
-                saveShipments(
-                    shipments
-                );
-
-
-                updateWarehouseCounters();
-
-
-                addWarehouseShipmentToTable(
-                    shipment
-                );
-
-
-                showScanSuccess(
-                    shipment
-                );
-
-
-                manualDeliveryForm.reset();
 
 
                 closeWarehouseManualModal();
 
+
+                return;
+
             }
 
-        );
+
+            const address =
+                document
+                    .getElementById(
+                        "manualAddress"
+                    )
+                    .value
+                    .trim();
+
+
+            const addressParts =
+                address.split(
+                    " "
+                );
+
+
+            const houseNumber =
+                addressParts.pop() ||
+                "";
+
+
+            const street =
+                addressParts.join(
+                    " "
+                );
+
+
+            const newShipment = {
+
+                shipment_number:
+                    document
+                        .getElementById(
+                            "manualShipmentNumber"
+                        )
+                        .value
+                        .trim(),
+
+                barcode:
+                    barcode ||
+                    null,
+
+                customer:
+                    document
+                        .getElementById(
+                            "manualCustomer"
+                        )
+                        .value
+                        .trim(),
+
+                phone:
+                    document
+                        .getElementById(
+                            "manualPhone"
+                        )
+                        .value
+                        .trim()
+                    ||
+                    null,
+
+                city:
+                    document
+                        .getElementById(
+                            "manualCity"
+                        )
+                        .value
+                        .trim(),
+
+                street:
+                    street,
+
+                house_number:
+                    houseNumber,
+
+                entrance:
+                    null,
+
+                floor:
+                    null,
+
+                apartment:
+                    null,
+
+                address_type:
+                    "אחר",
+
+                notes:
+                    null,
+
+                driver_id:
+                    null,
+
+                driver_name:
+                    null,
+
+                status:
+                    "ממתין לשיוך",
+
+                created_by:
+                    currentProfile.id
+
+            };
+
+
+            const {
+                data,
+                error
+            } =
+                await supabaseClient
+                    .from(
+                        "shipments"
+                    )
+                    .insert(
+                        newShipment
+                    )
+                    .select()
+                    .single();
+
+
+            if (
+                error
+            ) {
+
+                console.error(
+                    "Manual shipment insert failed:",
+                    error
+                );
+
+
+                alert(
+                    "לא ניתן היה לשמור את המשלוח."
+                );
+
+
+                return;
+
+            }
+
+
+            shipmentsCache.push(
+                data
+            );
+
+
+            updateWarehouseCounters();
+
+
+            addWarehouseShipmentToTable(
+                data
+            );
+
+
+            showScanSuccess(
+                data
+            );
+
+
+            manualDeliveryForm.reset();
+
+
+            closeWarehouseManualModal();
+
+        }
+
+    );
 
 }
-// =========================================================
-// =========================================================
-// SHIPMENTS PAGE
-// =========================================================
-// =========================================================
 
+
+// =========================================================
+// =========================================================
+// SHIPMENTS MANAGEMENT
+// =========================================================
+// =========================================================
 
 const shipmentsTableBody =
     document.getElementById(
@@ -1634,18 +1873,97 @@ const shipmentDriverSelect =
 
 
 // =========================================================
+// DRIVER NAME
+// =========================================================
+
+function getShipmentDriverDisplayName(
+    shipment
+) {
+
+    if (
+        shipment.driver_name
+    ) {
+
+        return shipment.driver_name;
+
+    }
+
+
+    if (
+        shipment.driver_id
+    ) {
+
+        const driver =
+            findSystemDriverById(
+                shipment.driver_id
+            );
+
+
+        if (
+            driver
+        ) {
+
+            return driver.full_name;
+
+        }
+
+    }
+
+
+    return "ללא שיוך";
+
+}
+
+
+// =========================================================
+// INACTIVE DRIVER
+// =========================================================
+
+function isShipmentDriverInactive(
+    shipment
+) {
+
+    if (
+        !shipment.driver_id
+    ) {
+
+        return false;
+
+    }
+
+
+    const driver =
+        findSystemDriverById(
+            shipment.driver_id
+        );
+
+
+    if (
+        !driver
+    ) {
+
+        return false;
+
+    }
+
+
+    return (
+        driver.status !==
+        "פעיל"
+    );
+
+}
+
+
+// =========================================================
 // DRIVER SELECTORS
 // =========================================================
 
 function populateDriverSelectors() {
 
-    const drivers =
+    const activeDrivers =
         getActiveDrivers();
 
-
-    // =====================================================
-    // SHIPMENT DRIVER SELECT
-    // =====================================================
 
     if (
         shipmentDriverSelect
@@ -1664,7 +1982,7 @@ function populateDriverSelectors() {
         `;
 
 
-        drivers.forEach(
+        activeDrivers.forEach(
 
             driver => {
 
@@ -1674,54 +1992,36 @@ function populateDriverSelectors() {
                     );
 
 
-                const driverId =
-                    driver.driverId ||
+                option.value =
                     driver.id;
 
 
-                option.value =
-                    driverId;
-
-
                 option.textContent =
-                    driver.fullName;
+                    driver.full_name ||
+                    driver.username ||
+                    "שליח";
 
 
-                option.dataset.driverName =
-                    driver.fullName;
-
-
-                shipmentDriverSelect
-                    .appendChild(
-                        option
-                    );
+                shipmentDriverSelect.appendChild(
+                    option
+                );
 
             }
 
         );
 
 
-        if (
-            currentValue
-        ) {
-
-            shipmentDriverSelect.value =
-                currentValue;
-
-        }
+        shipmentDriverSelect.value =
+            currentValue;
 
     }
 
-
-    // =====================================================
-    // DRIVER FILTER
-    // =====================================================
 
     if (
         driverFilter
     ) {
 
-        const currentFilter =
+        const currentValue =
             driverFilter.value;
 
 
@@ -1731,14 +2031,14 @@ function populateDriverSelectors() {
                 כל השליחים
             </option>
 
-            <option value="ללא שיוך">
+            <option value="UNASSIGNED">
                 ללא שיוך
             </option>
 
         `;
 
 
-        drivers.forEach(
+        activeDrivers.forEach(
 
             driver => {
 
@@ -1748,39 +2048,108 @@ function populateDriverSelectors() {
                     );
 
 
-                const driverId =
-                    driver.driverId ||
+                option.value =
                     driver.id;
 
 
-                option.value =
-                    driverId;
-
-
                 option.textContent =
-                    driver.fullName;
+                    driver.full_name ||
+                    driver.username ||
+                    "שליח";
 
 
-                driverFilter
-                    .appendChild(
-                        option
-                    );
+                driverFilter.appendChild(
+                    option
+                );
 
             }
 
         );
 
 
-        if (
-            currentFilter
-        ) {
+        driverFilter.value =
+            currentValue;
 
-            driverFilter.value =
-                currentFilter;
+    }
+
+}
+
+
+// =========================================================
+// CITY FILTER
+// =========================================================
+
+function populateCityFilter() {
+
+    if (
+        !cityFilter
+    ) {
+
+        return;
+
+    }
+
+
+    const currentValue =
+        cityFilter.value;
+
+
+    const cities =
+        [
+            ...new Set(
+
+                shipmentsCache
+                    .map(
+                        shipment =>
+                            shipment.city
+                    )
+                    .filter(
+                        Boolean
+                    )
+
+            )
+        ]
+            .sort();
+
+
+    cityFilter.innerHTML = `
+
+        <option value="">
+            כל הערים
+        </option>
+
+    `;
+
+
+    cities.forEach(
+
+        city => {
+
+            const option =
+                document.createElement(
+                    "option"
+                );
+
+
+            option.value =
+                city;
+
+
+            option.textContent =
+                city;
+
+
+            cityFilter.appendChild(
+                option
+            );
 
         }
 
-    }
+    );
+
+
+    cityFilter.value =
+        currentValue;
 
 }
 
@@ -1791,42 +2160,36 @@ function populateDriverSelectors() {
 
 function updateShipmentCounters() {
 
-    const shipments =
-        getShipments();
-
-
     const total =
-        shipments.length;
+        shipmentsCache.length;
 
 
     const unassigned =
-        shipments.filter(
+        shipmentsCache.filter(
 
             shipment =>
-
-                !shipment.driverId &&
-                !shipment.driver
+                !shipment.driver_id
 
         ).length;
 
 
     const assigned =
-        shipments.filter(
+        shipmentsCache.filter(
 
             shipment =>
-
-                shipment.driverId ||
-                shipment.driver
+                Boolean(
+                    shipment.driver_id
+                )
 
         ).length;
 
 
     const delivered =
-        shipments.filter(
+        shipmentsCache.filter(
 
             shipment =>
                 shipment.status ===
-                    "נמסר"
+                "נמסר"
 
         ).length;
 
@@ -1898,205 +2261,7 @@ function updateShipmentCounters() {
 
 
 // =========================================================
-// CITY FILTER
-// =========================================================
-
-function populateCityFilter() {
-
-    if (
-        !cityFilter
-    ) {
-
-        return;
-
-    }
-
-
-    const shipments =
-        getShipments();
-
-
-    const cities =
-        [
-
-            ...new Set(
-
-                shipments
-                    .map(
-                        shipment =>
-                            shipment.city
-                    )
-                    .filter(
-                        Boolean
-                    )
-
-            )
-
-        ];
-
-
-    cities.sort();
-
-
-    cityFilter.innerHTML = `
-
-        <option value="">
-            כל הערים
-        </option>
-
-    `;
-
-
-    cities.forEach(
-
-        city => {
-
-            const option =
-                document.createElement(
-                    "option"
-                );
-
-
-            option.value =
-                city;
-
-
-            option.textContent =
-                city;
-
-
-            cityFilter.appendChild(
-                option
-            );
-
-        }
-
-    );
-
-}
-
-
-// =========================================================
-// DRIVER DISPLAY NAME
-// =========================================================
-
-function getShipmentDriverDisplayName(
-    shipment
-) {
-
-    if (
-        shipment.driverName
-    ) {
-
-        return shipment.driverName;
-
-    }
-
-
-    if (
-        shipment.driverId
-    ) {
-
-        const systemDriver =
-            findSystemDriverById(
-                shipment.driverId
-            );
-
-
-        if (
-            systemDriver
-        ) {
-
-            return systemDriver.fullName;
-
-        }
-
-    }
-
-
-    if (
-        shipment.driver
-    ) {
-
-        return shipment.driver;
-
-    }
-
-
-    return "ללא שיוך";
-
-}
-
-
-// =========================================================
-// DRIVER ASSIGNMENT STATUS
-// =========================================================
-
-function isShipmentDriverInactive(
-    shipment
-) {
-
-    let driver =
-        null;
-
-
-    if (
-        shipment.driverId
-    ) {
-
-        driver =
-            findSystemDriverById(
-                shipment.driverId
-            );
-
-    }
-
-
-    if (
-        !driver &&
-        shipment.driverName
-    ) {
-
-        driver =
-            findSystemDriverByName(
-                shipment.driverName
-            );
-
-    }
-
-
-    if (
-        !driver &&
-        shipment.driver
-    ) {
-
-        driver =
-            findSystemDriverByName(
-                shipment.driver
-            );
-
-    }
-
-
-    if (
-        !driver
-    ) {
-
-        return false;
-
-    }
-
-
-    return (
-        driver.status !==
-        "פעיל"
-    );
-
-}
-
-
-// =========================================================
-// DRIVER FILTER MATCH
+// DRIVER FILTER
 // =========================================================
 
 function shipmentMatchesDriverFilter(
@@ -2115,75 +2280,30 @@ function shipmentMatchesDriverFilter(
 
     if (
         selectedDriver ===
-        "ללא שיוך"
+        "UNASSIGNED"
     ) {
 
         return (
-
-            !shipment.driverId &&
-            !shipment.driver
-
+            !shipment.driver_id
         );
 
     }
 
 
-    if (
-        shipment.driverId
-    ) {
+    return (
 
-        return (
+        String(
+            shipment.driver_id ||
+            ""
+        )
 
-            String(
-                shipment.driverId
-            )
+        ===
 
-            ===
+        String(
+            selectedDriver
+        )
 
-            String(
-                selectedDriver
-            )
-
-        );
-
-    }
-
-
-    // =====================================================
-    // LEGACY SHIPMENT
-    // משלוחים ישנים ששמרו רק שם
-    // =====================================================
-
-    if (
-        shipment.driver
-    ) {
-
-        const selectedActiveDriver =
-            findActiveDriverById(
-                selectedDriver
-            );
-
-
-        if (
-            !selectedActiveDriver
-        ) {
-
-            return false;
-
-        }
-
-
-        return (
-
-            shipment.driver ===
-            selectedActiveDriver.fullName
-
-        );
-
-    }
-
-
-    return false;
+    );
 
 }
 
@@ -2203,85 +2323,82 @@ function renderShipments() {
     }
 
 
-    const shipments =
-        getShipments();
-
-
-    const searchValue =
+    const search =
         shipmentSearchInput
-
-            ? shipmentSearchInput
-                .value
+            ? shipmentSearchInput.value
                 .trim()
                 .toLowerCase()
-
             : "";
 
 
     const selectedCity =
         cityFilter
-
             ? cityFilter.value
-
             : "";
 
 
     const selectedDriver =
         driverFilter
-
             ? driverFilter.value
-
             : "";
 
 
     const selectedStatus =
         statusFilter
-
             ? statusFilter.value
-
             : "";
 
 
     const filtered =
-        shipments.filter(
+        shipmentsCache.filter(
 
             shipment => {
 
-                const driverDisplayName =
+                const driverName =
                     getShipmentDriverDisplayName(
                         shipment
                     );
 
 
-                const searchableText = [
+                const searchText =
+                    [
 
-                    shipment.shipmentNumber,
+                        shipment.shipment_number,
 
-                    shipment.barcode,
+                        shipment.barcode,
 
-                    shipment.customer,
+                        shipment.customer,
 
-                    shipment.phone,
+                        shipment.phone,
 
-                    shipment.city,
+                        shipment.city,
 
-                    shipment.street,
+                        shipment.street,
 
-                    shipment.houseNumber,
+                        shipment.house_number,
 
-                    driverDisplayName,
+                        driverName,
 
-                    shipment.status
+                        shipment.status
 
-                ]
-                    .join(" ")
-                    .toLowerCase();
+                    ]
+                        .filter(
+                            value =>
+                                value !==
+                                null &&
+                                value !==
+                                undefined
+                        )
+                        .join(
+                            " "
+                        )
+                        .toLowerCase();
 
 
                 if (
-                    searchValue &&
-                    !searchableText.includes(
-                        searchValue
+                    search &&
+                    !searchText.includes(
+                        search
                     )
                 ) {
 
@@ -2293,7 +2410,7 @@ function renderShipments() {
                 if (
                     selectedCity &&
                     shipment.city !==
-                        selectedCity
+                    selectedCity
                 ) {
 
                     return false;
@@ -2316,7 +2433,7 @@ function renderShipments() {
                 if (
                     selectedStatus &&
                     shipment.status !==
-                        selectedStatus
+                    selectedStatus
                 ) {
 
                     return false;
@@ -2336,7 +2453,8 @@ function renderShipments() {
 
 
     if (
-        filtered.length === 0
+        filtered.length ===
+        0
     ) {
 
         shipmentsTableBody.innerHTML = `
@@ -2392,33 +2510,37 @@ function renderShipments() {
                 row.innerHTML = `
 
                     <td>
-                        #${shipment.shipmentNumber}
+                        #${shipment.shipment_number || ""}
                     </td>
 
                     <td>
-                        ${shipment.barcode}
+                        ${shipment.barcode || ""}
                     </td>
 
                     <td>
                         <strong>
-                            ${shipment.customer}
+                            ${shipment.customer || ""}
                         </strong>
                     </td>
 
                     <td>
-                        ${shipment.phone}
+                        ${shipment.phone || ""}
                     </td>
 
                     <td>
-                        ${shipment.city}
+                        ${shipment.city || ""}
                     </td>
 
                     <td>
-                        ${getMainAddress(shipment)}
+                        ${getMainAddress(
+                            shipment
+                        )}
                     </td>
 
                     <td>
-                        ${getBuildingDetails(shipment)}
+                        ${getBuildingDetails(
+                            shipment
+                        )}
                     </td>
 
                     <td>
@@ -2462,9 +2584,7 @@ function renderShipments() {
                                 )}
                             "
                         >
-
                             ${shipment.status}
-
                         </span>
 
                     </td>
@@ -2487,10 +2607,9 @@ function renderShipments() {
                 `;
 
 
-                shipmentsTableBody
-                    .appendChild(
-                        row
-                    );
+                shipmentsTableBody.appendChild(
+                    row
+                );
 
             }
 
@@ -2507,14 +2626,13 @@ if (
     shipmentSearchInput
 ) {
 
-    shipmentSearchInput
-        .addEventListener(
+    shipmentSearchInput.addEventListener(
 
-            "input",
+        "input",
 
-            renderShipments
+        renderShipments
 
-        );
+    );
 
 }
 
@@ -2523,14 +2641,13 @@ if (
     cityFilter
 ) {
 
-    cityFilter
-        .addEventListener(
+    cityFilter.addEventListener(
 
-            "change",
+        "change",
 
-            renderShipments
+        renderShipments
 
-        );
+    );
 
 }
 
@@ -2539,14 +2656,13 @@ if (
     driverFilter
 ) {
 
-    driverFilter
-        .addEventListener(
+    driverFilter.addEventListener(
 
-            "change",
+        "change",
 
-            renderShipments
+        renderShipments
 
-        );
+    );
 
 }
 
@@ -2555,14 +2671,13 @@ if (
     statusFilter
 ) {
 
-    statusFilter
-        .addEventListener(
+    statusFilter.addEventListener(
 
-            "change",
+        "change",
 
-            renderShipments
+        renderShipments
 
-        );
+    );
 
 }
 
@@ -2601,58 +2716,6 @@ const shipmentForm =
     );
 
 
-if (
-    newShipmentButton
-) {
-
-    newShipmentButton
-        .addEventListener(
-
-            "click",
-
-            function () {
-
-                openNewShipmentModal();
-
-            }
-
-        );
-
-}
-
-
-if (
-    closeShipmentModal
-) {
-
-    closeShipmentModal
-        .addEventListener(
-
-            "click",
-
-            closeShipmentManagementModal
-
-        );
-
-}
-
-
-if (
-    cancelShipmentButton
-) {
-
-    cancelShipmentButton
-        .addEventListener(
-
-            "click",
-
-            closeShipmentManagementModal
-
-        );
-
-}
-
-
 // =========================================================
 // OPEN NEW SHIPMENT
 // =========================================================
@@ -2675,24 +2738,39 @@ function openNewShipmentModal() {
     populateDriverSelectors();
 
 
-    document
-        .getElementById(
+    const editingId =
+        document.getElementById(
             "editingShipmentId"
-        )
-        .value =
-        "";
+        );
 
 
-    document
-        .getElementById(
+    if (
+        editingId
+    ) {
+
+        editingId.value =
+            "";
+
+    }
+
+
+    const title =
+        document.getElementById(
             "shipmentModalTitle"
-        )
-        .textContent =
-        "משלוח חדש";
+        );
 
 
-    shipmentModal
-        .classList
+    if (
+        title
+    ) {
+
+        title.textContent =
+            "משלוח חדש";
+
+    }
+
+
+    shipmentModal.classList
         .remove(
             "hidden"
         );
@@ -2707,21 +2785,64 @@ function openNewShipmentModal() {
 function closeShipmentManagementModal() {
 
     if (
-        !shipmentModal
+        shipmentModal
     ) {
 
-        return;
+        shipmentModal.classList
+            .add(
+                "hidden"
+            );
 
     }
 
+}
 
-    shipmentModal
-        .classList
-        .add(
-            "hidden"
-        );
+
+if (
+    newShipmentButton
+) {
+
+    newShipmentButton.addEventListener(
+
+        "click",
+
+        openNewShipmentModal
+
+    );
 
 }
+
+
+if (
+    closeShipmentModal
+) {
+
+    closeShipmentModal.addEventListener(
+
+        "click",
+
+        closeShipmentManagementModal
+
+    );
+
+}
+
+
+if (
+    cancelShipmentButton
+) {
+
+    cancelShipmentButton.addEventListener(
+
+        "click",
+
+        closeShipmentManagementModal
+
+    );
+
+}
+
+
 // =========================================================
 // EDIT SHIPMENT
 // =========================================================
@@ -2730,12 +2851,8 @@ function editShipment(
     shipmentId
 ) {
 
-    const shipments =
-        getShipments();
-
-
     const shipment =
-        shipments.find(
+        shipmentsCache.find(
 
             item =>
                 item.id ===
@@ -2770,7 +2887,8 @@ function editShipment(
             "shipmentBarcode"
         )
         .value =
-        shipment.barcode;
+        shipment.barcode ||
+        "";
 
 
     document
@@ -2778,7 +2896,8 @@ function editShipment(
             "shipmentNumber"
         )
         .value =
-        shipment.shipmentNumber;
+        shipment.shipment_number ||
+        "";
 
 
     document
@@ -2786,7 +2905,8 @@ function editShipment(
             "shipmentCustomer"
         )
         .value =
-        shipment.customer;
+        shipment.customer ||
+        "";
 
 
     document
@@ -2794,7 +2914,8 @@ function editShipment(
             "shipmentPhone"
         )
         .value =
-        shipment.phone;
+        shipment.phone ||
+        "";
 
 
     document
@@ -2802,7 +2923,7 @@ function editShipment(
             "shipmentAddressType"
         )
         .value =
-        shipment.addressType ||
+        shipment.address_type ||
         "אחר";
 
 
@@ -2811,7 +2932,8 @@ function editShipment(
             "shipmentCity"
         )
         .value =
-        shipment.city;
+        shipment.city ||
+        "";
 
 
     document
@@ -2819,7 +2941,8 @@ function editShipment(
             "shipmentStreet"
         )
         .value =
-        shipment.street;
+        shipment.street ||
+        "";
 
 
     document
@@ -2827,7 +2950,8 @@ function editShipment(
             "shipmentHouseNumber"
         )
         .value =
-        shipment.houseNumber;
+        shipment.house_number ||
+        "";
 
 
     document
@@ -2857,75 +2981,13 @@ function editShipment(
         "";
 
 
-    const shipmentDriverElement =
-        document.getElementById(
-            "shipmentDriver"
-        );
-
-
     if (
-        shipmentDriverElement
+        shipmentDriverSelect
     ) {
 
-        if (
-            shipment.driverId
-        ) {
-
-            shipmentDriverElement.value =
-                shipment.driverId;
-
-        }
-
-        else if (
-            shipment.driverName
-        ) {
-
-            const matchingDriver =
-                findActiveDriverByName(
-                    shipment.driverName
-                );
-
-
-            shipmentDriverElement.value =
-                matchingDriver
-
-                    ? (
-                        matchingDriver.driverId ||
-                        matchingDriver.id
-                    )
-
-                    : "";
-
-        }
-
-        else if (
-            shipment.driver
-        ) {
-
-            const matchingDriver =
-                findActiveDriverByName(
-                    shipment.driver
-                );
-
-
-            shipmentDriverElement.value =
-                matchingDriver
-
-                    ? (
-                        matchingDriver.driverId ||
-                        matchingDriver.id
-                    )
-
-                    : "";
-
-        }
-
-        else {
-
-            shipmentDriverElement.value =
-                "";
-
-        }
+        shipmentDriverSelect.value =
+            shipment.driver_id ||
+            "";
 
     }
 
@@ -2935,7 +2997,8 @@ function editShipment(
             "shipmentStatus"
         )
         .value =
-        shipment.status;
+        shipment.status ||
+        "ממתין לשיוך";
 
 
     document
@@ -2947,16 +3010,23 @@ function editShipment(
         "";
 
 
-    document
-        .getElementById(
+    const title =
+        document.getElementById(
             "shipmentModalTitle"
-        )
-        .textContent =
-        "עריכת משלוח";
+        );
 
 
-    shipmentModal
-        .classList
+    if (
+        title
+    ) {
+
+        title.textContent =
+            "עריכת משלוח";
+
+    }
+
+
+    shipmentModal.classList
         .remove(
             "hidden"
         );
@@ -2972,481 +3042,572 @@ if (
     shipmentForm
 ) {
 
-    shipmentForm
-        .addEventListener(
+    shipmentForm.addEventListener(
 
-            "submit",
+        "submit",
 
-            function (
-                event
+        async function (
+            event
+        ) {
+
+            event.preventDefault();
+
+
+            const editingId =
+                document
+                    .getElementById(
+                        "editingShipmentId"
+                    )
+                    .value;
+
+
+            const selectedDriverId =
+                shipmentDriverSelect
+                    ? shipmentDriverSelect.value
+                    : "";
+
+
+            let selectedDriverName =
+                null;
+
+
+            if (
+                selectedDriverId
             ) {
 
-                event.preventDefault();
-
-
-                const shipments =
-                    getShipments();
-
-
-                const editingId =
-                    document
-                        .getElementById(
-                            "editingShipmentId"
-                        )
-                        .value;
-
-
-                const shipmentDriverElement =
-                    document.getElementById(
-                        "shipmentDriver"
+                const selectedDriver =
+                    findSystemDriverById(
+                        selectedDriverId
                     );
 
 
-                const driverId =
-                    shipmentDriverElement
-
-                        ? shipmentDriverElement.value
-
-                        : "";
-
-
-                let driverName =
-                    "";
-
-
                 if (
-                    shipmentDriverElement &&
-                    driverId
+                    selectedDriver
                 ) {
 
-                    const selectedOption =
-                        shipmentDriverElement.options[
-                            shipmentDriverElement.selectedIndex
-                        ];
-
-
-                    driverName =
-                        selectedOption
-
-                            ? selectedOption.textContent.trim()
-
-                            : "";
+                    selectedDriverName =
+                        selectedDriver.full_name ||
+                        selectedDriver.username ||
+                        null;
 
                 }
-
-
-                let status =
-                    document
-                        .getElementById(
-                            "shipmentStatus"
-                        )
-                        .value;
-
-
-                if (
-                    driverId &&
-                    status ===
-                    "ממתין לשיוך"
-                ) {
-
-                    status =
-                        "משויך";
-
-                }
-
-
-                if (
-                    !driverId &&
-                    status ===
-                    "משויך"
-                ) {
-
-                    status =
-                        "ממתין לשיוך";
-
-                }
-
-
-                const formData = {
-
-                    barcode:
-                        document
-                            .getElementById(
-                                "shipmentBarcode"
-                            )
-                            .value
-                            .trim(),
-
-                    shipmentNumber:
-                        document
-                            .getElementById(
-                                "shipmentNumber"
-                            )
-                            .value
-                            .trim(),
-
-                    customer:
-                        document
-                            .getElementById(
-                                "shipmentCustomer"
-                            )
-                            .value
-                            .trim(),
-
-                    phone:
-                        document
-                            .getElementById(
-                                "shipmentPhone"
-                            )
-                            .value
-                            .trim(),
-
-                    addressType:
-                        document
-                            .getElementById(
-                                "shipmentAddressType"
-                            )
-                            .value,
-
-                    city:
-                        document
-                            .getElementById(
-                                "shipmentCity"
-                            )
-                            .value
-                            .trim(),
-
-                    street:
-                        document
-                            .getElementById(
-                                "shipmentStreet"
-                            )
-                            .value
-                            .trim(),
-
-                    houseNumber:
-                        document
-                            .getElementById(
-                                "shipmentHouseNumber"
-                            )
-                            .value
-                            .trim(),
-
-                    entrance:
-                        document
-                            .getElementById(
-                                "shipmentEntrance"
-                            )
-                            .value
-                            .trim(),
-
-                    floor:
-                        document
-                            .getElementById(
-                                "shipmentFloor"
-                            )
-                            .value
-                            .trim(),
-
-                    apartment:
-                        document
-                            .getElementById(
-                                "shipmentApartment"
-                            )
-                            .value
-                            .trim(),
-
-                    driverId:
-                        driverId,
-
-                    driverName:
-                        driverName,
-
-                    driver:
-                        driverName,
-
-                    status:
-                        status,
-
-                    notes:
-                        document
-                            .getElementById(
-                                "shipmentNotes"
-                            )
-                            .value
-                            .trim()
-
-                };
-
-
-                // =============================================
-                // EDIT EXISTING SHIPMENT
-                // =============================================
-
-                if (
-                    editingId
-                ) {
-
-                    const index =
-                        shipments
-                            .findIndex(
-
-                                item =>
-                                    item.id ===
-                                    editingId
-
-                            );
-
-
-                    if (
-                        index !== -1
-                    ) {
-
-                        const previousDriverId =
-                            shipments[
-                                index
-                            ].driverId ||
-                            "";
-
-
-                        const previousDriverName =
-                            shipments[
-                                index
-                            ].driverName ||
-                            shipments[
-                                index
-                            ].driver ||
-                            "";
-
-
-                        const driverChanged =
-                            String(
-                                previousDriverId
-                            )
-                            !==
-                            String(
-                                driverId
-                            );
-
-
-                        shipments[
-                            index
-                        ] = {
-
-                            ...shipments[
-                                index
-                            ],
-
-                            ...formData
-
-                        };
-
-
-                        // =====================================
-                        // ASSIGNMENT HISTORY
-                        // =====================================
-
-                        if (
-                            driverChanged
-                        ) {
-
-                            if (
-                                !Array.isArray(
-                                    shipments[
-                                        index
-                                    ].assignmentHistory
-                                )
-                            ) {
-
-                                shipments[
-                                    index
-                                ].assignmentHistory =
-                                    [];
-
-                            }
-
-
-                            shipments[
-                                index
-                            ].assignmentHistory.push({
-
-                                fromDriverId:
-                                    previousDriverId,
-
-                                fromDriverName:
-                                    previousDriverName,
-
-                                toDriverId:
-                                    driverId,
-
-                                toDriverName:
-                                    driverName,
-
-                                changedAt:
-                                    new Date()
-                                        .toISOString()
-
-                            });
-
-                        }
-
-
-                        if (
-                            status ===
-                            "נמסר" &&
-                            !shipments[
-                                index
-                            ].deliveredAt
-                        ) {
-
-                            shipments[
-                                index
-                            ].deliveredAt =
-                                new Date()
-                                    .toISOString();
-
-                        }
-
-
-                        if (
-                            status !==
-                            "נמסר"
-                        ) {
-
-                            shipments[
-                                index
-                            ].deliveredAt =
-                                null;
-
-                        }
-
-                    }
-
-                }
-
-
-                // =============================================
-                // NEW SHIPMENT
-                // =============================================
-
-                else {
-
-                    const duplicateBarcode =
-                        shipments.some(
-
-                            shipment =>
-                                shipment.barcode ===
-                                formData.barcode
-
-                        );
-
-
-                    if (
-                        duplicateBarcode
-                    ) {
-
-                        alert(
-                            "ברקוד זה כבר קיים במערכת."
-                        );
-
-                        return;
-
-                    }
-
-
-                    shipments.push({
-
-                        id:
-                            createShipmentId(),
-
-                        ...formData,
-
-                        createdAt:
-                            new Date()
-                                .toISOString(),
-
-                        deliveredAt:
-                            status ===
-                            "נמסר"
-
-                                ? new Date()
-                                    .toISOString()
-
-                                : null,
-
-                        assignmentHistory:
-                            driverId
-
-                                ? [
-                                    {
-                                        fromDriverId:
-                                            "",
-
-                                        fromDriverName:
-                                            "",
-
-                                        toDriverId:
-                                            driverId,
-
-                                        toDriverName:
-                                            driverName,
-
-                                        changedAt:
-                                            new Date()
-                                                .toISOString()
-                                    }
-                                ]
-
-                                : []
-
-                    });
-
-                }
-
-
-                saveShipments(
-                    shipments
-                );
-
-
-                closeShipmentManagementModal();
-
-
-                populateCityFilter();
-
-
-                populateDriverSelectors();
-
-
-                updateShipmentCounters();
-
-
-                renderShipments();
 
             }
 
-        );
+
+            let status =
+                document
+                    .getElementById(
+                        "shipmentStatus"
+                    )
+                    .value;
+
+
+            if (
+                selectedDriverId &&
+                status ===
+                "ממתין לשיוך"
+            ) {
+
+                status =
+                    "משויך";
+
+            }
+
+
+            if (
+                !selectedDriverId &&
+                status ===
+                "משויך"
+            ) {
+
+                status =
+                    "ממתין לשיוך";
+
+            }
+
+
+            const shipmentData = {
+
+                shipment_number:
+                    document
+                        .getElementById(
+                            "shipmentNumber"
+                        )
+                        .value
+                        .trim(),
+
+                barcode:
+                    document
+                        .getElementById(
+                            "shipmentBarcode"
+                        )
+                        .value
+                        .trim()
+                    ||
+                    null,
+
+                customer:
+                    document
+                        .getElementById(
+                            "shipmentCustomer"
+                        )
+                        .value
+                        .trim(),
+
+                phone:
+                    document
+                        .getElementById(
+                            "shipmentPhone"
+                        )
+                        .value
+                        .trim()
+                    ||
+                    null,
+
+                address_type:
+                    document
+                        .getElementById(
+                            "shipmentAddressType"
+                        )
+                        .value,
+
+                city:
+                    document
+                        .getElementById(
+                            "shipmentCity"
+                        )
+                        .value
+                        .trim(),
+
+                street:
+                    document
+                        .getElementById(
+                            "shipmentStreet"
+                        )
+                        .value
+                        .trim(),
+
+                house_number:
+                    document
+                        .getElementById(
+                            "shipmentHouseNumber"
+                        )
+                        .value
+                        .trim(),
+
+                entrance:
+                    document
+                        .getElementById(
+                            "shipmentEntrance"
+                        )
+                        .value
+                        .trim()
+                    ||
+                    null,
+
+                floor:
+                    document
+                        .getElementById(
+                            "shipmentFloor"
+                        )
+                        .value
+                        .trim()
+                    ||
+                    null,
+
+                apartment:
+                    document
+                        .getElementById(
+                            "shipmentApartment"
+                        )
+                        .value
+                        .trim()
+                    ||
+                    null,
+
+                driver_id:
+                    selectedDriverId ||
+                    null,
+
+                driver_name:
+                    selectedDriverName,
+
+                status:
+                    status,
+
+                notes:
+                    document
+                        .getElementById(
+                            "shipmentNotes"
+                        )
+                        .value
+                        .trim()
+                    ||
+                    null
+
+            };
+
+
+            if (
+                editingId
+            ) {
+
+                if (
+                    status ===
+                    "נמסר"
+                ) {
+
+                    const existingShipment =
+                        shipmentsCache.find(
+
+                            shipment =>
+                                shipment.id ===
+                                editingId
+
+                        );
+
+
+                    shipmentData.delivered_at =
+                        existingShipment &&
+                        existingShipment.delivered_at
+
+                            ? existingShipment.delivered_at
+
+                            : new Date()
+                                .toISOString();
+
+                }
+
+                else {
+
+                    shipmentData.delivered_at =
+                        null;
+
+                }
+
+
+                const {
+                    data,
+                    error
+                } =
+                    await supabaseClient
+                        .from(
+                            "shipments"
+                        )
+                        .update(
+                            shipmentData
+                        )
+                        .eq(
+                            "id",
+                            editingId
+                        )
+                        .select()
+                        .single();
+
+
+                if (
+                    error
+                ) {
+
+                    console.error(
+                        "Shipment update failed:",
+                        error
+                    );
+
+
+                    alert(
+                        "לא ניתן היה לעדכן את המשלוח."
+                    );
+
+
+                    return;
+
+                }
+
+
+                const index =
+                    shipmentsCache.findIndex(
+
+                        shipment =>
+                            shipment.id ===
+                            editingId
+
+                    );
+
+
+                if (
+                    index !==
+                    -1
+                ) {
+
+                    shipmentsCache[
+                        index
+                    ] =
+                        data;
+
+                }
+
+            }
+
+            else {
+
+                const duplicateBarcode =
+                    shipmentData.barcode
+
+                    &&
+                    shipmentsCache.some(
+
+                        shipment =>
+                            shipment.barcode ===
+                            shipmentData.barcode
+
+                    );
+
+
+                if (
+                    duplicateBarcode
+                ) {
+
+                    alert(
+                        "ברקוד זה כבר קיים במערכת."
+                    );
+
+
+                    return;
+
+                }
+
+
+                shipmentData.created_by =
+                    currentProfile.id;
+
+
+                const {
+                    data,
+                    error
+                } =
+                    await supabaseClient
+                        .from(
+                            "shipments"
+                        )
+                        .insert(
+                            shipmentData
+                        )
+                        .select()
+                        .single();
+
+
+                if (
+                    error
+                ) {
+
+                    console.error(
+                        "Shipment insert failed:",
+                        error
+                    );
+
+
+                    alert(
+                        "לא ניתן היה ליצור את המשלוח."
+                    );
+
+
+                    return;
+
+                }
+
+
+                shipmentsCache.push(
+                    data
+                );
+
+            }
+
+
+            closeShipmentManagementModal();
+
+
+            populateCityFilter();
+
+
+            populateDriverSelectors();
+
+
+            updateShipmentCounters();
+
+
+            renderShipments();
+
+        }
+
+    );
 
 }
 
 
 // =========================================================
-// INITIALIZE SHIPMENTS PAGE
+// INITIALIZE WAREHOUSE
 // =========================================================
 
-if (
-    shipmentsTableBody
-) {
+async function initializeWarehousePage() {
 
-    populateCityFilter();
+    if (
+        !isWarehousePage
+    ) {
+
+        return;
+
+    }
+
+
+    const authenticated =
+        await loadAuthenticatedUser();
+
+
+    if (
+        !authenticated
+    ) {
+
+        return;
+
+    }
+
+
+    const profileLoaded =
+        await loadCurrentProfile();
+
+
+    if (
+        !profileLoaded
+    ) {
+
+        return;
+
+    }
+
+
+    if (
+        !authorizeManagementPage()
+    ) {
+
+        return;
+
+    }
+
+
+    await loadShipments();
+
+
+    updateWarehouseCounters();
+
+
+    renderWarehouseRecentShipments();
+
+
+    setScannerReady();
+
+
+    if (
+        barcodeInput
+    ) {
+
+        barcodeInput.focus();
+
+    }
+
+}
+
+
+// =========================================================
+// INITIALIZE SHIPMENTS
+// =========================================================
+
+async function initializeShipmentsPage() {
+
+    if (
+        !isShipmentsPage
+    ) {
+
+        return;
+
+    }
+
+
+    const authenticated =
+        await loadAuthenticatedUser();
+
+
+    if (
+        !authenticated
+    ) {
+
+        return;
+
+    }
+
+
+    const profileLoaded =
+        await loadCurrentProfile();
+
+
+    if (
+        !profileLoaded
+    ) {
+
+        return;
+
+    }
+
+
+    if (
+        !authorizeManagementPage()
+    ) {
+
+        return;
+
+    }
+
+
+    await Promise.all(
+        [
+            loadSystemProfiles(),
+            loadShipments()
+        ]
+    );
 
 
     populateDriverSelectors();
+
+
+    populateCityFilter();
 
 
     updateShipmentCounters();
 
 
     renderShipments();
+
+}
+
+
+// =========================================================
+// START
+// =========================================================
+
+if (
+    isWarehousePage
+) {
+
+    initializeWarehousePage();
+
+}
+
+
+if (
+    isShipmentsPage
+) {
+
+    initializeShipmentsPage();
 
 }
