@@ -961,7 +961,6 @@ function updateWarehouseCounters() {
 
 }
 
-
 // =========================================================
 // SCANNER STATUS
 // =========================================================
@@ -1966,8 +1965,6 @@ if (
     );
 
 }
-
-
 // =========================================================
 // =========================================================
 // SHIPMENTS MANAGEMENT
@@ -2754,8 +2751,6 @@ function renderShipments() {
         );
 
 }
-
-
 // =========================================================
 // FILTER EVENTS
 // =========================================================
@@ -3173,6 +3168,112 @@ function editShipment(
 
 
 // =========================================================
+// GEOCODE SHIPMENT AFTER ADDRESS CHANGE
+// =========================================================
+
+async function geocodeShipmentLocation(
+    shipmentId
+) {
+
+    try {
+
+        const {
+            data,
+            error
+        } =
+            await supabaseClient
+                .functions
+                .invoke(
+                    "geocode-shipment",
+                    {
+                        body: {
+                            shipment_id:
+                                shipmentId
+                        }
+                    }
+                );
+
+
+        if (
+            error
+        ) {
+
+            console.error(
+                "Shipment geocoding failed:",
+                error
+            );
+
+
+            return {
+                success:
+                    false,
+                error:
+                    error
+            };
+
+        }
+
+
+        if (
+            !data ||
+            data.success !==
+            true
+        ) {
+
+            console.error(
+                "Unexpected geocoding response:",
+                data
+            );
+
+
+            return {
+                success:
+                    false,
+                error:
+                    data
+            };
+
+        }
+
+
+        console.log(
+            "Shipment geocoded successfully:",
+            data
+        );
+
+
+        return {
+            success:
+                true,
+            data:
+                data
+        };
+
+    }
+
+    catch (
+        error
+    ) {
+
+        console.error(
+            "Shipment geocoding exception:",
+            error
+        );
+
+
+        return {
+            success:
+                false,
+            error:
+                error
+        };
+
+    }
+
+}
+
+
+// =========================================================
 // SAVE SHIPMENT
 // =========================================================
 
@@ -3391,20 +3492,76 @@ if (
                 editingId
             ) {
 
+                const existingShipment =
+                    shipmentsCache.find(
+
+                        shipment =>
+                            shipment.id ===
+                            editingId
+
+                    );
+
+
+                const addressChanged =
+                    Boolean(
+                        existingShipment
+                    )
+
+                    &&
+
+                    (
+                        String(
+                            existingShipment.city ||
+                            ""
+                        )
+                            .trim()
+
+                        !==
+
+                        String(
+                            shipmentData.city ||
+                            ""
+                        )
+                            .trim()
+
+                        ||
+
+                        String(
+                            existingShipment.street ||
+                            ""
+                        )
+                            .trim()
+
+                        !==
+
+                        String(
+                            shipmentData.street ||
+                            ""
+                        )
+                            .trim()
+
+                        ||
+
+                        String(
+                            existingShipment.house_number ||
+                            ""
+                        )
+                            .trim()
+
+                        !==
+
+                        String(
+                            shipmentData.house_number ||
+                            ""
+                        )
+                            .trim()
+                    );
+
+
                 if (
                     status ===
                     "נמסר"
                 ) {
-
-                    const existingShipment =
-                        shipmentsCache.find(
-
-                            shipment =>
-                                shipment.id ===
-                                editingId
-
-                        );
-
 
                     shipmentData.delivered_at =
                         existingShipment &&
@@ -3483,6 +3640,41 @@ if (
                         index
                     ] =
                         data;
+
+                }
+
+
+                // =================================================
+                // ADDRESS CHANGED -> GEOCODE NEW LOCATION
+                // =================================================
+
+                if (
+                    addressChanged
+                ) {
+
+                    const geocodeResult =
+                        await geocodeShipmentLocation(
+                            editingId
+                        );
+
+
+                    if (
+                        geocodeResult.success
+                    ) {
+
+                        console.log(
+                            "Shipment location updated successfully."
+                        );
+
+                    }
+
+                    else {
+
+                        alert(
+                            "המשלוח נשמר, אבל לא הצלחנו לאתר את הכתובת החדשה במפה.\nאפשר לנסות שוב דרך מפת הפעילות."
+                        );
+
+                    }
 
                 }
 
@@ -3581,10 +3773,7 @@ if (
 
     );
 
-}
-
-
-// =========================================================
+}// =========================================================
 // INITIALIZE WAREHOUSE
 // =========================================================
 
