@@ -41,6 +41,9 @@ let driverShipments =
 let selectedShipmentId =
     null;
 
+let routeNeedsRecalculation =
+    false;
+
 
 // =========================================================
 // DOM ELEMENTS
@@ -109,6 +112,27 @@ const driverAddShipmentForm =
     );
 
 
+const driverShipmentModalTitle =
+    document.getElementById(
+        "driverShipmentModalTitle"
+    );
+
+const driverShipmentModalSubtitle =
+    document.getElementById(
+        "driverShipmentModalSubtitle"
+    );
+
+const editingDriverShipmentId =
+    document.getElementById(
+        "editingDriverShipmentId"
+    );
+
+const saveDriverShipmentButton =
+    document.getElementById(
+        "saveDriverShipmentButton"
+    );
+
+
 const driverShipmentsList =
     document.getElementById(
         "driverShipmentsList"
@@ -124,6 +148,10 @@ const shipmentListSubtitle =
         "shipmentListSubtitle"
     );
 
+
+// =========================================================
+// ROUTE DOM
+// =========================================================
 
 const toggleRoutePlannerButton =
     document.getElementById(
@@ -160,11 +188,61 @@ const saveRouteSettingsButton =
         "saveRouteSettingsButton"
     );
 
+const calculateRouteButton =
+    document.getElementById(
+        "calculateRouteButton"
+    );
+
+const recalculateRouteButton =
+    document.getElementById(
+        "recalculateRouteButton"
+    );
+
 const routePlannerMessage =
     document.getElementById(
         "routePlannerMessage"
     );
 
+
+const routeSummarySection =
+    document.getElementById(
+        "routeSummarySection"
+    );
+
+const routeSummaryStartTime =
+    document.getElementById(
+        "routeSummaryStartTime"
+    );
+
+const routeSummaryEndTime =
+    document.getElementById(
+        "routeSummaryEndTime"
+    );
+
+const routeSummaryDuration =
+    document.getElementById(
+        "routeSummaryDuration"
+    );
+
+const routeSummaryDistance =
+    document.getElementById(
+        "routeSummaryDistance"
+    );
+
+const routeUpdateWarning =
+    document.getElementById(
+        "routeUpdateWarning"
+    );
+
+const optimizedRouteList =
+    document.getElementById(
+        "optimizedRouteList"
+    );
+
+
+// =========================================================
+// DELIVERY DETAILS DOM
+// =========================================================
 
 const deliveryDetailsOverlay =
     document.getElementById(
@@ -191,14 +269,34 @@ const deliveryAddress =
         "deliveryAddress"
     );
 
+const deliveryAddressButton =
+    document.getElementById(
+        "deliveryAddressButton"
+    );
+
 const deliveryBuildingDetails =
     document.getElementById(
         "deliveryBuildingDetails"
     );
 
+const deliveryBuildingCode =
+    document.getElementById(
+        "deliveryBuildingCode"
+    );
+
 const deliveryPhone =
     document.getElementById(
         "deliveryPhone"
+    );
+
+const deliveryAddressNotes =
+    document.getElementById(
+        "deliveryAddressNotes"
+    );
+
+const deliveryInstructions =
+    document.getElementById(
+        "deliveryInstructions"
     );
 
 const deliveryNotes =
@@ -216,24 +314,19 @@ const callCustomerButton =
         "callCustomerButton"
     );
 
-const openNavigationButton =
+const openWazeDirectButton =
     document.getElementById(
-        "openNavigationButton"
+        "openWazeDirectButton"
     );
 
-const navigationOptions =
+const editDriverShipmentButton =
     document.getElementById(
-        "navigationOptions"
+        "editDriverShipmentButton"
     );
 
-const openWazeButton =
+const deliveryRouteUpdateMessage =
     document.getElementById(
-        "openWazeButton"
-    );
-
-const openGoogleMapsButton =
-    document.getElementById(
-        "openGoogleMapsButton"
+        "deliveryRouteUpdateMessage"
     );
 
 const markDeliveredButton =
@@ -246,10 +339,259 @@ const markFailedButton =
         "markFailedButton"
     );
 
+
 const driverReportsButton =
     document.getElementById(
         "driverReportsButton"
     );
+
+
+// =========================================================
+// BASIC HELPERS
+// =========================================================
+
+function getInputValue(
+    id
+) {
+
+    const element =
+        document.getElementById(
+            id
+        );
+
+
+    return element
+        ? element.value.trim()
+        : "";
+
+}
+
+
+function setInputValue(
+    id,
+    value
+) {
+
+    const element =
+        document.getElementById(
+            id
+        );
+
+
+    if (
+        element
+    ) {
+
+        element.value =
+            value ||
+            "";
+
+    }
+
+}
+
+
+function normalizePhoneForTel(
+    phone
+) {
+
+    return String(
+        phone ||
+        ""
+    )
+        .replace(
+            /[^\d+]/g,
+            ""
+        );
+
+}
+
+
+// =========================================================
+// ADDRESS
+// =========================================================
+
+function getShipmentMainAddress(
+    shipment
+) {
+
+    const mainAddress =
+        `${shipment.street || ""} ${shipment.house_number || ""}`
+            .replace(
+                /\s+/g,
+                " "
+            )
+            .trim();
+
+
+    if (
+        shipment.city
+    ) {
+
+        return (
+            `${mainAddress}, ${shipment.city}`
+        );
+
+    }
+
+
+    return mainAddress;
+
+}
+
+
+// =========================================================
+// BUILDING DETAILS
+// =========================================================
+
+function getShipmentBuildingDetails(
+    shipment
+) {
+
+    const parts =
+        [];
+
+
+    if (
+        shipment.address_type &&
+        shipment.address_type !==
+        "אחר"
+    ) {
+
+        parts.push(
+            shipment.address_type
+        );
+
+    }
+
+
+    if (
+        shipment.entrance
+    ) {
+
+        parts.push(
+            `כניסה ${shipment.entrance}`
+        );
+
+    }
+
+
+    if (
+        shipment.floor
+    ) {
+
+        parts.push(
+            `קומה ${shipment.floor}`
+        );
+
+    }
+
+
+    if (
+        shipment.apartment
+    ) {
+
+        parts.push(
+            `דירה ${shipment.apartment}`
+        );
+
+    }
+
+
+    return (
+        parts.join(
+            " • "
+        )
+        ||
+        "ללא פרטים נוספים"
+    );
+
+}
+
+
+// =========================================================
+// STATUS CLASS
+// =========================================================
+
+function getDriverStatusClass(
+    status
+) {
+
+    switch (
+        status
+    ) {
+
+        case "נמסר":
+
+            return "status-delivered";
+
+
+        case "לא נמסר":
+
+            return "status-failed";
+
+
+        case "בדרך":
+
+            return "status-route";
+
+
+        case "משויך":
+
+            return "status-assigned";
+
+
+        default:
+
+            return "status-waiting";
+
+    }
+
+}
+
+
+// =========================================================
+// CREATE SHIPMENT NUMBER
+// =========================================================
+
+function createShipmentNumber() {
+
+    return (
+        "D" +
+        Date.now()
+            .toString()
+            .slice(
+                -8
+            )
+    );
+
+}
+
+
+// =========================================================
+// SELECTED SHIPMENT
+// =========================================================
+
+function getSelectedShipment() {
+
+    if (
+        !selectedShipmentId
+    ) {
+
+        return null;
+
+    }
+
+
+    return driverShipments.find(
+
+        shipment =>
+            shipment.id ===
+            selectedShipmentId
+
+    ) || null;
+
+}
 
 
 // =========================================================
@@ -262,32 +604,31 @@ async function loadAuthenticatedUser() {
         data,
         error
     } =
-        await supabaseClient.auth
+        await supabaseClient
+            .auth
             .getSession();
 
 
     if (
-        error
-    ) {
-
-        console.error(
-            "Failed loading Supabase session:",
-            error
-        );
-
-        redirectToLogin();
-
-        return false;
-
-    }
-
-
-    if (
+        error ||
         !data.session ||
         !data.session.user
     ) {
 
+        if (
+            error
+        ) {
+
+            console.error(
+                "Failed loading Supabase session:",
+                error
+            );
+
+        }
+
+
         redirectToLogin();
+
 
         return false;
 
@@ -354,6 +695,7 @@ async function loadCurrentProfile() {
             error
         );
 
+
         return false;
 
     }
@@ -362,16 +704,18 @@ async function loadCurrentProfile() {
     if (
         !data ||
         data.role !==
-            "DRIVER" ||
+        "DRIVER" ||
         data.status !==
-            "פעיל"
+        "פעיל"
     ) {
 
-        await supabaseClient.auth
+        await supabaseClient
+            .auth
             .signOut();
 
 
         redirectToLogin();
+
 
         return false;
 
@@ -539,7 +883,8 @@ if (
 
         async function () {
 
-            await supabaseClient.auth
+            await supabaseClient
+                .auth
                 .signOut();
 
 
@@ -556,151 +901,6 @@ if (
     );
 
 }
-
-
-// =========================================================
-// ADDRESS
-// =========================================================
-
-function getShipmentMainAddress(
-    shipment
-) {
-
-    const mainAddress =
-
-        `${shipment.street || ""} ${shipment.house_number || ""}`
-
-            .replace(
-                /\s+/g,
-                " "
-            )
-
-            .trim();
-
-
-    if (
-        shipment.city
-    ) {
-
-        return (
-            `${mainAddress}, ${shipment.city}`
-        );
-
-    }
-
-
-    return mainAddress;
-
-}
-
-
-// =========================================================
-// BUILDING DETAILS
-// =========================================================
-
-function getShipmentBuildingDetails(
-    shipment
-) {
-
-    const parts =
-        [];
-
-
-    if (
-        shipment.address_type &&
-        shipment.address_type !==
-            "אחר"
-    ) {
-
-        parts.push(
-            shipment.address_type
-        );
-
-    }
-
-
-    if (
-        shipment.entrance
-    ) {
-
-        parts.push(
-            `כניסה ${shipment.entrance}`
-        );
-
-    }
-
-
-    if (
-        shipment.floor
-    ) {
-
-        parts.push(
-            `קומה ${shipment.floor}`
-        );
-
-    }
-
-
-    if (
-        shipment.apartment
-    ) {
-
-        parts.push(
-            `דירה ${shipment.apartment}`
-        );
-
-    }
-
-
-    return (
-        parts.join(" • ") ||
-        "ללא פרטים נוספים"
-    );
-
-}
-
-
-// =========================================================
-// STATUS CLASS
-// =========================================================
-
-function getDriverStatusClass(
-    status
-) {
-
-    switch (
-        status
-    ) {
-
-        case "נמסר":
-
-            return "status-delivered";
-
-
-        case "לא נמסר":
-
-            return "status-failed";
-
-
-        case "בדרך":
-
-            return "status-route";
-
-
-        case "משויך":
-
-            return "status-assigned";
-
-
-        default:
-
-            return "status-waiting";
-
-    }
-
-}
-
-
 // =========================================================
 // LOAD SHIPMENTS FROM SUPABASE
 // =========================================================
@@ -748,6 +948,9 @@ async function loadDriverShipments() {
                 floor,
                 apartment,
                 address_type,
+                building_code,
+                address_notes,
+                delivery_instructions,
                 notes,
                 driver_id,
                 driver_name,
@@ -758,7 +961,10 @@ async function loadDriverShipments() {
                 failed_reason,
                 delivery_rate,
                 delivery_amount,
-                created_by
+                created_by,
+                latitude,
+                longitude,
+                geocoded_at
                 `
             )
             .eq(
@@ -918,6 +1124,102 @@ function updateDriverCounters() {
 
 
 // =========================================================
+// ROUTE WARNING
+// =========================================================
+
+function showRouteRecalculationWarning() {
+
+    routeNeedsRecalculation =
+        true;
+
+
+    if (
+        routeUpdateWarning
+    ) {
+
+        routeUpdateWarning.classList
+            .remove(
+                "hidden"
+            );
+
+    }
+
+
+    if (
+        recalculateRouteButton
+    ) {
+
+        recalculateRouteButton.classList
+            .remove(
+                "hidden"
+            );
+
+    }
+
+
+    if (
+        deliveryRouteUpdateMessage
+    ) {
+
+        deliveryRouteUpdateMessage.classList
+            .remove(
+                "hidden"
+            );
+
+    }
+
+}
+
+
+// =========================================================
+// CLEAR ROUTE WARNING
+// =========================================================
+
+function clearRouteRecalculationWarning() {
+
+    routeNeedsRecalculation =
+        false;
+
+
+    if (
+        routeUpdateWarning
+    ) {
+
+        routeUpdateWarning.classList
+            .add(
+                "hidden"
+            );
+
+    }
+
+
+    if (
+        recalculateRouteButton
+    ) {
+
+        recalculateRouteButton.classList
+            .add(
+                "hidden"
+            );
+
+    }
+
+
+    if (
+        deliveryRouteUpdateMessage
+    ) {
+
+        deliveryRouteUpdateMessage.classList
+            .add(
+                "hidden"
+            );
+
+    }
+
+}
+
+
+// =========================================================
 // RENDER SHIPMENTS
 // =========================================================
 
@@ -958,6 +1260,7 @@ function renderDriverShipments() {
 
 
         updateDriverCounters();
+
 
         return;
 
@@ -1012,6 +1315,12 @@ function renderDriverShipments() {
                 "משויך";
 
 
+            const buildingDetails =
+                getShipmentBuildingDetails(
+                    shipment
+                );
+
+
             card.innerHTML = `
 
                 <div class="shipment-card-top">
@@ -1061,6 +1370,57 @@ function renderDriverShipments() {
                 </div>
 
 
+                <div
+                    style="
+                        margin-top:6px;
+                        font-size:13px;
+                        color:#64748b;
+                    "
+                >
+                    ${buildingDetails}
+                </div>
+
+
+                ${
+                    shipment.building_code
+
+                        ? `
+                            <div
+                                style="
+                                    margin-top:6px;
+                                    font-size:13px;
+                                    font-weight:700;
+                                "
+                            >
+                                🔐 קוד בניין:
+                                ${shipment.building_code}
+                            </div>
+                        `
+
+                        : ""
+                }
+
+
+                ${
+                    shipment.delivery_instructions
+
+                        ? `
+                            <div
+                                style="
+                                    margin-top:6px;
+                                    font-size:13px;
+                                    color:#334155;
+                                "
+                            >
+                                📝
+                                ${shipment.delivery_instructions}
+                            </div>
+                        `
+
+                        : ""
+                }
+
+
                 <div class="shipment-card-footer">
 
                     <span class="shipment-card-eta">
@@ -1098,7 +1458,64 @@ function renderDriverShipments() {
 
 
 // =========================================================
-// ADD SHIPMENT MODAL
+// RESET SHIPMENT FORM
+// =========================================================
+
+function resetDriverShipmentForm() {
+
+    if (
+        driverAddShipmentForm
+    ) {
+
+        driverAddShipmentForm.reset();
+
+    }
+
+
+    if (
+        editingDriverShipmentId
+    ) {
+
+        editingDriverShipmentId.value =
+            "";
+
+    }
+
+
+    if (
+        driverShipmentModalTitle
+    ) {
+
+        driverShipmentModalTitle.textContent =
+            "הוספת משלוח";
+
+    }
+
+
+    if (
+        driverShipmentModalSubtitle
+    ) {
+
+        driverShipmentModalSubtitle.textContent =
+            "הזן את פרטי הלקוח והכתובת";
+
+    }
+
+
+    if (
+        saveDriverShipmentButton
+    ) {
+
+        saveDriverShipmentButton.textContent =
+            "שמור משלוח";
+
+    }
+
+}
+
+
+// =========================================================
+// OPEN ADD SHIPMENT MODAL
 // =========================================================
 
 function openAddShipmentModal() {
@@ -1110,6 +1527,9 @@ function openAddShipmentModal() {
         return;
 
     }
+
+
+    resetDriverShipmentForm();
 
 
     addShipmentModal.classList
@@ -1145,6 +1565,137 @@ function openAddShipmentModal() {
 }
 
 
+// =========================================================
+// OPEN EDIT SHIPMENT MODAL
+// =========================================================
+
+function openEditDriverShipmentModal(
+    shipment
+) {
+
+    if (
+        !shipment ||
+        !addShipmentModal
+    ) {
+
+        return;
+
+    }
+
+
+    if (
+        editingDriverShipmentId
+    ) {
+
+        editingDriverShipmentId.value =
+            shipment.id;
+
+    }
+
+
+    setInputValue(
+        "driverShipmentCustomer",
+        shipment.customer
+    );
+
+    setInputValue(
+        "driverShipmentPhone",
+        shipment.phone
+    );
+
+    setInputValue(
+        "driverShipmentCity",
+        shipment.city
+    );
+
+    setInputValue(
+        "driverShipmentStreet",
+        shipment.street
+    );
+
+    setInputValue(
+        "driverShipmentHouseNumber",
+        shipment.house_number
+    );
+
+    setInputValue(
+        "driverShipmentEntrance",
+        shipment.entrance
+    );
+
+    setInputValue(
+        "driverShipmentFloor",
+        shipment.floor
+    );
+
+    setInputValue(
+        "driverShipmentApartment",
+        shipment.apartment
+    );
+
+    setInputValue(
+        "driverShipmentBuildingCode",
+        shipment.building_code
+    );
+
+    setInputValue(
+        "driverShipmentAddressNotes",
+        shipment.address_notes
+    );
+
+    setInputValue(
+        "driverShipmentDeliveryInstructions",
+        shipment.delivery_instructions
+    );
+
+    setInputValue(
+        "driverShipmentNotes",
+        shipment.notes
+    );
+
+
+    if (
+        driverShipmentModalTitle
+    ) {
+
+        driverShipmentModalTitle.textContent =
+            "עריכת משלוח";
+
+    }
+
+
+    if (
+        driverShipmentModalSubtitle
+    ) {
+
+        driverShipmentModalSubtitle.textContent =
+            "עדכן את פרטי הלקוח והמסירה";
+
+    }
+
+
+    if (
+        saveDriverShipmentButton
+    ) {
+
+        saveDriverShipmentButton.textContent =
+            "שמור שינויים";
+
+    }
+
+
+    addShipmentModal.classList
+        .remove(
+            "hidden"
+        );
+
+}
+
+
+// =========================================================
+// CLOSE ADD / EDIT MODAL
+// =========================================================
+
 function closeDriverAddShipmentModal() {
 
     if (
@@ -1163,6 +1714,10 @@ function closeDriverAddShipmentModal() {
 
 }
 
+
+// =========================================================
+// MODAL EVENTS
+// =========================================================
 
 if (
     addShipmentButton
@@ -1210,25 +1765,85 @@ if (
 
 
 // =========================================================
-// CREATE SHIPMENT NUMBER
+// GEOCODE SHIPMENT
 // =========================================================
 
-function createShipmentNumber() {
+async function geocodeDriverShipment(
+    shipmentId
+) {
 
-    return (
-        "D" +
-        Date.now()
-            .toString()
-            .slice(
-                -8
-            )
-    );
+    try {
+
+        const {
+            data,
+            error
+        } =
+            await supabaseClient
+                .functions
+                .invoke(
+                    "geocode-shipment",
+                    {
+                        body: {
+                            shipment_id:
+                                shipmentId
+                        }
+                    }
+                );
+
+
+        if (
+            error
+        ) {
+
+            console.error(
+                "Driver geocoding failed:",
+                error
+            );
+
+
+            return false;
+
+        }
+
+
+        if (
+            !data ||
+            data.success !==
+            true
+        ) {
+
+            console.error(
+                "Unexpected driver geocoding response:",
+                data
+            );
+
+
+            return false;
+
+        }
+
+
+        return true;
+
+    }
+
+    catch (
+        error
+    ) {
+
+        console.error(
+            "Driver geocoding exception:",
+            error
+        );
+
+
+        return false;
+
+    }
 
 }
-
-
 // =========================================================
-// ADD SHIPMENT TO SUPABASE
+// SAVE NEW / EDITED SHIPMENT
 // =========================================================
 
 if (
@@ -1255,85 +1870,82 @@ if (
             }
 
 
+            const editingId =
+                editingDriverShipmentId
+                    ? editingDriverShipmentId.value
+                    : "";
+
+
             const customer =
-                document
-                    .getElementById(
-                        "driverShipmentCustomer"
-                    )
-                    .value
-                    .trim();
+                getInputValue(
+                    "driverShipmentCustomer"
+                );
 
 
             const phone =
-                document
-                    .getElementById(
-                        "driverShipmentPhone"
-                    )
-                    .value
-                    .trim();
+                getInputValue(
+                    "driverShipmentPhone"
+                );
 
 
             const city =
-                document
-                    .getElementById(
-                        "driverShipmentCity"
-                    )
-                    .value
-                    .trim();
+                getInputValue(
+                    "driverShipmentCity"
+                );
 
 
             const street =
-                document
-                    .getElementById(
-                        "driverShipmentStreet"
-                    )
-                    .value
-                    .trim();
+                getInputValue(
+                    "driverShipmentStreet"
+                );
 
 
             const houseNumber =
-                document
-                    .getElementById(
-                        "driverShipmentHouseNumber"
-                    )
-                    .value
-                    .trim();
+                getInputValue(
+                    "driverShipmentHouseNumber"
+                );
 
 
             const entrance =
-                document
-                    .getElementById(
-                        "driverShipmentEntrance"
-                    )
-                    .value
-                    .trim();
+                getInputValue(
+                    "driverShipmentEntrance"
+                );
 
 
             const floor =
-                document
-                    .getElementById(
-                        "driverShipmentFloor"
-                    )
-                    .value
-                    .trim();
+                getInputValue(
+                    "driverShipmentFloor"
+                );
 
 
             const apartment =
-                document
-                    .getElementById(
-                        "driverShipmentApartment"
-                    )
-                    .value
-                    .trim();
+                getInputValue(
+                    "driverShipmentApartment"
+                );
+
+
+            const buildingCode =
+                getInputValue(
+                    "driverShipmentBuildingCode"
+                );
+
+
+            const addressNotes =
+                getInputValue(
+                    "driverShipmentAddressNotes"
+                );
+
+
+            const deliveryInstructions =
+                getInputValue(
+                    "driverShipmentDeliveryInstructions"
+                );
 
 
             const notes =
-                document
-                    .getElementById(
-                        "driverShipmentNotes"
-                    )
-                    .value
-                    .trim();
+                getInputValue(
+                    "driverShipmentNotes"
+                );
 
 
             if (
@@ -1346,18 +1958,13 @@ if (
                     "יש להזין עיר, רחוב ומספר בית."
                 );
 
+
                 return;
 
             }
 
 
-            const newShipment = {
-
-                shipment_number:
-                    createShipmentNumber(),
-
-                barcode:
-                    null,
+            const shipmentData = {
 
                 customer:
                     customer ||
@@ -1391,9 +1998,335 @@ if (
                 address_type:
                     "אחר",
 
+                building_code:
+                    buildingCode ||
+                    null,
+
+                address_notes:
+                    addressNotes ||
+                    null,
+
+                delivery_instructions:
+                    deliveryInstructions ||
+                    null,
+
                 notes:
                     notes ||
+                    null
+
+            };
+
+
+            if (
+                saveDriverShipmentButton
+            ) {
+
+                saveDriverShipmentButton.disabled =
+                    true;
+
+
+                saveDriverShipmentButton.textContent =
+                    editingId
+                        ? "שומר שינויים..."
+                        : "שומר משלוח...";
+
+            }
+
+
+            // =================================================
+            // EDIT EXISTING SHIPMENT
+            // =================================================
+
+            if (
+                editingId
+            ) {
+
+                const existingShipment =
+                    driverShipments.find(
+
+                        shipment =>
+                            shipment.id ===
+                            editingId
+
+                    );
+
+
+                if (
+                    !existingShipment
+                ) {
+
+                    if (
+                        saveDriverShipmentButton
+                    ) {
+
+                        saveDriverShipmentButton.disabled =
+                            false;
+
+                        saveDriverShipmentButton.textContent =
+                            "שמור שינויים";
+
+                    }
+
+
+                    alert(
+                        "לא נמצא המשלוח לעריכה."
+                    );
+
+
+                    return;
+
+                }
+
+
+                const addressChanged =
+
+                    String(
+                        existingShipment.city ||
+                        ""
+                    )
+                        .trim()
+
+                    !==
+
+                    String(
+                        shipmentData.city ||
+                        ""
+                    )
+                        .trim()
+
+                    ||
+
+                    String(
+                        existingShipment.street ||
+                        ""
+                    )
+                        .trim()
+
+                    !==
+
+                    String(
+                        shipmentData.street ||
+                        ""
+                    )
+                        .trim()
+
+                    ||
+
+                    String(
+                        existingShipment.house_number ||
+                        ""
+                    )
+                        .trim()
+
+                    !==
+
+                    String(
+                        shipmentData.house_number ||
+                        ""
+                    )
+                        .trim();
+
+
+                const {
+                    data,
+                    error
+                } =
+                    await supabaseClient
+                        .from(
+                            "shipments"
+                        )
+                        .update(
+                            shipmentData
+                        )
+                        .eq(
+                            "id",
+                            editingId
+                        )
+                        .eq(
+                            "driver_id",
+                            currentProfile.id
+                        )
+                        .select()
+                        .single();
+
+
+                if (
+                    error
+                ) {
+
+                    console.error(
+                        "Failed updating driver shipment:",
+                        error
+                    );
+
+
+                    if (
+                        saveDriverShipmentButton
+                    ) {
+
+                        saveDriverShipmentButton.disabled =
+                            false;
+
+                        saveDriverShipmentButton.textContent =
+                            "שמור שינויים";
+
+                    }
+
+
+                    alert(
+                        "לא ניתן היה לעדכן את המשלוח."
+                    );
+
+
+                    return;
+
+                }
+
+
+                const index =
+                    driverShipments.findIndex(
+
+                        shipment =>
+                            shipment.id ===
+                            editingId
+
+                    );
+
+
+                if (
+                    index !==
+                    -1
+                ) {
+
+                    driverShipments[
+                        index
+                    ] =
+                        data;
+
+                }
+
+
+                if (
+                    addressChanged
+                ) {
+
+                    const geocoded =
+                        await geocodeDriverShipment(
+                            editingId
+                        );
+
+
+                    if (
+                        geocoded
+                    ) {
+
+                        await loadDriverShipments();
+
+                    }
+
+                    else {
+
+                        alert(
+                            "הפרטים נשמרו, אבל כרגע לא הצלחנו לאתר את הכתובת החדשה.\nנוכל לנסות שוב בהמשך."
+                        );
+
+                    }
+
+
+                    showRouteRecalculationWarning();
+
+                }
+
+
+                if (
+                    saveDriverShipmentButton
+                ) {
+
+                    saveDriverShipmentButton.disabled =
+                        false;
+
+                    saveDriverShipmentButton.textContent =
+                        "שמור משלוח";
+
+                }
+
+
+                driverAddShipmentForm.reset();
+
+
+                closeDriverAddShipmentModal();
+
+
+                renderDriverShipments();
+
+
+                if (
+                    selectedShipmentId ===
+                    editingId
+                ) {
+
+                    openShipmentDetails(
+                        editingId
+                    );
+
+                }
+
+
+                return;
+
+            }
+
+
+            // =================================================
+            // CREATE NEW SHIPMENT
+            // =================================================
+
+            const newShipment = {
+
+                shipment_number:
+                    createShipmentNumber(),
+
+                barcode:
                     null,
+
+                customer:
+                    shipmentData.customer,
+
+                phone:
+                    shipmentData.phone,
+
+                city:
+                    shipmentData.city,
+
+                street:
+                    shipmentData.street,
+
+                house_number:
+                    shipmentData.house_number,
+
+                entrance:
+                    shipmentData.entrance,
+
+                floor:
+                    shipmentData.floor,
+
+                apartment:
+                    shipmentData.apartment,
+
+                address_type:
+                    shipmentData.address_type,
+
+                building_code:
+                    shipmentData.building_code,
+
+                address_notes:
+                    shipmentData.address_notes,
+
+                delivery_instructions:
+                    shipmentData.delivery_instructions,
+
+                notes:
+                    shipmentData.notes,
 
                 driver_id:
                     currentProfile.id,
@@ -1421,26 +2354,6 @@ if (
             };
 
 
-            const submitButton =
-                driverAddShipmentForm
-                    .querySelector(
-                        'button[type="submit"]'
-                    );
-
-
-            if (
-                submitButton
-            ) {
-
-                submitButton.disabled =
-                    true;
-
-                submitButton.textContent =
-                    "שומר...";
-
-            }
-
-
             const {
                 data,
                 error
@@ -1457,19 +2370,6 @@ if (
 
 
             if (
-                submitButton
-            ) {
-
-                submitButton.disabled =
-                    false;
-
-                submitButton.textContent =
-                    "הוסף משלוח";
-
-            }
-
-
-            if (
                 error
             ) {
 
@@ -1479,11 +2379,66 @@ if (
                 );
 
 
+                if (
+                    saveDriverShipmentButton
+                ) {
+
+                    saveDriverShipmentButton.disabled =
+                        false;
+
+                    saveDriverShipmentButton.textContent =
+                        "שמור משלוח";
+
+                }
+
+
                 alert(
                     "לא ניתן היה לשמור את המשלוח."
                 );
 
+
                 return;
+
+            }
+
+
+            driverShipments.push(
+                data
+            );
+
+
+            const geocoded =
+                await geocodeDriverShipment(
+                    data.id
+                );
+
+
+            if (
+                geocoded
+            ) {
+
+                await loadDriverShipments();
+
+            }
+
+            else {
+
+                console.warn(
+                    "Shipment saved without geocoding."
+                );
+
+            }
+
+
+            if (
+                saveDriverShipmentButton
+            ) {
+
+                saveDriverShipmentButton.disabled =
+                    false;
+
+                saveDriverShipmentButton.textContent =
+                    "שמור משלוח";
 
             }
 
@@ -1494,42 +2449,14 @@ if (
             closeDriverAddShipmentModal();
 
 
-            driverShipments.push(
-                data
-            );
-
-
             renderDriverShipments();
+
+
+            showRouteRecalculationWarning();
 
         }
 
     );
-
-}
-
-
-// =========================================================
-// GET SELECTED SHIPMENT
-// =========================================================
-
-function getSelectedShipment() {
-
-    if (
-        !selectedShipmentId
-    ) {
-
-        return null;
-
-    }
-
-
-    return driverShipments.find(
-
-        shipment =>
-            shipment.id ===
-            selectedShipmentId
-
-    ) || null;
 
 }
 
@@ -1611,12 +2538,45 @@ function openShipmentDetails(
 
 
     if (
+        deliveryBuildingCode
+    ) {
+
+        deliveryBuildingCode.textContent =
+            shipment.building_code ||
+            "-";
+
+    }
+
+
+    if (
+        deliveryAddressNotes
+    ) {
+
+        deliveryAddressNotes.textContent =
+            shipment.address_notes ||
+            "-";
+
+    }
+
+
+    if (
+        deliveryInstructions
+    ) {
+
+        deliveryInstructions.textContent =
+            shipment.delivery_instructions ||
+            "-";
+
+    }
+
+
+    if (
         deliveryNotes
     ) {
 
         deliveryNotes.textContent =
             shipment.notes ||
-            "ללא הערות";
+            "-";
 
     }
 
@@ -1636,6 +2596,12 @@ function openShipmentDetails(
         "";
 
 
+    const telPhone =
+        normalizePhoneForTel(
+            phone
+        );
+
+
     if (
         deliveryPhone
     ) {
@@ -1646,8 +2612,8 @@ function openShipmentDetails(
 
 
         deliveryPhone.href =
-            phone
-                ? `tel:${phone}`
+            telPhone
+                ? `tel:${telPhone}`
                 : "#";
 
     }
@@ -1658,13 +2624,13 @@ function openShipmentDetails(
     ) {
 
         callCustomerButton.href =
-            phone
-                ? `tel:${phone}`
+            telPhone
+                ? `tel:${telPhone}`
                 : "#";
 
 
         callCustomerButton.style.opacity =
-            phone
+            telPhone
                 ? "1"
                 : "0.45";
 
@@ -1672,13 +2638,28 @@ function openShipmentDetails(
 
 
     if (
-        navigationOptions
+        deliveryRouteUpdateMessage
     ) {
 
-        navigationOptions.classList
-            .add(
-                "hidden"
-            );
+        if (
+            routeNeedsRecalculation
+        ) {
+
+            deliveryRouteUpdateMessage.classList
+                .remove(
+                    "hidden"
+                );
+
+        }
+
+        else {
+
+            deliveryRouteUpdateMessage.classList
+                .add(
+                    "hidden"
+                );
+
+        }
 
     }
 
@@ -1718,18 +2699,6 @@ function closeShipmentDetails() {
 
     }
 
-
-    if (
-        navigationOptions
-    ) {
-
-        navigationOptions.classList
-            .add(
-                "hidden"
-            );
-
-    }
-
 }
 
 
@@ -1749,46 +2718,14 @@ if (
 
 
 // =========================================================
-// NAVIGATION
+// EDIT SELECTED SHIPMENT
 // =========================================================
 
 if (
-    openNavigationButton
+    editDriverShipmentButton
 ) {
 
-    openNavigationButton.addEventListener(
-
-        "click",
-
-        function () {
-
-            if (
-                navigationOptions
-            ) {
-
-                navigationOptions.classList
-                    .toggle(
-                        "hidden"
-                    );
-
-            }
-
-        }
-
-    );
-
-}
-
-
-// =========================================================
-// WAZE
-// =========================================================
-
-if (
-    openWazeButton
-) {
-
-    openWazeButton.addEventListener(
+    editDriverShipmentButton.addEventListener(
 
         "click",
 
@@ -1807,23 +2744,11 @@ if (
             }
 
 
-            const address =
-                getShipmentMainAddress(
-                    shipment
-                );
+            closeShipmentDetails();
 
 
-            const url =
-                "https://waze.com/ul?q=" +
-                encodeURIComponent(
-                    address
-                ) +
-                "&navigate=yes";
-
-
-            window.open(
-                url,
-                "_blank"
+            openEditDriverShipmentModal(
+                shipment
             );
 
         }
@@ -1834,14 +2759,67 @@ if (
 
 
 // =========================================================
-// GOOGLE MAPS
+// OPEN WAZE
+// =========================================================
+
+function openShipmentInWaze(
+    shipment
+) {
+
+    if (
+        !shipment
+    ) {
+
+        return;
+
+    }
+
+
+    const address =
+        getShipmentMainAddress(
+            shipment
+        );
+
+
+    if (
+        !address
+    ) {
+
+        alert(
+            "לא קיימת כתובת למשלוח."
+        );
+
+
+        return;
+
+    }
+
+
+    const url =
+        "https://waze.com/ul?q=" +
+        encodeURIComponent(
+            address
+        ) +
+        "&navigate=yes";
+
+
+    window.open(
+        url,
+        "_blank"
+    );
+
+}
+
+
+// =========================================================
+// ADDRESS CLICK -> WAZE
 // =========================================================
 
 if (
-    openGoogleMapsButton
+    deliveryAddressButton
 ) {
 
-    openGoogleMapsButton.addEventListener(
+    deliveryAddressButton.addEventListener(
 
         "click",
 
@@ -1851,31 +2829,37 @@ if (
                 getSelectedShipment();
 
 
-            if (
-                !shipment
-            ) {
+            openShipmentInWaze(
+                shipment
+            );
 
-                return;
+        }
 
-            }
+    );
 
-
-            const address =
-                getShipmentMainAddress(
-                    shipment
-                );
+}
 
 
-            const url =
-                "https://www.google.com/maps/dir/?api=1&destination=" +
-                encodeURIComponent(
-                    address
-                );
+// =========================================================
+// DIRECT WAZE BUTTON
+// =========================================================
+
+if (
+    openWazeDirectButton
+) {
+
+    openWazeDirectButton.addEventListener(
+
+        "click",
+
+        function () {
+
+            const shipment =
+                getSelectedShipment();
 
 
-            window.open(
-                url,
-                "_blank"
+            openShipmentInWaze(
+                shipment
             );
 
         }
@@ -1956,6 +2940,10 @@ if (
                     .eq(
                         "id",
                         shipment.id
+                    )
+                    .eq(
+                        "driver_id",
+                        currentProfile.id
                     );
 
 
@@ -1972,6 +2960,7 @@ if (
                 alert(
                     "לא ניתן היה לעדכן את המשלוח."
                 );
+
 
                 return;
 
@@ -2085,6 +3074,10 @@ if (
                     .eq(
                         "id",
                         shipment.id
+                    )
+                    .eq(
+                        "driver_id",
+                        currentProfile.id
                     );
 
 
@@ -2101,6 +3094,7 @@ if (
                 alert(
                     "לא ניתן היה לעדכן את המשלוח."
                 );
+
 
                 return;
 
@@ -2133,10 +3127,8 @@ if (
     );
 
 }
-
-
 // =========================================================
-// ROUTE PLANNER
+// ROUTE PLANNER TOGGLE
 // =========================================================
 
 if (
@@ -2290,7 +3282,173 @@ function loadRouteSettings() {
 
 
 // =========================================================
+// GET ROUTE SETTINGS
+// =========================================================
+
+function getCurrentRouteSettings() {
+
+    return {
+
+        date:
+            routeDate
+                ? routeDate.value
+                : "",
+
+        startTime:
+            routeStartTime
+                ? routeStartTime.value
+                : "",
+
+        startAddress:
+            routeStartAddress
+                ? routeStartAddress.value.trim()
+                : "",
+
+        endAddress:
+            routeEndAddress
+                ? routeEndAddress.value.trim()
+                : ""
+
+    };
+
+}
+
+
+// =========================================================
+// VALIDATE ROUTE SETTINGS
+// =========================================================
+
+function validateRouteSettings(
+    settings
+) {
+
+    if (
+        !settings.date
+    ) {
+
+        alert(
+            "יש לבחור תאריך למסלול."
+        );
+
+        return false;
+
+    }
+
+
+    if (
+        !settings.startTime
+    ) {
+
+        alert(
+            "יש להזין שעת התחלה."
+        );
+
+        return false;
+
+    }
+
+
+    if (
+        !settings.startAddress
+    ) {
+
+        alert(
+            "יש להזין כתובת התחלה."
+        );
+
+        return false;
+
+    }
+
+
+    if (
+        !settings.endAddress
+    ) {
+
+        alert(
+            "יש להזין כתובת סיום."
+        );
+
+        return false;
+
+    }
+
+
+    const activeShipments =
+        driverShipments.filter(
+
+            shipment =>
+                shipment.status !==
+                "נמסר"
+
+                &&
+
+                shipment.status !==
+                "לא נמסר"
+
+        );
+
+
+    if (
+        activeShipments.length ===
+        0
+    ) {
+
+        alert(
+            "אין כרגע משלוחים פעילים לחישוב מסלול."
+        );
+
+        return false;
+
+    }
+
+
+    return true;
+
+}
+
+
+// =========================================================
 // SAVE ROUTE SETTINGS
+// =========================================================
+
+function saveCurrentRouteSettings() {
+
+    if (
+        !currentProfile
+    ) {
+
+        return false;
+
+    }
+
+
+    const settings =
+        getCurrentRouteSettings();
+
+
+    const storageKey =
+        `${DRIVER_ROUTE_STORAGE_KEY}_${currentProfile.id}`;
+
+
+    localStorage.setItem(
+
+        storageKey,
+
+        JSON.stringify(
+            settings
+        )
+
+    );
+
+
+    return true;
+
+}
+
+
+// =========================================================
+// SAVE ROUTE SETTINGS BUTTON
 // =========================================================
 
 if (
@@ -2303,53 +3461,28 @@ if (
 
         function () {
 
+            const settings =
+                getCurrentRouteSettings();
+
+
             if (
-                !currentProfile
+                !settings.date ||
+                !settings.startTime ||
+                !settings.startAddress ||
+                !settings.endAddress
             ) {
+
+                alert(
+                    "יש למלא תאריך, שעת התחלה, כתובת התחלה וכתובת סיום."
+                );
+
 
                 return;
 
             }
 
 
-            const settings = {
-
-                date:
-                    routeDate
-                        ? routeDate.value
-                        : "",
-
-                startTime:
-                    routeStartTime
-                        ? routeStartTime.value
-                        : "",
-
-                startAddress:
-                    routeStartAddress
-                        ? routeStartAddress.value.trim()
-                        : "",
-
-                endAddress:
-                    routeEndAddress
-                        ? routeEndAddress.value.trim()
-                        : ""
-
-            };
-
-
-            const storageKey =
-                `${DRIVER_ROUTE_STORAGE_KEY}_${currentProfile.id}`;
-
-
-            localStorage.setItem(
-
-                storageKey,
-
-                JSON.stringify(
-                    settings
-                )
-
-            );
+            saveCurrentRouteSettings();
 
 
             if (
@@ -2357,11 +3490,351 @@ if (
             ) {
 
                 routePlannerMessage.textContent =
-                    "הגדרות המסלול נשמרו. בשלב הבא נחבר אופטימיזציה של Google Maps.";
+                    "הגדרות המסלול נשמרו.";
 
             }
 
         }
+
+    );
+
+}
+
+
+// =========================================================
+// PLACEHOLDER ROUTE LIST
+// =========================================================
+
+function renderTemporaryRoutePreview() {
+
+    if (
+        !optimizedRouteList
+    ) {
+
+        return;
+
+    }
+
+
+    const activeShipments =
+        driverShipments.filter(
+
+            shipment =>
+                shipment.status !==
+                "נמסר"
+
+                &&
+
+                shipment.status !==
+                "לא נמסר"
+
+        );
+
+
+    optimizedRouteList.innerHTML =
+        "";
+
+
+    if (
+        activeShipments.length ===
+        0
+    ) {
+
+        optimizedRouteList.innerHTML = `
+
+            <div class="driver-empty-state">
+
+                אין משלוחים פעילים למסלול.
+
+            </div>
+
+        `;
+
+
+        return;
+
+    }
+
+
+    activeShipments.forEach(
+
+        (
+            shipment,
+            index
+        ) => {
+
+            const item =
+                document.createElement(
+                    "button"
+                );
+
+
+            item.type =
+                "button";
+
+
+            item.className =
+                "driver-shipment-card";
+
+
+            item.addEventListener(
+
+                "click",
+
+                function () {
+
+                    openShipmentDetails(
+                        shipment.id
+                    );
+
+                }
+
+            );
+
+
+            item.innerHTML = `
+
+                <div class="shipment-card-top">
+
+                    <div>
+
+                        <div
+                            style="
+                                font-size:12px;
+                                color:#64748b;
+                                margin-bottom:4px;
+                            "
+                        >
+                            תחנה ${index + 1}
+                        </div>
+
+                        <h3 class="shipment-card-customer">
+                            ${shipment.customer || "לקוח"}
+                        </h3>
+
+                    </div>
+
+                    <span class="shipment-card-status status-assigned">
+                        ETA בהמשך
+                    </span>
+
+                </div>
+
+
+                <div class="shipment-card-address">
+
+                    📍
+                    ${getShipmentMainAddress(
+                        shipment
+                    )}
+
+                </div>
+
+
+                <div class="shipment-card-footer">
+
+                    <span class="shipment-card-eta">
+                        עדיין לא בוצע חישוב Google Routes
+                    </span>
+
+                    <span class="shipment-open-text">
+                        פרטים >
+                    </span>
+
+                </div>
+
+            `;
+
+
+            optimizedRouteList.appendChild(
+                item
+            );
+
+        }
+
+    );
+
+}
+
+
+// =========================================================
+// TEMPORARY ROUTE SUMMARY
+// =========================================================
+
+function renderTemporaryRouteSummary() {
+
+    const settings =
+        getCurrentRouteSettings();
+
+
+    if (
+        routeSummaryStartTime
+    ) {
+
+        routeSummaryStartTime.textContent =
+            settings.startTime ||
+            "--";
+
+    }
+
+
+    if (
+        routeSummaryEndTime
+    ) {
+
+        routeSummaryEndTime.textContent =
+            "--";
+
+    }
+
+
+    if (
+        routeSummaryDuration
+    ) {
+
+        routeSummaryDuration.textContent =
+            "--";
+
+    }
+
+
+    if (
+        routeSummaryDistance
+    ) {
+
+        routeSummaryDistance.textContent =
+            "--";
+
+    }
+
+
+    renderTemporaryRoutePreview();
+
+
+    if (
+        routeSummarySection
+    ) {
+
+        routeSummarySection.classList
+            .remove(
+                "hidden"
+            );
+
+    }
+
+}
+
+
+// =========================================================
+// CALCULATE ROUTE
+// =========================================================
+
+async function calculateDriverRoute() {
+
+    const settings =
+        getCurrentRouteSettings();
+
+
+    if (
+        !validateRouteSettings(
+            settings
+        )
+    ) {
+
+        return;
+
+    }
+
+
+    saveCurrentRouteSettings();
+
+
+    if (
+        calculateRouteButton
+    ) {
+
+        calculateRouteButton.disabled =
+            true;
+
+        calculateRouteButton.textContent =
+            "מחשב מסלול...";
+
+    }
+
+
+    if (
+        routePlannerMessage
+    ) {
+
+        routePlannerMessage.textContent =
+            "מכין את המשלוחים לחישוב מסלול...";
+
+    }
+
+
+    renderTemporaryRouteSummary();
+
+
+    if (
+        routePlannerMessage
+    ) {
+
+        routePlannerMessage.textContent =
+            "המסלול עדיין לא מחובר ל-Google Routes. בשלב הבא נחבר את החישוב האמיתי עם סדר תחנות, ETA, זמן כולל ומרחק.";
+
+    }
+
+
+    if (
+        calculateRouteButton
+    ) {
+
+        calculateRouteButton.disabled =
+            false;
+
+        calculateRouteButton.textContent =
+            "🧭 סדר לי מסלול";
+
+    }
+
+
+    clearRouteRecalculationWarning();
+
+}
+
+
+// =========================================================
+// CALCULATE ROUTE BUTTON
+// =========================================================
+
+if (
+    calculateRouteButton
+) {
+
+    calculateRouteButton.addEventListener(
+
+        "click",
+
+        calculateDriverRoute
+
+    );
+
+}
+
+
+// =========================================================
+// RECALCULATE ROUTE BUTTON
+// =========================================================
+
+if (
+    recalculateRouteButton
+) {
+
+    recalculateRouteButton.addEventListener(
+
+        "click",
+
+        calculateDriverRoute
 
     );
 
@@ -2383,7 +3856,7 @@ if (
         function () {
 
             alert(
-                "מסך הדוחות וההכנסות יחובר ל-Supabase בשלב הבא."
+                "מסך הדוחות וההכנסות יחובר בהמשך."
             );
 
         }

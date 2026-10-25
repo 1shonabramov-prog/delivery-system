@@ -16,7 +16,7 @@
 
     <link
         rel="stylesheet"
-        href="driver.css?v=20261022-1"
+        href="driver.css?v=20261026-1"
     >
 
 </head>
@@ -199,7 +199,7 @@
                     </h2>
 
                     <p>
-                        בחר נקודת התחלה וסיום
+                        הזן נקודת התחלה, סיום ושעת יציאה
                     </p>
 
                 </div>
@@ -274,11 +274,146 @@
             </button>
 
 
+            <button
+                id="calculateRouteButton"
+                class="primary-action-button"
+                type="button"
+            >
+                🧭 סדר לי מסלול
+            </button>
+
+
+            <button
+                id="recalculateRouteButton"
+                class="secondary-action-button hidden"
+                type="button"
+            >
+                🔄 חשב מסלול מחדש
+            </button>
+
+
             <div
                 id="routePlannerMessage"
                 class="route-message"
             >
             </div>
+
+
+        </section>
+
+
+
+        <!-- ================================================= -->
+        <!-- ROUTE SUMMARY -->
+        <!-- ================================================= -->
+
+        <section
+            id="routeSummarySection"
+            class="route-planner hidden"
+        >
+
+            <div class="section-heading">
+
+                <div>
+
+                    <h2>
+                        המסלול שלי
+                    </h2>
+
+                    <p>
+                        סדר התחנות וזמני הגעה משוערים
+                    </p>
+
+                </div>
+
+            </div>
+
+
+            <div class="summary-grid">
+
+
+                <div class="summary-card">
+
+                    <span
+                        id="routeSummaryStartTime"
+                        class="summary-number"
+                    >
+                        --
+                    </span>
+
+                    <span class="summary-label">
+                        יציאה
+                    </span>
+
+                </div>
+
+
+                <div class="summary-card">
+
+                    <span
+                        id="routeSummaryEndTime"
+                        class="summary-number"
+                    >
+                        --
+                    </span>
+
+                    <span class="summary-label">
+                        סיום משוער
+                    </span>
+
+                </div>
+
+
+                <div class="summary-card">
+
+                    <span
+                        id="routeSummaryDuration"
+                        class="summary-number"
+                    >
+                        --
+                    </span>
+
+                    <span class="summary-label">
+                        זמן מסלול
+                    </span>
+
+                </div>
+
+
+                <div class="summary-card">
+
+                    <span
+                        id="routeSummaryDistance"
+                        class="summary-number"
+                    >
+                        --
+                    </span>
+
+                    <span class="summary-label">
+                        מרחק
+                    </span>
+
+                </div>
+
+
+            </div>
+
+
+            <div
+                id="routeUpdateWarning"
+                class="route-message hidden"
+            >
+                ⚠️ כתובת של משלוח השתנתה.
+                מומלץ לחשב את המסלול מחדש.
+            </div>
+
+
+            <div
+                id="optimizedRouteList"
+                class="driver-shipments-list"
+            >
+            </div>
+
 
         </section>
 
@@ -316,7 +451,6 @@
             </div>
 
 
-
             <div
                 id="driverShipmentsList"
                 class="driver-shipments-list"
@@ -339,9 +473,7 @@
                 class="reports-button"
                 type="button"
             >
-
                 📊 דוחות והכנסות
-
             </button>
 
         </section>
@@ -352,7 +484,7 @@
 
 
     <!-- ===================================================== -->
-    <!-- ADD SHIPMENT MODAL -->
+    <!-- ADD / EDIT SHIPMENT MODAL -->
     <!-- ===================================================== -->
 
     <div
@@ -367,11 +499,11 @@
 
                 <div>
 
-                    <h2>
+                    <h2 id="driverShipmentModalTitle">
                         הוספת משלוח
                     </h2>
 
-                    <p>
+                    <p id="driverShipmentModalSubtitle">
                         הזן את פרטי הלקוח והכתובת
                     </p>
 
@@ -391,6 +523,13 @@
 
 
             <form id="driverAddShipmentForm">
+
+
+                <input
+                    id="editingDriverShipmentId"
+                    type="hidden"
+                    value=""
+                >
 
 
                 <div class="form-group">
@@ -531,14 +670,59 @@
 
                 <div class="form-group">
 
+                    <label for="driverShipmentBuildingCode">
+                        קוד בניין
+                    </label>
+
+                    <input
+                        id="driverShipmentBuildingCode"
+                        type="text"
+                        placeholder="לדוגמה: 2580#"
+                    >
+
+                </div>
+
+
+                <div class="form-group">
+
+                    <label for="driverShipmentAddressNotes">
+                        הערת כתובת
+                    </label>
+
+                    <textarea
+                        id="driverShipmentAddressNotes"
+                        rows="2"
+                        placeholder="לדוגמה: הכניסה מאחורי הבניין"
+                    ></textarea>
+
+                </div>
+
+
+                <div class="form-group">
+
+                    <label for="driverShipmentDeliveryInstructions">
+                        הוראות מסירה
+                    </label>
+
+                    <textarea
+                        id="driverShipmentDeliveryInstructions"
+                        rows="3"
+                        placeholder="לדוגמה: להשאיר ליד הדלת, לא לצלצל"
+                    ></textarea>
+
+                </div>
+
+
+                <div class="form-group">
+
                     <label for="driverShipmentNotes">
-                        הערות
+                        הערות כלליות
                     </label>
 
                     <textarea
                         id="driverShipmentNotes"
                         rows="3"
-                        placeholder="לדוגמה: להתקשר לפני הגעה"
+                        placeholder="הערות נוספות למשלוח"
                     ></textarea>
 
                 </div>
@@ -557,10 +741,11 @@
 
 
                     <button
+                        id="saveDriverShipmentButton"
                         class="save-button"
                         type="submit"
                     >
-                        הוסף משלוח
+                        שמור משלוח
                     </button>
 
 
@@ -573,10 +758,7 @@
         </div>
 
     </div>
-
-
-
-    <!-- ===================================================== -->
+        <!-- ===================================================== -->
     <!-- DELIVERY DETAILS -->
     <!-- ===================================================== -->
 
@@ -624,6 +806,10 @@
 
 
 
+            <!-- ================================================= -->
+            <!-- CUSTOMER -->
+            <!-- ================================================= -->
+
             <div class="delivery-info-card">
 
 
@@ -633,8 +819,23 @@
                         כתובת
                     </span>
 
-                    <strong id="deliveryAddress">
-                    </strong>
+                    <button
+                        id="deliveryAddressButton"
+                        type="button"
+                        style="
+                            border:0;
+                            background:none;
+                            padding:0;
+                            text-align:right;
+                            font:inherit;
+                            font-weight:700;
+                            color:#2563eb;
+                            cursor:pointer;
+                        "
+                    >
+                        <span id="deliveryAddress">
+                        </span>
+                    </button>
 
                 </div>
 
@@ -647,6 +848,19 @@
 
                     <span id="deliveryBuildingDetails">
                     </span>
+
+                </div>
+
+
+                <div class="delivery-info-row">
+
+                    <span class="info-label">
+                        קוד בניין
+                    </span>
+
+                    <strong id="deliveryBuildingCode">
+                        -
+                    </strong>
 
                 </div>
 
@@ -669,10 +883,37 @@
                 <div class="delivery-info-row">
 
                     <span class="info-label">
-                        הערות
+                        הערת כתובת
+                    </span>
+
+                    <span id="deliveryAddressNotes">
+                        -
+                    </span>
+
+                </div>
+
+
+                <div class="delivery-info-row">
+
+                    <span class="info-label">
+                        הוראות מסירה
+                    </span>
+
+                    <span id="deliveryInstructions">
+                        -
+                    </span>
+
+                </div>
+
+
+                <div class="delivery-info-row">
+
+                    <span class="info-label">
+                        הערות כלליות
                     </span>
 
                     <span id="deliveryNotes">
+                        -
                     </span>
 
                 </div>
@@ -684,9 +925,9 @@
                         ETA
                     </span>
 
-                    <span id="deliveryEta">
+                    <strong id="deliveryEta">
                         עדיין לא חושב
-                    </span>
+                    </strong>
 
                 </div>
 
@@ -694,6 +935,10 @@
             </div>
 
 
+
+            <!-- ================================================= -->
+            <!-- CONTACT / NAVIGATION -->
+            <!-- ================================================= -->
 
             <div class="delivery-actions-grid">
 
@@ -708,43 +953,53 @@
 
 
                 <button
-                    id="openNavigationButton"
+                    id="openWazeDirectButton"
                     class="delivery-action-button"
                     type="button"
                 >
-                    🚗 ניווט
+                    🚗 Waze
                 </button>
 
 
             </div>
 
 
+
+            <!-- ================================================= -->
+            <!-- EDIT -->
+            <!-- ================================================= -->
+
+            <button
+                id="editDriverShipmentButton"
+                class="secondary-action-button"
+                type="button"
+                style="
+                    width:100%;
+                    margin-top:12px;
+                "
+            >
+                ✏️ ערוך פרטי משלוח
+            </button>
+
+
+
+            <!-- ================================================= -->
+            <!-- ROUTE CHANGE WARNING -->
+            <!-- ================================================= -->
 
             <div
-                id="navigationOptions"
-                class="navigation-options hidden"
+                id="deliveryRouteUpdateMessage"
+                class="route-message hidden"
             >
-
-
-                <button
-                    id="openWazeButton"
-                    type="button"
-                >
-                    Waze
-                </button>
-
-
-                <button
-                    id="openGoogleMapsButton"
-                    type="button"
-                >
-                    Google Maps
-                </button>
-
-
+                הכתובת השתנתה.
+                לאחר השמירה ניתן לחשב את המסלול מחדש.
             </div>
 
 
+
+            <!-- ================================================= -->
+            <!-- STATUS -->
+            <!-- ================================================= -->
 
             <div class="delivery-status-actions">
 
@@ -784,7 +1039,7 @@
 
     <script src="supabase-config.js"></script>
 
-    <script src="driver.js?v=20261022-2"></script>
+    <script src="driver.js?v=20261026-1"></script>
 
 
 </body>
