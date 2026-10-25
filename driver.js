@@ -551,7 +551,7 @@ function getDriverStatusClass(
 
 
 // =========================================================
-// CREATE SHIPMENT NUMBER
+// CREATE INTERNAL SHIPMENT NUMBER
 // =========================================================
 
 function createShipmentNumber() {
@@ -952,6 +952,8 @@ async function loadDriverShipments() {
                 address_notes,
                 delivery_instructions,
                 notes,
+                source_type,
+                source_name,
                 driver_id,
                 driver_name,
                 status,
@@ -1321,6 +1323,17 @@ function renderDriverShipments() {
                 );
 
 
+            const sourceLabel =
+                shipment.source_type ===
+                    "DRIVER_MANUAL"
+
+                    ? "ידני"
+
+                    : shipment.source_name
+                        ? shipment.source_name
+                        : "";
+
+
             card.innerHTML = `
 
                 <div class="shipment-card-top">
@@ -1331,9 +1344,23 @@ function renderDriverShipments() {
                             ${customerName}
                         </h3>
 
-                        <div class="shipment-card-number">
-                            #${shipment.shipment_number || ""}
-                        </div>
+                        ${
+                            sourceLabel
+
+                                ? `
+                                    <div
+                                        style="
+                                            margin-top:3px;
+                                            font-size:11px;
+                                            color:#94a3b8;
+                                        "
+                                    >
+                                        ${sourceLabel}
+                                    </div>
+                                `
+
+                                : ""
+                        }
 
                     </div>
 
@@ -2227,7 +2254,7 @@ if (
                     else {
 
                         alert(
-                            "הפרטים נשמרו, אבל כרגע לא הצלחנו לאתר את הכתובת החדשה.\nנוכל לנסות שוב בהמשך."
+                            "הפרטים נשמרו, אבל כרגע לא הצלחנו לאתר את הכתובת החדשה.\nאפשר יהיה לנסות שוב בהמשך."
                         );
 
                     }
@@ -2278,14 +2305,16 @@ if (
 
 
             // =================================================
-            // CREATE NEW SHIPMENT
+            // CREATE NEW MANUAL SHIPMENT
             // =================================================
 
             const newShipment = {
 
+                // מספר פנימי אוטומטי של המערכת
                 shipment_number:
                     createShipmentNumber(),
 
+                // משלוח ידני של שליח לא דורש ברקוד
                 barcode:
                     null,
 
@@ -2328,6 +2357,14 @@ if (
                 notes:
                     shipmentData.notes,
 
+                // מקור המשלוח
+                source_type:
+                    "DRIVER_MANUAL",
+
+                source_name:
+                    null,
+
+                // המשלוח שייך אוטומטית לשליח שיצר אותו
                 driver_id:
                     currentProfile.id,
 
@@ -2406,6 +2443,10 @@ if (
                 data
             );
 
+
+            // =================================================
+            // GEOCODING BEHIND THE SCENES
+            // =================================================
 
             const geocoded =
                 await geocodeDriverShipment(
@@ -2496,8 +2537,14 @@ function openShipmentDetails(
         deliveryShipmentNumber
     ) {
 
+        // המספר קיים פנימית, אבל השליח לא נדרש להזין אותו
         deliveryShipmentNumber.textContent =
-            `משלוח #${shipment.shipment_number || ""}`;
+            shipment.source_type ===
+                "DRIVER_MANUAL"
+
+                ? "משלוח ידני"
+
+                : `משלוח #${shipment.shipment_number || ""}`;
 
     }
 
@@ -3502,7 +3549,7 @@ if (
 
 
 // =========================================================
-// PLACEHOLDER ROUTE LIST
+// TEMPORARY ROUTE PREVIEW
 // =========================================================
 
 function renderTemporaryRoutePreview() {
@@ -3726,7 +3773,7 @@ function renderTemporaryRouteSummary() {
 
 
 // =========================================================
-// CALCULATE ROUTE
+// CALCULATE ROUTE - TEMPORARY
 // =========================================================
 
 async function calculateDriverRoute() {
@@ -3780,7 +3827,7 @@ async function calculateDriverRoute() {
     ) {
 
         routePlannerMessage.textContent =
-            "המסלול עדיין לא מחובר ל-Google Routes. בשלב הבא נחבר את החישוב האמיתי עם סדר תחנות, ETA, זמן כולל ומרחק.";
+            "המסלול עדיין לא מחובר ל-Google Routes. בשלב הבא נחבר חישוב אמיתי עם סדר תחנות, ETA, זמן כולל ומרחק.";
 
     }
 
