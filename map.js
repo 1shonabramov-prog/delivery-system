@@ -1,6 +1,6 @@
 // =========================================================
 // DELIVERY SYSTEM
-// ACTIVITY MAP - SUPABASE
+// ACTIVITY MAP - GOOGLE MAPS + SUPABASE
 // =========================================================
 
 
@@ -31,6 +31,21 @@ let mapProfiles =
 let mapShipments =
     [];
 
+let googleMap =
+    null;
+
+let googleInfoWindow =
+    null;
+
+let googleMarkers =
+    [];
+
+let googleMapsReady =
+    false;
+
+let AdvancedMarkerElementClass =
+    null;
+
 
 // =========================================================
 // DOM
@@ -41,58 +56,74 @@ const mapUserAvatar =
         "mapUserAvatar"
     );
 
-
 const mapUserName =
     document.getElementById(
         "mapUserName"
     );
-
 
 const mapUserRole =
     document.getElementById(
         "mapUserRole"
     );
 
-
 const mapTotalShipments =
     document.getElementById(
         "mapTotalShipments"
     );
-
 
 const mapAssignedShipments =
     document.getElementById(
         "mapAssignedShipments"
     );
 
-
 const mapOnRouteShipments =
     document.getElementById(
         "mapOnRouteShipments"
     );
-
 
 const mapMissingLocationCount =
     document.getElementById(
         "mapMissingLocationCount"
     );
 
-
 const mapSearchInput =
     document.getElementById(
         "mapSearchInput"
     );
-
 
 const mapStatusFilter =
     document.getElementById(
         "mapStatusFilter"
     );
 
+const mapLocationFilter =
+    document.getElementById(
+        "mapLocationFilter"
+    );
 
 const mapShipmentsTableBody =
     document.getElementById(
         "mapShipmentsTableBody"
+    );
+
+const activityMap =
+    document.getElementById(
+        "activityMap"
+    );
+
+const mapStatusText =
+    document.getElementById(
+        "mapStatusText"
+    );
+
+const mapVisibleMarkersCount =
+    document.getElementById(
+        "mapVisibleMarkersCount"
+    );
+
+const mapGeocodeMissingButton =
+    document.getElementById(
+        "mapGeocodeMissingButton"
     );
 
 
@@ -105,7 +136,6 @@ function mapRedirectToLogin() {
     sessionStorage.removeItem(
         "delivery_system_current_user"
     );
-
 
     window.location.href =
         "login.html";
@@ -135,7 +165,6 @@ async function loadMapSession() {
             "Failed loading map session:",
             error
         );
-
 
         mapRedirectToLogin();
 
@@ -201,7 +230,6 @@ async function loadMapCurrentProfile() {
             error
         );
 
-
         return false;
     }
 
@@ -219,7 +247,6 @@ async function loadMapCurrentProfile() {
         await mapSupabase
             .auth
             .signOut();
-
 
         mapRedirectToLogin();
 
@@ -334,10 +361,8 @@ async function loadMapProfiles() {
             error
         );
 
-
         mapProfiles =
             [];
-
 
         return false;
     }
@@ -405,15 +430,12 @@ async function loadMapShipments() {
             error
         );
 
-
         mapShipments =
             [];
-
 
         showMapTableError(
             "לא ניתן לטעון את המשלוחים."
         );
-
 
         return false;
     }
@@ -425,6 +447,353 @@ async function loadMapShipments() {
 
 
     return true;
+}
+
+
+// =========================================================
+// GOOGLE MAPS BOOTSTRAP
+// =========================================================
+
+function installGoogleMapsBootstrap() {
+
+    if (
+        window.google &&
+        window.google.maps &&
+        window.google.maps.importLibrary
+    ) {
+
+        return;
+    }
+
+
+    ((g) => {
+
+        let h;
+        let a;
+        let k;
+
+        const p =
+            "The Google Maps JavaScript API";
+
+        const c =
+            "google";
+
+        const l =
+            "importLibrary";
+
+        const q =
+            "__ib__";
+
+        const m =
+            document;
+
+        let b =
+            window;
+
+
+        b =
+            b[c] ||
+            (
+                b[c] =
+                {}
+            );
+
+
+        const d =
+            b.maps ||
+            (
+                b.maps =
+                    {}
+            );
+
+
+        const r =
+            new Set();
+
+
+        const e =
+            new URLSearchParams();
+
+
+        const u =
+            () =>
+                h ||
+                (
+                    h =
+                        new Promise(
+
+                            async (
+                                f,
+                                n
+                            ) => {
+
+                                await (
+                                    a =
+                                        m.createElement(
+                                            "script"
+                                        )
+                                );
+
+
+                                e.set(
+                                    "libraries",
+                                    [
+                                        ...r
+                                    ] + ""
+                                );
+
+
+                                for (
+                                    k in g
+                                ) {
+
+                                    e.set(
+                                        k.replace(
+                                            /[A-Z]/g,
+                                            t =>
+                                                "_" +
+                                                t[0]
+                                                    .toLowerCase()
+                                        ),
+                                        g[k]
+                                    );
+                                }
+
+
+                                e.set(
+                                    "callback",
+                                    c +
+                                    ".maps." +
+                                    q
+                                );
+
+
+                                a.src =
+                                    `https://maps.${c}apis.com/maps/api/js?` +
+                                    e;
+
+
+                                d[q] =
+                                    f;
+
+
+                                a.onerror =
+                                    () =>
+                                        h =
+                                            n(
+                                                Error(
+                                                    p +
+                                                    " could not load."
+                                                )
+                                            );
+
+
+                                m.head.append(
+                                    a
+                                );
+
+                            }
+
+                        )
+                );
+
+
+        d[l]
+            ? console.warn(
+                p +
+                " only loads once. Ignoring:",
+                g
+            )
+            : d[l] =
+                (
+                    f,
+                    ...n
+                ) =>
+                    r.add(
+                        f
+                    )
+                    &&
+                    u()
+                        .then(
+                            () =>
+                                d[l](
+                                    f,
+                                    ...n
+                                )
+                        );
+
+    })(
+        {
+            key:
+                GOOGLE_MAPS_API_KEY,
+
+            v:
+                "weekly",
+
+            language:
+                "he",
+
+            region:
+                "IL"
+        }
+    );
+}
+
+
+// =========================================================
+// LOAD GOOGLE MAPS
+// =========================================================
+
+async function loadGoogleMaps() {
+
+    try {
+
+        if (
+            !GOOGLE_MAPS_API_KEY ||
+            GOOGLE_MAPS_API_KEY.includes(
+                "PASTE_"
+            )
+        ) {
+
+            throw new Error(
+                "Google Maps API key is missing"
+            );
+        }
+
+
+        installGoogleMapsBootstrap();
+
+
+        const [
+            mapsLibrary,
+            markerLibrary
+        ] =
+            await Promise.all(
+                [
+                    google.maps.importLibrary(
+                        "maps"
+                    ),
+
+                    google.maps.importLibrary(
+                        "marker"
+                    )
+                ]
+            );
+
+
+        AdvancedMarkerElementClass =
+            markerLibrary
+                .AdvancedMarkerElement;
+
+
+        googleInfoWindow =
+            new google.maps.InfoWindow();
+
+
+        googleMap =
+            new mapsLibrary.Map(
+                activityMap,
+                {
+                    center: {
+                        lat:
+                            31.95,
+
+                        lng:
+                            34.80
+                    },
+
+                    zoom:
+                        9,
+
+                    mapId:
+                        "DEMO_MAP_ID",
+
+                    streetViewControl:
+                        false,
+
+                    mapTypeControl:
+                        false,
+
+                    fullscreenControl:
+                        true
+                }
+            );
+
+
+        googleMapsReady =
+            true;
+
+
+        mapStatusText.textContent =
+            "Google Maps מחובר";
+
+
+        return true;
+
+    }
+
+    catch (
+        error
+    ) {
+
+        console.error(
+            "Google Maps load failed:",
+            error
+        );
+
+
+        googleMapsReady =
+            false;
+
+
+        mapStatusText.textContent =
+            "לא ניתן לטעון את Google Maps";
+
+
+        activityMap.innerHTML = `
+
+            <div
+                style="
+                    height:100%;
+                    display:flex;
+                    align-items:center;
+                    justify-content:center;
+                    text-align:center;
+                    padding:30px;
+                    color:#b91c1c;
+                "
+            >
+
+                <div>
+
+                    <div
+                        style="
+                            font-size:42px;
+                            margin-bottom:10px;
+                        "
+                    >
+                        ⚠️
+                    </div>
+
+                    <strong>
+                        Google Maps לא נטען
+                    </strong>
+
+                    <p>
+                        בדוק שה-Maps JavaScript API פעיל
+                        ושה-Website API Key תקין.
+                    </p>
+
+                </div>
+
+            </div>
+
+        `;
+
+
+        return false;
+    }
+
 }
 
 
@@ -455,23 +824,11 @@ function getMapFullAddress(
     shipment
 ) {
 
-    const address =
+    return [
         getMapShipmentAddress(
             shipment
-        );
-
-
-    const city =
-        String(
-            shipment.city ||
-            ""
-        )
-            .trim();
-
-
-    return [
-        address,
-        city,
+        ),
+        shipment.city,
         "ישראל"
     ]
         .filter(
@@ -539,33 +896,33 @@ function getMapDriverName(
 
 
 // =========================================================
-// HAS LOCATION
+// LOCATION
 // =========================================================
 
 function shipmentHasLocation(
     shipment
 ) {
 
+    const latitude =
+        Number(
+            shipment.latitude
+        );
+
+
+    const longitude =
+        Number(
+            shipment.longitude
+        );
+
+
     return (
-
-        shipment.latitude !==
-            null
-
+        Number.isFinite(
+            latitude
+        )
         &&
-
-        shipment.latitude !==
-            undefined
-
-        &&
-
-        shipment.longitude !==
-            null
-
-        &&
-
-        shipment.longitude !==
-            undefined
-
+        Number.isFinite(
+            longitude
+        )
     );
 }
 
@@ -576,56 +933,34 @@ function shipmentHasLocation(
 
 function renderMapCounters() {
 
-    const total =
+    mapTotalShipments.textContent =
         mapShipments.length;
 
 
-    const assigned =
+    mapAssignedShipments.textContent =
         mapShipments.filter(
-
             shipment =>
                 Boolean(
                     shipment.driver_id
                 )
-
         ).length;
 
 
-    const onRoute =
+    mapOnRouteShipments.textContent =
         mapShipments.filter(
-
             shipment =>
                 shipment.status ===
                 "בדרך"
-
         ).length;
 
 
-    const missingLocation =
+    mapMissingLocationCount.textContent =
         mapShipments.filter(
-
             shipment =>
                 !shipmentHasLocation(
                     shipment
                 )
-
         ).length;
-
-
-    mapTotalShipments.textContent =
-        total;
-
-
-    mapAssignedShipments.textContent =
-        assigned;
-
-
-    mapOnRouteShipments.textContent =
-        onRoute;
-
-
-    mapMissingLocationCount.textContent =
-        missingLocation;
 }
 
 
@@ -660,7 +995,6 @@ function getMapStatusClass(
 
             return "waiting";
     }
-
 }
 
 
@@ -705,13 +1039,20 @@ function getMapLocationBadge(
 function getFilteredMapShipments() {
 
     const search =
-        mapSearchInput.value
+        mapSearchInput
+            .value
             .trim()
             .toLowerCase();
 
 
     const selectedStatus =
-        mapStatusFilter.value;
+        mapStatusFilter
+            .value;
+
+
+    const selectedLocation =
+        mapLocationFilter
+            .value;
 
 
     return mapShipments.filter(
@@ -722,6 +1063,36 @@ function getFilteredMapShipments() {
                 selectedStatus &&
                 shipment.status !==
                     selectedStatus
+            ) {
+
+                return false;
+            }
+
+
+            if (
+                selectedLocation ===
+                    "LOCATED"
+
+                &&
+
+                !shipmentHasLocation(
+                    shipment
+                )
+            ) {
+
+                return false;
+            }
+
+
+            if (
+                selectedLocation ===
+                    "MISSING"
+
+                &&
+
+                shipmentHasLocation(
+                    shipment
+                )
             ) {
 
                 return false;
@@ -744,6 +1115,8 @@ function getFilteredMapShipments() {
                         shipment.street,
 
                         shipment.house_number,
+
+                        shipment.phone,
 
                         getMapDriverName(
                             shipment
@@ -781,6 +1154,412 @@ function getFilteredMapShipments() {
 
 
 // =========================================================
+// CLEAR MARKERS
+// =========================================================
+
+function clearGoogleMarkers() {
+
+    googleMarkers.forEach(
+
+        marker => {
+
+            marker.map =
+                null;
+        }
+
+    );
+
+
+    googleMarkers =
+        [];
+}
+
+
+// =========================================================
+// MARKER CONTENT
+// =========================================================
+
+function createMarkerContent(
+    shipment
+) {
+
+    const element =
+        document.createElement(
+            "div"
+        );
+
+
+    element.style.width =
+        "34px";
+
+    element.style.height =
+        "34px";
+
+    element.style.borderRadius =
+        "50%";
+
+    element.style.display =
+        "flex";
+
+    element.style.alignItems =
+        "center";
+
+    element.style.justifyContent =
+        "center";
+
+    element.style.background =
+        "#2563eb";
+
+    element.style.color =
+        "#ffffff";
+
+    element.style.fontSize =
+        "16px";
+
+    element.style.fontWeight =
+        "700";
+
+    element.style.border =
+        "3px solid #ffffff";
+
+    element.style.boxShadow =
+        "0 4px 12px rgba(0,0,0,0.25)";
+
+
+    if (
+        shipment.status ===
+        "נמסר"
+    ) {
+
+        element.textContent =
+            "✓";
+    }
+
+    else if (
+        shipment.status ===
+        "לא נמסר"
+    ) {
+
+        element.textContent =
+            "✕";
+    }
+
+    else {
+
+        element.textContent =
+            "📦";
+    }
+
+
+    return element;
+}
+
+
+// =========================================================
+// INFO WINDOW
+// =========================================================
+
+function getMarkerInfoHtml(
+    shipment
+) {
+
+    return `
+
+        <div
+            dir="rtl"
+            style="
+                min-width:220px;
+                font-family:Arial,sans-serif;
+                line-height:1.6;
+            "
+        >
+
+            <strong
+                style="
+                    font-size:15px;
+                "
+            >
+                #${shipment.shipment_number || ""}
+                -
+                ${shipment.customer || "לקוח"}
+            </strong>
+
+            <div>
+                📍 ${getMapFullAddress(
+                    shipment
+                )}
+            </div>
+
+            <div>
+                🚚 ${getMapDriverName(
+                    shipment
+                )}
+            </div>
+
+            <div>
+                סטטוס:
+                ${shipment.status}
+            </div>
+
+            ${
+                shipment.phone
+
+                    ? `
+                        <div>
+                            📞
+                            <a
+                                href="tel:${shipment.phone}"
+                            >
+                                ${shipment.phone}
+                            </a>
+                        </div>
+                    `
+
+                    : ""
+            }
+
+        </div>
+
+    `;
+}
+
+
+// =========================================================
+// RENDER GOOGLE MARKERS
+// =========================================================
+
+function renderGoogleMarkers() {
+
+    if (
+        !googleMapsReady ||
+        !googleMap ||
+        !AdvancedMarkerElementClass
+    ) {
+
+        return;
+    }
+
+
+    clearGoogleMarkers();
+
+
+    const shipments =
+        getFilteredMapShipments()
+            .filter(
+                shipmentHasLocation
+            );
+
+
+    if (
+        shipments.length ===
+        0
+    ) {
+
+        mapVisibleMarkersCount.textContent =
+            "0 נקודות על המפה";
+
+
+        return;
+    }
+
+
+    const bounds =
+        new google.maps.LatLngBounds();
+
+
+    shipments.forEach(
+
+        shipment => {
+
+            const position = {
+
+                lat:
+                    Number(
+                        shipment.latitude
+                    ),
+
+                lng:
+                    Number(
+                        shipment.longitude
+                    )
+
+            };
+
+
+            const marker =
+                new AdvancedMarkerElementClass(
+                    {
+                        map:
+                            googleMap,
+
+                        position:
+                            position,
+
+                        title:
+                            `${shipment.customer || ""} - ${getMapFullAddress(
+                                shipment
+                            )}`,
+
+                        content:
+                            createMarkerContent(
+                                shipment
+                            )
+                    }
+                );
+
+
+            marker.addListener(
+
+                "click",
+
+                () => {
+
+                    googleInfoWindow.setContent(
+                        getMarkerInfoHtml(
+                            shipment
+                        )
+                    );
+
+
+                    googleInfoWindow.open(
+                        {
+                            map:
+                                googleMap,
+
+                            anchor:
+                                marker
+                        }
+                    );
+
+                }
+
+            );
+
+
+            googleMarkers.push(
+                marker
+            );
+
+
+            bounds.extend(
+                position
+            );
+
+        }
+
+    );
+
+
+    if (
+        shipments.length ===
+        1
+    ) {
+
+        googleMap.setCenter(
+            {
+                lat:
+                    Number(
+                        shipments[0].latitude
+                    ),
+
+                lng:
+                    Number(
+                        shipments[0].longitude
+                    )
+            }
+        );
+
+
+        googleMap.setZoom(
+            15
+        );
+    }
+
+    else {
+
+        googleMap.fitBounds(
+            bounds
+        );
+    }
+
+
+    mapVisibleMarkersCount.textContent =
+        `${shipments.length} נקודות על המפה`;
+}
+
+
+// =========================================================
+// OPEN SHIPMENT ON MAP
+// =========================================================
+
+function focusShipmentOnMap(
+    shipmentId
+) {
+
+    const shipment =
+        mapShipments.find(
+
+            item =>
+                String(
+                    item.id
+                )
+                ===
+                String(
+                    shipmentId
+                )
+
+        );
+
+
+    if (
+        !shipment ||
+        !shipmentHasLocation(
+            shipment
+        ) ||
+        !googleMap
+    ) {
+
+        return;
+    }
+
+
+    googleMap.setCenter(
+        {
+            lat:
+                Number(
+                    shipment.latitude
+                ),
+
+            lng:
+                Number(
+                    shipment.longitude
+                )
+        }
+    );
+
+
+    googleMap.setZoom(
+        17
+    );
+
+
+    window.scrollTo(
+        {
+            top:
+                0,
+
+            behavior:
+                "smooth"
+        }
+    );
+}
+
+
+window.focusShipmentOnMap =
+    focusShipmentOnMap;
+
+
+// =========================================================
 // TABLE
 // =========================================================
 
@@ -804,7 +1583,7 @@ function renderMapShipmentsTable() {
             <tr>
 
                 <td
-                    colspan="7"
+                    colspan="8"
                     style="
                         text-align:center;
                         padding:35px;
@@ -817,6 +1596,9 @@ function renderMapShipmentsTable() {
             </tr>
 
         `;
+
+
+        renderGoogleMarkers();
 
 
         return;
@@ -839,46 +1621,25 @@ function renderMapShipmentsTable() {
                     #${shipment.shipment_number || ""}
                 </td>
 
-
                 <td>
                     ${shipment.customer || "-"}
                 </td>
-
 
                 <td>
                     ${shipment.city || "-"}
                 </td>
 
-
                 <td>
-
-                    <div>
-                        ${getMapShipmentAddress(
-                            shipment
-                        ) || "-"}
-                    </div>
-
-                    <div
-                        style="
-                            margin-top:4px;
-                            font-size:11px;
-                            color:#64748b;
-                        "
-                    >
-                        ${getMapFullAddress(
-                            shipment
-                        )}
-                    </div>
-
+                    ${getMapShipmentAddress(
+                        shipment
+                    ) || "-"}
                 </td>
-
 
                 <td>
                     ${getMapDriverName(
                         shipment
                     )}
                 </td>
-
 
                 <td>
 
@@ -895,12 +1656,44 @@ function renderMapShipmentsTable() {
 
                 </td>
 
-
                 <td>
-
                     ${getMapLocationBadge(
                         shipment
                     )}
+                </td>
+
+                <td>
+
+                    ${
+                        shipmentHasLocation(
+                            shipment
+                        )
+
+                            ? `
+                                <button
+                                    type="button"
+                                    class="table-btn"
+                                    onclick="
+                                        focusShipmentOnMap(
+                                            '${shipment.id}'
+                                        )
+                                    "
+                                >
+                                    הצג במפה
+                                </button>
+                            `
+
+                            : `
+                                <span
+                                    style="
+                                        color:#94a3b8;
+                                        font-size:12px;
+                                    "
+                                >
+                                    טרם אותר
+                                </span>
+                            `
+                    }
 
                 </td>
 
@@ -914,6 +1707,9 @@ function renderMapShipmentsTable() {
         }
 
     );
+
+
+    renderGoogleMarkers();
 }
 
 
@@ -930,7 +1726,7 @@ function showMapTableError(
         <tr>
 
             <td
-                colspan="7"
+                colspan="8"
                 style="
                     text-align:center;
                     padding:35px;
@@ -947,24 +1743,186 @@ function showMapTableError(
 
 
 // =========================================================
+// GEOCODE ONE SHIPMENT
+// =========================================================
+
+async function geocodeMapShipment(
+    shipment
+) {
+
+    const {
+        data,
+        error
+    } =
+        await mapSupabase
+            .functions
+            .invoke(
+                "geocode-shipment",
+                {
+                    body: {
+                        shipment_id:
+                            shipment.id
+                    }
+                }
+            );
+
+
+    if (
+        error
+    ) {
+
+        console.error(
+            "Geocoding failed:",
+            shipment.id,
+            error
+        );
+
+
+        return false;
+    }
+
+
+    if (
+        !data ||
+        data.success !==
+            true
+    ) {
+
+        console.error(
+            "Unexpected geocoding response:",
+            data
+        );
+
+
+        return false;
+    }
+
+
+    shipment.latitude =
+        data.latitude;
+
+    shipment.longitude =
+        data.longitude;
+
+    shipment.geocoded_at =
+        data.geocoded_at;
+
+
+    return true;
+}
+
+
+// =========================================================
+// GEOCODE ALL MISSING
+// =========================================================
+
+async function geocodeMissingMapShipments() {
+
+    const missing =
+        mapShipments.filter(
+
+            shipment =>
+                !shipmentHasLocation(
+                    shipment
+                )
+
+        );
+
+
+    if (
+        missing.length ===
+        0
+    ) {
+
+        alert(
+            "לכל המשלוחים כבר יש מיקום."
+        );
+
+        return;
+    }
+
+
+    mapGeocodeMissingButton.disabled =
+        true;
+
+
+    let successCount =
+        0;
+
+
+    for (
+        let index = 0;
+        index < missing.length;
+        index++
+    ) {
+
+        mapGeocodeMissingButton.textContent =
+            `מאתר ${index + 1}/${missing.length}...`;
+
+
+        const success =
+            await geocodeMapShipment(
+                missing[index]
+            );
+
+
+        if (
+            success
+        ) {
+
+            successCount++;
+        }
+
+    }
+
+
+    mapGeocodeMissingButton.disabled =
+        false;
+
+
+    mapGeocodeMissingButton.textContent =
+        "📍 אתר משלוחים ללא מיקום";
+
+
+    await loadMapShipments();
+
+
+    renderMapCounters();
+
+    renderMapShipmentsTable();
+
+
+    alert(
+        `הסתיים תהליך האיתור.\n${successCount} מתוך ${missing.length} משלוחים אותרו בהצלחה.`
+    );
+}
+
+
+// =========================================================
 // EVENTS
 // =========================================================
 
 mapSearchInput.addEventListener(
-
     "input",
-
     renderMapShipmentsTable
-
 );
 
 
 mapStatusFilter.addEventListener(
-
     "change",
-
     renderMapShipmentsTable
+);
 
+
+mapLocationFilter.addEventListener(
+    "change",
+    renderMapShipmentsTable
+);
+
+
+mapGeocodeMissingButton.addEventListener(
+    "click",
+    geocodeMissingMapShipments
 );
 
 
@@ -1012,7 +1970,20 @@ async function initializeMapPage() {
     renderMapCounters();
 
 
+    const mapLoaded =
+        await loadGoogleMaps();
+
+
     renderMapShipmentsTable();
+
+
+    if (
+        mapLoaded
+    ) {
+
+        renderGoogleMarkers();
+    }
+
 }
 
 

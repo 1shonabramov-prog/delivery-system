@@ -16,7 +16,7 @@
 
     <link
         rel="stylesheet"
-        href="style.css?v=20261022-8"
+        href="style.css?v=20261025-1"
     >
 
 </head>
@@ -25,13 +25,19 @@
 <body>
 
 
+    <!-- ===================================================== -->
+    <!-- SIDEBAR -->
+    <!-- ===================================================== -->
+
     <aside class="sidebar">
+
 
         <div class="logo">
 
             <div class="logo-icon">
                 D
             </div>
+
 
             <div class="logo-text">
 
@@ -48,49 +54,124 @@
         </div>
 
 
+
         <nav class="menu">
 
-            <a href="index.html" class="menu-item">
-                <span class="menu-icon">🏠</span>
-                <span>לוח בקרה</span>
+
+            <a
+                href="index.html"
+                class="menu-item"
+            >
+                <span class="menu-icon">
+                    🏠
+                </span>
+
+                <span>
+                    לוח בקרה
+                </span>
             </a>
 
-            <a href="warehouse.html" class="menu-item">
-                <span class="menu-icon">📥</span>
-                <span>קליטת משלוחים</span>
+
+            <a
+                href="warehouse.html"
+                class="menu-item"
+            >
+                <span class="menu-icon">
+                    📥
+                </span>
+
+                <span>
+                    קליטת משלוחים
+                </span>
             </a>
 
-            <a href="shipments.html" class="menu-item">
-                <span class="menu-icon">📦</span>
-                <span>משלוחים</span>
+
+            <a
+                href="shipments.html"
+                class="menu-item"
+            >
+                <span class="menu-icon">
+                    📦
+                </span>
+
+                <span>
+                    משלוחים
+                </span>
             </a>
 
-            <a href="drivers.html" class="menu-item">
-                <span class="menu-icon">🚚</span>
-                <span>שליחים</span>
+
+            <a
+                href="drivers.html"
+                class="menu-item"
+            >
+                <span class="menu-icon">
+                    🚚
+                </span>
+
+                <span>
+                    שליחים
+                </span>
             </a>
 
-            <a href="cities.html" class="menu-item">
-                <span class="menu-icon">📍</span>
-                <span>ערים ואזורים</span>
+
+            <a
+                href="cities.html"
+                class="menu-item"
+            >
+                <span class="menu-icon">
+                    📍
+                </span>
+
+                <span>
+                    ערים ואזורים
+                </span>
             </a>
 
-            <a href="map.html" class="menu-item active">
-                <span class="menu-icon">🗺️</span>
-                <span>מפת פעילות</span>
+
+            <a
+                href="map.html"
+                class="menu-item active"
+            >
+                <span class="menu-icon">
+                    🗺️
+                </span>
+
+                <span>
+                    מפת פעילות
+                </span>
             </a>
 
-            <a href="reports.html" class="menu-item">
-                <span class="menu-icon">📊</span>
-                <span>דוחות</span>
+
+            <a
+                href="reports.html"
+                class="menu-item"
+            >
+                <span class="menu-icon">
+                    📊
+                </span>
+
+                <span>
+                    דוחות
+                </span>
             </a>
 
-            <a href="settings.html" class="menu-item">
-                <span class="menu-icon">⚙️</span>
-                <span>הגדרות</span>
+
+            <a
+                href="settings.html"
+                class="menu-item"
+            >
+                <span class="menu-icon">
+                    ⚙️
+                </span>
+
+                <span>
+                    הגדרות
+                </span>
             </a>
+
 
         </nav>
+
 
 
         <div class="sidebar-user">
@@ -101,6 +182,7 @@
             >
                 מ
             </div>
+
 
             <div class="user-details">
 
@@ -116,14 +198,24 @@
 
         </div>
 
+
     </aside>
 
 
 
+    <!-- ===================================================== -->
+    <!-- MAIN -->
+    <!-- ===================================================== -->
+
     <main class="main-content">
 
 
+        <!-- ================================================= -->
+        <!-- HEADER -->
+        <!-- ================================================= -->
+
         <header class="topbar">
+
 
             <div class="page-title">
 
@@ -132,16 +224,35 @@
                 </h1>
 
                 <p>
-                    צפייה במשלוחים ובפעילות לפי מיקום
+                    צפייה במשלוחים לפי מיקום גאוגרפי
                 </p>
 
             </div>
+
+
+            <div class="topbar-actions">
+
+                <button
+                    id="mapGeocodeMissingButton"
+                    class="primary-btn"
+                    type="button"
+                >
+                    📍 אתר משלוחים ללא מיקום
+                </button>
+
+            </div>
+
 
         </header>
 
 
 
+        <!-- ================================================= -->
+        <!-- STATS -->
+        <!-- ================================================= -->
+
         <section class="stats-grid">
+
 
             <div class="stat-card">
 
@@ -157,6 +268,7 @@
 
                 </div>
 
+
                 <div
                     id="mapTotalShipments"
                     class="stat-number"
@@ -164,11 +276,13 @@
                     0
                 </div>
 
+
                 <div class="stat-footer">
                     במערכת
                 </div>
 
             </div>
+
 
 
             <div class="stat-card">
@@ -185,6 +299,7 @@
 
                 </div>
 
+
                 <div
                     id="mapAssignedShipments"
                     class="stat-number"
@@ -192,11 +307,13 @@
                     0
                 </div>
 
+
                 <div class="stat-footer success">
                     עם שליח
                 </div>
 
             </div>
+
 
 
             <div class="stat-card">
@@ -213,6 +330,7 @@
 
                 </div>
 
+
                 <div
                     id="mapOnRouteShipments"
                     class="stat-number"
@@ -220,11 +338,13 @@
                     0
                 </div>
 
+
                 <div class="stat-footer warning">
                     משלוחים פעילים
                 </div>
 
             </div>
+
 
 
             <div class="stat-card">
@@ -241,6 +361,7 @@
 
                 </div>
 
+
                 <div
                     id="mapMissingLocationCount"
                     class="stat-number"
@@ -248,17 +369,24 @@
                     0
                 </div>
 
+
                 <div class="stat-footer danger">
-                    טרם עברו Geocoding
+                    ממתינים ל-Geocoding
                 </div>
 
             </div>
+
 
         </section>
 
 
 
+        <!-- ================================================= -->
+        <!-- MAP -->
+        <!-- ================================================= -->
+
         <section class="panel">
+
 
             <div class="panel-header">
 
@@ -268,71 +396,66 @@
                         מפה
                     </h2>
 
-                    <p>
-                        בשלב הבא נחבר כאן את Google Maps
+                    <p id="mapStatusText">
+                        טוען Google Maps...
                     </p>
 
                 </div>
 
+
+                <div>
+
+                    <span
+                        id="mapVisibleMarkersCount"
+                        style="
+                            font-size:13px;
+                            color:#64748b;
+                        "
+                    >
+                        0 נקודות על המפה
+                    </span>
+
+                </div>
+
             </div>
+
 
 
             <div
                 id="activityMap"
                 style="
-                    min-height:420px;
-                    border:1px dashed #cbd5e1;
+                    width:100%;
+                    height:520px;
                     border-radius:16px;
-                    display:flex;
-                    align-items:center;
-                    justify-content:center;
-                    text-align:center;
-                    padding:30px;
+                    overflow:hidden;
                     background:#f8fafc;
-                    color:#64748b;
+                    border:1px solid #e2e8f0;
                 "
             >
-
-                <div>
-
-                    <div
-                        style="
-                            font-size:50px;
-                            margin-bottom:12px;
-                        "
-                    >
-                        🗺️
-                    </div>
-
-                    <strong>
-                        Google Maps עדיין לא מחובר
-                    </strong>
-
-                    <p>
-                        קודם נטען את המשלוחים מ-Supabase,
-                        ואז נחבר Geocoding ומפה אמיתית.
-                    </p>
-
-                </div>
-
             </div>
+
 
         </section>
 
 
 
+        <!-- ================================================= -->
+        <!-- FILTER + SHIPMENTS -->
+        <!-- ================================================= -->
+
         <section class="panel">
+
 
             <div class="panel-header">
 
                 <div>
 
                     <h2>
-                        משלוחים למפה
+                        משלוחים במפה
                     </h2>
 
                     <p>
-                        כתובות שייטענו למפה
+                        חיפוש וסינון משפיעים גם על הנקודות שמוצגות במפה
                     </p>
 
                 </div>
@@ -340,13 +463,16 @@
             </div>
 
 
+
             <div class="shipments-toolbar">
+
 
                 <input
                     type="text"
                     id="mapSearchInput"
-                    placeholder="חיפוש עיר / רחוב / לקוח..."
+                    placeholder="חיפוש עיר / רחוב / לקוח / שליח..."
                 >
+
 
                 <select id="mapStatusFilter">
 
@@ -376,12 +502,33 @@
 
                 </select>
 
+
+                <select id="mapLocationFilter">
+
+                    <option value="">
+                        כל המשלוחים
+                    </option>
+
+                    <option value="LOCATED">
+                        עם מיקום
+                    </option>
+
+                    <option value="MISSING">
+                        ללא מיקום
+                    </option>
+
+                </select>
+
+
             </div>
+
 
 
             <div class="table-wrapper">
 
+
                 <table>
+
 
                     <thead>
 
@@ -415,6 +562,10 @@
                                 מצב מיקום
                             </th>
 
+                            <th>
+                                פעולה
+                            </th>
+
                         </tr>
 
                     </thead>
@@ -425,7 +576,7 @@
                         <tr>
 
                             <td
-                                colspan="7"
+                                colspan="8"
                                 style="
                                     text-align:center;
                                     padding:35px;
@@ -439,9 +590,12 @@
 
                     </tbody>
 
+
                 </table>
 
+
             </div>
+
 
         </section>
 
@@ -450,11 +604,27 @@
 
 
 
+    <!-- ===================================================== -->
+    <!-- SUPABASE -->
+    <!-- ===================================================== -->
+
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
     <script src="supabase-config.js"></script>
 
-    <script src="map.js?v=20261022-1"></script>
+
+    <!-- ===================================================== -->
+    <!-- GOOGLE MAPS CONFIG -->
+    <!-- ===================================================== -->
+
+    <script src="google-maps-config.js?v=20261025-1"></script>
+
+
+    <!-- ===================================================== -->
+    <!-- MAP LOGIC -->
+    <!-- ===================================================== -->
+
+    <script src="map.js?v=20261025-2"></script>
 
 
 </body>
