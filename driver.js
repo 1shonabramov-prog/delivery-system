@@ -3175,6 +3175,17 @@ if (
 
 }
 // =========================================================
+// ROUTE RESULT STATE
+// =========================================================
+
+const DRIVER_OPTIMIZED_ROUTE_STORAGE_KEY =
+    "delivery_system_optimized_route";
+
+let optimizedRouteResult =
+    null;
+
+
+// =========================================================
 // ROUTE PLANNER TOGGLE
 // =========================================================
 
@@ -3207,22 +3218,40 @@ if (
 
 
 // =========================================================
+// ROUTE STORAGE KEY
+// =========================================================
+
+function getRouteStorageKey() {
+
+    return currentProfile
+
+        ? `${DRIVER_ROUTE_STORAGE_KEY}_${currentProfile.id}`
+
+        : DRIVER_ROUTE_STORAGE_KEY;
+
+}
+
+
+function getOptimizedRouteStorageKey() {
+
+    return currentProfile
+
+        ? `${DRIVER_OPTIMIZED_ROUTE_STORAGE_KEY}_${currentProfile.id}`
+
+        : DRIVER_OPTIMIZED_ROUTE_STORAGE_KEY;
+
+}
+
+
+// =========================================================
 // LOAD ROUTE SETTINGS
 // =========================================================
 
 function loadRouteSettings() {
 
-    const storageKey =
-        currentProfile
-
-            ? `${DRIVER_ROUTE_STORAGE_KEY}_${currentProfile.id}`
-
-            : DRIVER_ROUTE_STORAGE_KEY;
-
-
     const saved =
         localStorage.getItem(
-            storageKey
+            getRouteStorageKey()
         );
 
 
@@ -3240,7 +3269,8 @@ function loadRouteSettings() {
 
             const localDate =
                 new Date(
-                    now.getTime() -
+                    now.getTime()
+                    -
                     now.getTimezoneOffset() *
                     60000
                 )
@@ -3362,7 +3392,35 @@ function getCurrentRouteSettings() {
 
 
 // =========================================================
-// VALIDATE ROUTE SETTINGS
+// SAVE ROUTE SETTINGS
+// =========================================================
+
+function saveCurrentRouteSettings() {
+
+    if (
+        !currentProfile
+    ) {
+
+        return;
+
+    }
+
+
+    localStorage.setItem(
+
+        getRouteStorageKey(),
+
+        JSON.stringify(
+            getCurrentRouteSettings()
+        )
+
+    );
+
+}
+
+
+// =========================================================
+// VALIDATE ROUTE
 // =========================================================
 
 function validateRouteSettings(
@@ -3426,12 +3484,12 @@ function validateRouteSettings(
 
             shipment =>
                 shipment.status !==
-                "נמסר"
+                    "נמסר"
 
                 &&
 
                 shipment.status !==
-                "לא נמסר"
+                    "לא נמסר"
 
         );
 
@@ -3442,7 +3500,7 @@ function validateRouteSettings(
     ) {
 
         alert(
-            "אין כרגע משלוחים פעילים לחישוב מסלול."
+            "אין כרגע משלוחים פעילים לסידור מסלול."
         );
 
         return false;
@@ -3456,46 +3514,7 @@ function validateRouteSettings(
 
 
 // =========================================================
-// SAVE ROUTE SETTINGS
-// =========================================================
-
-function saveCurrentRouteSettings() {
-
-    if (
-        !currentProfile
-    ) {
-
-        return false;
-
-    }
-
-
-    const settings =
-        getCurrentRouteSettings();
-
-
-    const storageKey =
-        `${DRIVER_ROUTE_STORAGE_KEY}_${currentProfile.id}`;
-
-
-    localStorage.setItem(
-
-        storageKey,
-
-        JSON.stringify(
-            settings
-        )
-
-    );
-
-
-    return true;
-
-}
-
-
-// =========================================================
-// SAVE ROUTE SETTINGS BUTTON
+// SAVE SETTINGS BUTTON
 // =========================================================
 
 if (
@@ -3513,16 +3532,10 @@ if (
 
 
             if (
-                !settings.date ||
-                !settings.startTime ||
-                !settings.startAddress ||
-                !settings.endAddress
+                !validateRouteSettings(
+                    settings
+                )
             ) {
-
-                alert(
-                    "יש למלא תאריך, שעת התחלה, כתובת התחלה וכתובת סיום."
-                );
-
 
                 return;
 
@@ -3549,66 +3562,409 @@ if (
 
 
 // =========================================================
-// TEMPORARY ROUTE PREVIEW
+// BUILD START DATE/TIME
 // =========================================================
 
-function renderTemporaryRoutePreview() {
+function buildRouteStartIso(
+    settings
+) {
+
+    const localDate =
+        new Date(
+            `${settings.date}T${settings.startTime}:00`
+        );
+
 
     if (
-        !optimizedRouteList
+        Number.isNaN(
+            localDate.getTime()
+        )
     ) {
 
-        return;
+        return null;
 
     }
 
 
-    const activeShipments =
+    return localDate
+        .toISOString();
+
+}
+
+
+// =========================================================
+// FORMAT TIME
+// =========================================================
+
+function formatRouteTime(
+    value
+) {
+
+    if (
+        !value
+    ) {
+
+        return "--";
+
+    }
+
+
+    const date =
+        new Date(
+            value
+        );
+
+
+    if (
+        Number.isNaN(
+            date.getTime()
+        )
+    ) {
+
+        return "--";
+
+    }
+
+
+    return date
+        .toLocaleTimeString(
+            "he-IL",
+            {
+                hour:
+                    "2-digit",
+
+                minute:
+                    "2-digit"
+            }
+        );
+
+}
+
+
+// =========================================================
+// FORMAT DURATION
+// =========================================================
+
+function formatRouteDuration(
+    seconds
+) {
+
+    const totalMinutes =
+        Math.round(
+            Number(
+                seconds ||
+                0
+            )
+            /
+            60
+        );
+
+
+    const hours =
+        Math.floor(
+            totalMinutes /
+            60
+        );
+
+
+    const minutes =
+        totalMinutes %
+        60;
+
+
+    if (
+        hours <=
+        0
+    ) {
+
+        return `${minutes} דקות`;
+
+    }
+
+
+    if (
+        minutes ===
+        0
+    ) {
+
+        return `${hours} שעות`;
+
+    }
+
+
+    return `${hours} שעות ו-${minutes} דקות`;
+
+}
+
+
+// =========================================================
+// FORMAT DISTANCE
+// =========================================================
+
+function formatRouteDistance(
+    meters
+) {
+
+    const km =
+        Number(
+            meters ||
+            0
+        )
+        /
+        1000;
+
+
+    return `${km.toFixed(1)} ק"מ`;
+
+}
+
+
+// =========================================================
+// GEOCODE MISSING ACTIVE SHIPMENTS
+// =========================================================
+
+async function ensureActiveShipmentsGeocoded() {
+
+    const missing =
         driverShipments.filter(
 
             shipment =>
+
                 shipment.status !==
-                "נמסר"
+                    "נמסר"
 
                 &&
 
                 shipment.status !==
-                "לא נמסר"
+                    "לא נמסר"
+
+                &&
+
+                (
+                    shipment.latitude ===
+                        null
+
+                    ||
+
+                    shipment.longitude ===
+                        null
+                )
 
         );
 
 
-    optimizedRouteList.innerHTML =
-        "";
-
-
     if (
-        activeShipments.length ===
+        missing.length ===
         0
     ) {
 
-        optimizedRouteList.innerHTML = `
+        return true;
 
-            <div class="driver-empty-state">
+    }
 
-                אין משלוחים פעילים למסלול.
 
-            </div>
+    if (
+        routePlannerMessage
+    ) {
 
-        `;
+        routePlannerMessage.textContent =
+            `מאתר ${missing.length} כתובות לפני חישוב המסלול...`;
 
+    }
+
+
+    for (
+        const shipment
+        of missing
+    ) {
+
+        const success =
+            await geocodeDriverShipment(
+                shipment.id
+            );
+
+
+        if (
+            !success
+        ) {
+
+            alert(
+                `לא הצלחנו לאתר את הכתובת של ${shipment.customer || "אחד המשלוחים"}.\nבדוק את העיר, הרחוב ומספר הבית.`
+            );
+
+
+            return false;
+
+        }
+
+    }
+
+
+    await loadDriverShipments();
+
+
+    return true;
+
+}
+
+
+// =========================================================
+// SAVE OPTIMIZED ROUTE
+// =========================================================
+
+function saveOptimizedRoute(
+    result
+) {
+
+    optimizedRouteResult =
+        result;
+
+
+    localStorage.setItem(
+
+        getOptimizedRouteStorageKey(),
+
+        JSON.stringify(
+            result
+        )
+
+    );
+
+}
+
+
+// =========================================================
+// LOAD SAVED OPTIMIZED ROUTE
+// =========================================================
+
+function loadSavedOptimizedRoute() {
+
+    const saved =
+        localStorage.getItem(
+            getOptimizedRouteStorageKey()
+        );
+
+
+    if (
+        !saved
+    ) {
 
         return;
 
     }
 
 
-    activeShipments.forEach(
+    try {
 
-        (
-            shipment,
-            index
-        ) => {
+        optimizedRouteResult =
+            JSON.parse(
+                saved
+            );
+
+
+        renderOptimizedRoute(
+            optimizedRouteResult
+        );
+
+    }
+
+    catch (
+        error
+    ) {
+
+        console.error(
+            "Failed loading optimized route:",
+            error
+        );
+
+    }
+
+}
+
+
+// =========================================================
+// RENDER OPTIMIZED ROUTE
+// =========================================================
+
+function renderOptimizedRoute(
+    result
+) {
+
+    if (
+        !result
+    ) {
+
+        return;
+
+    }
+
+
+    if (
+        routeSummaryStartTime
+    ) {
+
+        routeSummaryStartTime.textContent =
+            formatRouteTime(
+                result.vehicle_start_time
+            );
+
+    }
+
+
+    if (
+        routeSummaryEndTime
+    ) {
+
+        routeSummaryEndTime.textContent =
+            formatRouteTime(
+                result.vehicle_end_time
+            );
+
+    }
+
+
+    if (
+        routeSummaryDuration
+    ) {
+
+        routeSummaryDuration.textContent =
+            formatRouteDuration(
+                result.total_duration_seconds
+            );
+
+    }
+
+
+    if (
+        routeSummaryDistance
+    ) {
+
+        routeSummaryDistance.textContent =
+            formatRouteDistance(
+                result.total_distance_meters
+            );
+
+    }
+
+
+    if (
+        optimizedRouteList
+    ) {
+
+        optimizedRouteList.innerHTML =
+            "";
+
+    }
+
+
+    const stops =
+        result.stops ||
+        [];
+
+
+    stops.forEach(
+
+        stop => {
 
             const item =
                 document.createElement(
@@ -3618,7 +3974,6 @@ function renderTemporaryRoutePreview() {
 
             item.type =
                 "button";
-
 
             item.className =
                 "driver-shipment-card";
@@ -3631,8 +3986,20 @@ function renderTemporaryRoutePreview() {
                 function () {
 
                     openShipmentDetails(
-                        shipment.id
+                        stop.shipment_id
                     );
+
+
+                    if (
+                        deliveryEta
+                    ) {
+
+                        deliveryEta.textContent =
+                            formatRouteTime(
+                                stop.eta
+                            );
+
+                    }
 
                 }
 
@@ -3652,17 +4019,23 @@ function renderTemporaryRoutePreview() {
                                 margin-bottom:4px;
                             "
                         >
-                            תחנה ${index + 1}
+                            תחנה ${stop.order}
                         </div>
 
                         <h3 class="shipment-card-customer">
-                            ${shipment.customer || "לקוח"}
+                            ${stop.customer || "לקוח"}
                         </h3>
 
                     </div>
 
+
                     <span class="shipment-card-status status-assigned">
-                        ETA בהמשך
+
+                        ETA
+                        ${formatRouteTime(
+                            stop.eta
+                        )}
+
                     </span>
 
                 </div>
@@ -3671,9 +4044,18 @@ function renderTemporaryRoutePreview() {
                 <div class="shipment-card-address">
 
                     📍
-                    ${getShipmentMainAddress(
-                        shipment
-                    )}
+
+                    ${stop.street || ""}
+                    ${stop.house_number || ""},
+                    ${stop.city || ""}
+
+                </div>
+
+
+                <div class="shipment-card-phone">
+
+                    📞
+                    ${stop.phone || "ללא טלפון"}
 
                 </div>
 
@@ -3681,11 +4063,24 @@ function renderTemporaryRoutePreview() {
                 <div class="shipment-card-footer">
 
                     <span class="shipment-card-eta">
-                        עדיין לא בוצע חישוב Google Routes
+
+                        ${
+                            stop.travel_distance_meters
+                                ?
+                                formatRouteDistance(
+                                    stop.travel_distance_meters
+                                )
+                                :
+                                ""
+                        }
+
                     </span>
 
+
                     <span class="shipment-open-text">
+
                         פרטים >
+
                     </span>
 
                 </div>
@@ -3693,69 +4088,14 @@ function renderTemporaryRoutePreview() {
             `;
 
 
-            optimizedRouteList.appendChild(
-                item
-            );
+            optimizedRouteList
+                .appendChild(
+                    item
+                );
 
         }
 
     );
-
-}
-
-
-// =========================================================
-// TEMPORARY ROUTE SUMMARY
-// =========================================================
-
-function renderTemporaryRouteSummary() {
-
-    const settings =
-        getCurrentRouteSettings();
-
-
-    if (
-        routeSummaryStartTime
-    ) {
-
-        routeSummaryStartTime.textContent =
-            settings.startTime ||
-            "--";
-
-    }
-
-
-    if (
-        routeSummaryEndTime
-    ) {
-
-        routeSummaryEndTime.textContent =
-            "--";
-
-    }
-
-
-    if (
-        routeSummaryDuration
-    ) {
-
-        routeSummaryDuration.textContent =
-            "--";
-
-    }
-
-
-    if (
-        routeSummaryDistance
-    ) {
-
-        routeSummaryDistance.textContent =
-            "--";
-
-    }
-
-
-    renderTemporaryRoutePreview();
 
 
     if (
@@ -3773,7 +4113,7 @@ function renderTemporaryRouteSummary() {
 
 
 // =========================================================
-// CALCULATE ROUTE - TEMPORARY
+// CALCULATE REAL GOOGLE ROUTE
 // =========================================================
 
 async function calculateDriverRoute() {
@@ -3796,6 +4136,26 @@ async function calculateDriverRoute() {
     saveCurrentRouteSettings();
 
 
+    const startAt =
+        buildRouteStartIso(
+            settings
+        );
+
+
+    if (
+        !startAt
+    ) {
+
+        alert(
+            "שעת ההתחלה אינה תקינה."
+        );
+
+
+        return;
+
+    }
+
+
     if (
         calculateRouteButton
     ) {
@@ -3810,48 +4170,221 @@ async function calculateDriverRoute() {
 
 
     if (
-        routePlannerMessage
+        recalculateRouteButton
     ) {
 
-        routePlannerMessage.textContent =
-            "מכין את המשלוחים לחישוב מסלול...";
+        recalculateRouteButton.disabled =
+            true;
 
     }
 
 
-    renderTemporaryRouteSummary();
+    try {
+
+        // =====================================================
+        // FIRST MAKE SURE EVERY ACTIVE SHIPMENT HAS COORDINATES
+        // =====================================================
+
+        const geocodingReady =
+            await ensureActiveShipmentsGeocoded();
 
 
-    if (
-        routePlannerMessage
-    ) {
+        if (
+            !geocodingReady
+        ) {
 
-        routePlannerMessage.textContent =
-            "המסלול עדיין לא מחובר ל-Google Routes. בשלב הבא נחבר חישוב אמיתי עם סדר תחנות, ETA, זמן כולל ומרחק.";
+            return;
+
+        }
+
+
+        if (
+            routePlannerMessage
+        ) {
+
+            routePlannerMessage.textContent =
+                "Google מסדר את התחנות ומחשב זמני הגעה...";
+
+        }
+
+
+        // =====================================================
+        // CALL EDGE FUNCTION
+        // =====================================================
+
+        const {
+            data,
+            error
+        } =
+            await supabaseClient
+                .functions
+                .invoke(
+                    "optimize-driver-route",
+                    {
+                        body: {
+
+                            start_address:
+                                settings.startAddress,
+
+                            end_address:
+                                settings.endAddress,
+
+                            start_at:
+                                startAt
+
+                        }
+                    }
+                );
+
+
+        if (
+            error
+        ) {
+
+            console.error(
+                "Route optimization invoke failed:",
+                error
+            );
+
+
+            alert(
+                "לא הצלחנו לחשב את המסלול. נבדוק את ה-Edge Function."
+            );
+
+
+            return;
+
+        }
+
+
+        if (
+            !data ||
+            data.success !==
+            true
+        ) {
+
+            console.error(
+                "Route optimization response:",
+                data
+            );
+
+
+            if (
+                data?.missing_shipments?.length
+            ) {
+
+                const names =
+                    data.missing_shipments
+                        .map(
+                            shipment =>
+                                shipment.customer ||
+                                shipment.address
+                        )
+                        .join(
+                            "\n"
+                        );
+
+
+                alert(
+                    `יש משלוחים ללא מיקום תקין:\n${names}`
+                );
+
+            }
+
+            else {
+
+                alert(
+                    data?.error ||
+                    "לא הצלחנו לחשב את המסלול."
+                );
+
+            }
+
+
+            return;
+
+        }
+
+
+        // =====================================================
+        // SUCCESS
+        // =====================================================
+
+        saveOptimizedRoute(
+            data
+        );
+
+
+        renderOptimizedRoute(
+            data
+        );
+
+
+        clearRouteRecalculationWarning();
+
+
+        if (
+            routePlannerMessage
+        ) {
+
+            routePlannerMessage.textContent =
+                `המסלול מוכן ✅ ${data.stop_count} תחנות • ${formatRouteDistance(
+                    data.total_distance_meters
+                )} • סיום משוער ${formatRouteTime(
+                    data.vehicle_end_time
+                )}`;
+
+        }
 
     }
 
-
-    if (
-        calculateRouteButton
+    catch (
+        error
     ) {
 
-        calculateRouteButton.disabled =
-            false;
+        console.error(
+            "calculateDriverRoute failed:",
+            error
+        );
 
-        calculateRouteButton.textContent =
-            "🧭 סדר לי מסלול";
+
+        alert(
+            "אירעה שגיאה בחישוב המסלול."
+        );
 
     }
 
+    finally {
 
-    clearRouteRecalculationWarning();
+        if (
+            calculateRouteButton
+        ) {
+
+            calculateRouteButton.disabled =
+                false;
+
+            calculateRouteButton.textContent =
+                "🧭 סדר לי מסלול";
+
+        }
+
+
+        if (
+            recalculateRouteButton
+        ) {
+
+            recalculateRouteButton.disabled =
+                false;
+
+        }
+
+    }
 
 }
 
 
 // =========================================================
-// CALCULATE ROUTE BUTTON
+// CALCULATE BUTTON
 // =========================================================
 
 if (
@@ -3870,7 +4403,7 @@ if (
 
 
 // =========================================================
-// RECALCULATE ROUTE BUTTON
+// RECALCULATE BUTTON
 // =========================================================
 
 if (
@@ -3953,11 +4486,14 @@ async function initializeDriverApp() {
 
     await loadDriverShipments();
 
+
+    loadSavedOptimizedRoute();
+
 }
 
 
 // =========================================================
-// START
+// START DRIVER APP
 // =========================================================
 
 initializeDriverApp();
