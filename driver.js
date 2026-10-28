@@ -5816,6 +5816,18 @@ function renderOptimizedRoute(
         [];
 
 
+    // כאשר יש מסלול פעיל, כרטיס "נשארו" צריך לשקף
+    // את מספר התחנות שנותרו במסלול ולא את כל המשלוחים הפעילים.
+    if (
+        remainingShipmentsElement
+    ) {
+
+        remainingShipmentsElement.textContent =
+            stops.length;
+
+    }
+
+
     stops.forEach(
 
         stop => {
