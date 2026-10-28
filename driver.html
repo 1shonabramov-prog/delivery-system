@@ -16,7 +16,7 @@
 
     <link
         rel="stylesheet"
-        href="driver.css?v=20261026-1"
+        href="driver.css?v=20261028-5"
     >
 
 </head>
@@ -532,6 +532,39 @@
                 >
 
 
+                <!-- ========================================= -->
+                <!-- GOOGLE PLACE DATA -->
+                <!-- ========================================= -->
+
+                <input
+                    id="driverShipmentGooglePlaceId"
+                    type="hidden"
+                    value=""
+                >
+
+                <input
+                    id="driverShipmentFormattedAddress"
+                    type="hidden"
+                    value=""
+                >
+
+                <input
+                    id="driverShipmentLatitude"
+                    type="hidden"
+                    value=""
+                >
+
+                <input
+                    id="driverShipmentLongitude"
+                    type="hidden"
+                    value=""
+                >
+
+
+                <!-- ========================================= -->
+                <!-- CUSTOMER -->
+                <!-- ========================================= -->
+
                 <div class="form-group">
 
                     <label for="driverShipmentCustomer">
@@ -563,6 +596,49 @@
                 </div>
 
 
+                <!-- ========================================= -->
+                <!-- GOOGLE ADDRESS SEARCH -->
+                <!-- ========================================= -->
+
+                <div class="form-group">
+
+                    <label for="driverShipmentAddressSearch">
+                        🔎 חפש כתובת ב-Google
+                    </label>
+
+                    <input
+                        id="driverShipmentAddressSearch"
+                        type="text"
+                        autocomplete="off"
+                        placeholder="התחל להקליד רחוב ומספר..."
+                    >
+
+                    <div
+                        style="
+                            margin-top:6px;
+                            font-size:12px;
+                            color:#64748b;
+                            line-height:1.5;
+                        "
+                    >
+                        מומלץ לבחור כתובת מתוך הרשימה של Google כדי לקבל מיקום מדויק למסלול.
+                    </div>
+
+                </div>
+
+
+                <div
+                    id="driverShipmentAddressSelected"
+                    class="route-message hidden"
+                >
+                    ✅ כתובת נבחרה מ-Google
+                </div>
+
+
+                <!-- ========================================= -->
+                <!-- ADDRESS FIELDS -->
+                <!-- ========================================= -->
+
                 <div class="form-group">
 
                     <label for="driverShipmentCity">
@@ -572,7 +648,7 @@
                     <input
                         id="driverShipmentCity"
                         type="text"
-                        placeholder="לדוגמה: פתח תקווה"
+                        placeholder="לדוגמה: יהוד"
                         required
                     >
 
@@ -758,7 +834,10 @@
         </div>
 
     </div>
-        <!-- ===================================================== -->
+
+
+
+    <!-- ===================================================== -->
     <!-- DELIVERY DETAILS -->
     <!-- ===================================================== -->
 
@@ -805,10 +884,6 @@
             </div>
 
 
-
-            <!-- ================================================= -->
-            <!-- CUSTOMER -->
-            <!-- ================================================= -->
 
             <div class="delivery-info-card">
 
@@ -936,10 +1011,6 @@
 
 
 
-            <!-- ================================================= -->
-            <!-- CONTACT / NAVIGATION -->
-            <!-- ================================================= -->
-
             <div class="delivery-actions-grid">
 
 
@@ -965,10 +1036,6 @@
 
 
 
-            <!-- ================================================= -->
-            <!-- EDIT -->
-            <!-- ================================================= -->
-
             <button
                 id="editDriverShipmentButton"
                 class="secondary-action-button"
@@ -983,10 +1050,6 @@
 
 
 
-            <!-- ================================================= -->
-            <!-- ROUTE CHANGE WARNING -->
-            <!-- ================================================= -->
-
             <div
                 id="deliveryRouteUpdateMessage"
                 class="route-message hidden"
@@ -996,10 +1059,6 @@
             </div>
 
 
-
-            <!-- ================================================= -->
-            <!-- STATUS -->
-            <!-- ================================================= -->
 
             <div class="delivery-status-actions">
 
@@ -1039,7 +1098,9 @@
 
     <script src="supabase-config.js"></script>
 
-    <script src="driver.js?v=20261028-4"></script>
+    <script src="google-maps-config.js?v=20261028-1"></script>
+
+    <script src="driver.js?v=20261028-5"></script>
 
 
 </body>
