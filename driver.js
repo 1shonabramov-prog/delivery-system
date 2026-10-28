@@ -1653,6 +1653,734 @@ function renderDriverShipments() {
 
 
 // =========================================================
+// GOOGLE PLACES - BROWSER API KEY
+// =========================================================
+
+function getGoogleMapsBrowserApiKey() {
+
+    try {
+
+        if (
+            typeof GOOGLE_MAPS_API_KEY !==
+                "undefined"
+            &&
+            GOOGLE_MAPS_API_KEY
+        ) {
+
+            return String(
+                GOOGLE_MAPS_API_KEY
+            ).trim();
+
+        }
+
+    }
+    catch (
+        error
+    ) {
+    }
+
+
+    try {
+
+        if (
+            typeof GOOGLE_MAPS_BROWSER_API_KEY !==
+                "undefined"
+            &&
+            GOOGLE_MAPS_BROWSER_API_KEY
+        ) {
+
+            return String(
+                GOOGLE_MAPS_BROWSER_API_KEY
+            ).trim();
+
+        }
+
+    }
+    catch (
+        error
+    ) {
+    }
+
+
+    try {
+
+        if (
+            typeof MAPS_API_KEY !==
+                "undefined"
+            &&
+            MAPS_API_KEY
+        ) {
+
+            return String(
+                MAPS_API_KEY
+            ).trim();
+
+        }
+
+    }
+    catch (
+        error
+    ) {
+    }
+
+
+    return (
+        window.GOOGLE_MAPS_API_KEY
+        ||
+        window.GOOGLE_MAPS_BROWSER_API_KEY
+        ||
+        window.MAPS_API_KEY
+        ||
+        ""
+    );
+
+}
+
+
+// =========================================================
+// GOOGLE MAPS JAVASCRIPT LOADER
+// =========================================================
+
+function loadGoogleMapsPlacesLibrary() {
+
+    return new Promise(
+
+        (
+            resolve,
+            reject
+        ) => {
+
+            if (
+                window.google
+                &&
+                google.maps
+                &&
+                typeof google.maps.importLibrary ===
+                    "function"
+            ) {
+
+                resolve();
+
+                return;
+
+            }
+
+
+            const apiKey =
+                getGoogleMapsBrowserApiKey();
+
+
+            if (
+                !apiKey
+            ) {
+
+                reject(
+                    new Error(
+                        "Google Maps browser API key was not found in google-maps-config.js"
+                    )
+                );
+
+                return;
+
+            }
+
+
+            if (
+                document.getElementById(
+                    "driverGoogleMapsScript"
+                )
+            ) {
+
+                let attempts =
+                    0;
+
+
+                const interval =
+                    setInterval(
+                        function () {
+
+                            attempts++;
+
+
+                            if (
+                                window.google
+                                &&
+                                google.maps
+                                &&
+                                typeof google.maps.importLibrary ===
+                                    "function"
+                            ) {
+
+                                clearInterval(
+                                    interval
+                                );
+
+                                resolve();
+
+                                return;
+
+                            }
+
+
+                            if (
+                                attempts >=
+                                100
+                            ) {
+
+                                clearInterval(
+                                    interval
+                                );
+
+                                reject(
+                                    new Error(
+                                        "Google Maps JavaScript API did not finish loading."
+                                    )
+                                );
+
+                            }
+
+                        },
+                        100
+                    );
+
+
+                return;
+
+            }
+
+
+            const script =
+                document.createElement(
+                    "script"
+                );
+
+
+            script.id =
+                "driverGoogleMapsScript";
+
+
+            script.src =
+                "https://maps.googleapis.com/maps/api/js"
+                +
+                "?key="
+                +
+                encodeURIComponent(
+                    apiKey
+                )
+                +
+                "&v=weekly"
+                +
+                "&loading=async"
+                +
+                "&language=he"
+                +
+                "&region=IL";
+
+
+            script.async =
+                true;
+
+
+            script.defer =
+                true;
+
+
+            script.onload =
+                function () {
+
+                    resolve();
+
+                };
+
+
+            script.onerror =
+                function () {
+
+                    reject(
+                        new Error(
+                            "Failed loading Google Maps JavaScript API."
+                        )
+                    );
+
+                };
+
+
+            document.head.appendChild(
+                script
+            );
+
+        }
+
+    );
+
+}
+
+
+// =========================================================
+// GOOGLE PLACE COMPONENT HELPERS
+// =========================================================
+
+function getGoogleAddressComponent(
+    addressComponents,
+    types
+) {
+
+    const component =
+        (
+            addressComponents
+            ||
+            []
+        ).find(
+
+            item => {
+
+                const componentTypes =
+                    item.types
+                    ||
+                    [];
+
+
+                return types.some(
+                    type =>
+                        componentTypes.includes(
+                            type
+                        )
+                );
+
+            }
+
+        );
+
+
+    if (
+        !component
+    ) {
+
+        return "";
+
+    }
+
+
+    return (
+        component.longText
+        ||
+        component.shortText
+        ||
+        ""
+    );
+
+}
+
+
+function clearGooglePlaceSelection(
+    clearSearchText = false
+) {
+
+    setInputValue(
+        "driverShipmentGooglePlaceId",
+        ""
+    );
+
+    setInputValue(
+        "driverShipmentFormattedAddress",
+        ""
+    );
+
+    setInputValue(
+        "driverShipmentLatitude",
+        ""
+    );
+
+    setInputValue(
+        "driverShipmentLongitude",
+        ""
+    );
+
+
+    if (
+        clearSearchText
+        &&
+        driverShipmentAddressSearch
+    ) {
+
+        driverShipmentAddressSearch.value =
+            "";
+
+    }
+
+
+    if (
+        driverShipmentAddressSelected
+    ) {
+
+        driverShipmentAddressSelected.classList
+            .add(
+                "hidden"
+            );
+
+    }
+
+}
+
+
+function showGooglePlaceSelection(
+    formattedAddress
+) {
+
+    if (
+        !driverShipmentAddressSelected
+    ) {
+
+        return;
+
+    }
+
+
+    driverShipmentAddressSelected.textContent =
+        formattedAddress
+            ? `✅ נבחרה כתובת: ${formattedAddress}`
+            : "✅ כתובת נבחרה מ-Google";
+
+
+    driverShipmentAddressSelected.classList
+        .remove(
+            "hidden"
+        );
+
+}
+
+
+// =========================================================
+// GOOGLE PLACES AUTOCOMPLETE
+// =========================================================
+
+async function initializeGooglePlacesAutocomplete() {
+
+    if (
+        googlePlacesReady
+    ) {
+
+        return true;
+
+    }
+
+
+    const originalInput =
+        document.getElementById(
+            "driverShipmentAddressSearch"
+        );
+
+
+    if (
+        !originalInput
+    ) {
+
+        return false;
+
+    }
+
+
+    try {
+
+        await loadGoogleMapsPlacesLibrary();
+
+
+        const {
+            PlaceAutocompleteElement
+        } =
+            await google.maps.importLibrary(
+                "places"
+            );
+
+
+        const autocomplete =
+            new PlaceAutocompleteElement({
+                includedRegionCodes: [
+                    "il"
+                ]
+            });
+
+
+        autocomplete.id =
+            "driverShipmentAddressSearch";
+
+
+        autocomplete.placeholder =
+            "התחל להקליד רחוב ומספר...";
+
+
+        autocomplete.style.width =
+            "100%";
+
+
+        autocomplete.style.display =
+            "block";
+
+
+        originalInput.replaceWith(
+            autocomplete
+        );
+
+
+        driverShipmentAddressSearch =
+            autocomplete;
+
+
+        googlePlaceAutocomplete =
+            autocomplete;
+
+
+        autocomplete.addEventListener(
+
+            "gmp-select",
+
+            async function (
+                event
+            ) {
+
+                try {
+
+                    const prediction =
+                        event.placePrediction;
+
+
+                    if (
+                        !prediction
+                    ) {
+
+                        return;
+
+                    }
+
+
+                    const place =
+                        prediction.toPlace();
+
+
+                    await place.fetchFields({
+                        fields: [
+                            "id",
+                            "formattedAddress",
+                            "location",
+                            "addressComponents"
+                        ]
+                    });
+
+
+                    const addressComponents =
+                        place.addressComponents
+                        ||
+                        [];
+
+
+                    const city =
+                        getGoogleAddressComponent(
+                            addressComponents,
+                            [
+                                "locality",
+                                "postal_town"
+                            ]
+                        )
+                        ||
+                        getGoogleAddressComponent(
+                            addressComponents,
+                            [
+                                "administrative_area_level_2"
+                            ]
+                        );
+
+
+                    const street =
+                        getGoogleAddressComponent(
+                            addressComponents,
+                            [
+                                "route"
+                            ]
+                        );
+
+
+                    const houseNumber =
+                        getGoogleAddressComponent(
+                            addressComponents,
+                            [
+                                "street_number"
+                            ]
+                        );
+
+
+                    const latitude =
+                        place.location
+                            ? place.location.lat()
+                            : null;
+
+
+                    const longitude =
+                        place.location
+                            ? place.location.lng()
+                            : null;
+
+
+                    setInputValue(
+                        "driverShipmentCity",
+                        city
+                    );
+
+                    setInputValue(
+                        "driverShipmentStreet",
+                        street
+                    );
+
+                    setInputValue(
+                        "driverShipmentHouseNumber",
+                        houseNumber
+                    );
+
+                    setInputValue(
+                        "driverShipmentGooglePlaceId",
+                        place.id
+                        ||
+                        ""
+                    );
+
+                    setInputValue(
+                        "driverShipmentFormattedAddress",
+                        place.formattedAddress
+                        ||
+                        ""
+                    );
+
+                    setInputValue(
+                        "driverShipmentLatitude",
+                        latitude !== null
+                            ? String(
+                                latitude
+                            )
+                            : ""
+                    );
+
+                    setInputValue(
+                        "driverShipmentLongitude",
+                        longitude !== null
+                            ? String(
+                                longitude
+                            )
+                            : ""
+                    );
+
+
+                    autocomplete.value =
+                        place.formattedAddress
+                        ||
+                        prediction.text?.text
+                        ||
+                        "";
+
+
+                    showGooglePlaceSelection(
+                        place.formattedAddress
+                        ||
+                        ""
+                    );
+
+                }
+
+                catch (
+                    error
+                ) {
+
+                    console.error(
+                        "Failed reading selected Google place:",
+                        error
+                    );
+
+
+                    alert(
+                        "לא הצלחנו לקרוא את הכתובת שנבחרה מ-Google. אפשר לנסות לבחור אותה שוב או להזין את הכתובת ידנית."
+                    );
+
+                }
+
+            }
+
+        );
+
+
+        const manualAddressInputs = [
+            "driverShipmentCity",
+            "driverShipmentStreet",
+            "driverShipmentHouseNumber"
+        ];
+
+
+        manualAddressInputs.forEach(
+
+            inputId => {
+
+                const input =
+                    document.getElementById(
+                        inputId
+                    );
+
+
+                if (
+                    !input
+                ) {
+
+                    return;
+
+                }
+
+
+                input.addEventListener(
+
+                    "input",
+
+                    function () {
+
+                        clearGooglePlaceSelection(
+                            false
+                        );
+
+                    }
+
+                );
+
+            }
+
+        );
+
+
+        googlePlacesReady =
+            true;
+
+
+        return true;
+
+    }
+
+    catch (
+        error
+    ) {
+
+        console.error(
+            "Google Places initialization failed:",
+            error
+        );
+
+
+        googlePlacesReady =
+            false;
+
+
+        return false;
+
+    }
+
+}
+
+
+
+// =========================================================
 // RESET SHIPMENT FORM
 // =========================================================
 
