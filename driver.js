@@ -966,7 +966,9 @@ async function loadDriverShipments() {
                 created_by,
                 latitude,
                 longitude,
-                geocoded_at
+                geocoded_at,
+                planned_delivery_date,
+                route_started_at
                 `
             )
             .eq(
@@ -1017,7 +1019,7 @@ async function loadDriverShipments() {
     ) {
 
         shipmentListSubtitle.textContent =
-            "כל המשלוחים המשויכים אליך";
+            "המשלוחים הפעילים שלך";
 
     }
 
@@ -1028,17 +1030,145 @@ async function loadDriverShipments() {
 
 
 // =========================================================
+// DATE HELPERS
+// =========================================================
+
+function isTodayDate(
+    value
+) {
+
+    if (
+        !value
+    ) {
+
+        return false;
+
+    }
+
+
+    const date =
+        new Date(
+            value
+        );
+
+
+    if (
+        Number.isNaN(
+            date.getTime()
+        )
+    ) {
+
+        return false;
+
+    }
+
+
+    const now =
+        new Date();
+
+
+    return (
+
+        date.getFullYear() ===
+            now.getFullYear()
+
+        &&
+
+        date.getMonth() ===
+            now.getMonth()
+
+        &&
+
+        date.getDate() ===
+            now.getDate()
+
+    );
+
+}
+
+
+// =========================================================
+// ACTIVE SHIPMENTS
+// =========================================================
+
+function getActiveDriverShipments() {
+
+    return driverShipments.filter(
+
+        shipment =>
+
+            shipment.status !==
+                "נמסר"
+
+            &&
+
+            shipment.status !==
+                "לא נמסר"
+
+    );
+
+}
+
+
+// =========================================================
+// COMPLETED TODAY
+// =========================================================
+
+function getCompletedTodayShipments() {
+
+    return driverShipments.filter(
+
+        shipment => {
+
+            if (
+                shipment.status ===
+                "נמסר"
+            ) {
+
+                return isTodayDate(
+                    shipment.delivered_at
+                );
+
+            }
+
+
+            if (
+                shipment.status ===
+                "לא נמסר"
+            ) {
+
+                return isTodayDate(
+                    shipment.failed_at
+                );
+
+            }
+
+
+            return false;
+
+        }
+
+    );
+
+}
+
+
+// =========================================================
 // COUNTERS
 // =========================================================
 
 function updateDriverCounters() {
 
-    const total =
-        driverShipments.length;
+    const active =
+        getActiveDriverShipments();
 
 
-    const delivered =
-        driverShipments.filter(
+    const completedToday =
+        getCompletedTodayShipments();
+
+
+    const deliveredToday =
+        completedToday.filter(
 
             shipment =>
                 shipment.status ===
@@ -1047,8 +1177,8 @@ function updateDriverCounters() {
         ).length;
 
 
-    const failed =
-        driverShipments.filter(
+    const failedToday =
+        completedToday.filter(
 
             shipment =>
                 shipment.status ===
@@ -1058,27 +1188,16 @@ function updateDriverCounters() {
 
 
     const remaining =
-        driverShipments.filter(
-
-            shipment =>
-
-                shipment.status !==
-                    "נמסר"
-
-                &&
-
-                shipment.status !==
-                    "לא נמסר"
-
-        ).length;
+        active.length;
 
 
+    // המספר הראשי מציג כרגע עבודה פעילה בלבד
     if (
         totalShipmentsElement
     ) {
 
         totalShipmentsElement.textContent =
-            total;
+            active.length;
 
     }
 
@@ -1088,7 +1207,7 @@ function updateDriverCounters() {
     ) {
 
         deliveredShipmentsElement.textContent =
-            delivered;
+            deliveredToday;
 
     }
 
@@ -1108,7 +1227,7 @@ function updateDriverCounters() {
     ) {
 
         failedShipmentsElement.textContent =
-            failed;
+            failedToday;
 
     }
 
@@ -1118,7 +1237,7 @@ function updateDriverCounters() {
     ) {
 
         shipmentCountBadge.textContent =
-            total;
+            active.length;
 
     }
 
@@ -1222,7 +1341,321 @@ function clearRouteRecalculationWarning() {
 
 
 // =========================================================
-// RENDER SHIPMENTS
+// CREATE SHIPMENT CARD
+// =========================================================
+
+function createDriverShipmentCard(
+    shipment
+) {
+
+    const card =
+        document.createElement(
+            "button"
+        );
+
+
+    card.type =
+        "button";
+
+
+    card.className =
+        "driver-shipment-card";
+
+
+    card.addEventListener(
+
+        "click",
+
+        function () {
+
+            openShipmentDetails(
+                shipment.id
+            );
+
+        }
+
+    );
+
+
+    const customerName =
+        shipment.customer ||
+        "לקוח";
+
+
+    const phone =
+        shipment.phone ||
+        "ללא טלפון";
+
+
+    const status =
+        shipment.status ||
+        "משויך";
+
+
+    const buildingDetails =
+        getShipmentBuildingDetails(
+            shipment
+        );
+
+
+    const sourceLabel =
+        shipment.source_type ===
+            "DRIVER_MANUAL"
+
+            ? "משלוח ידני"
+
+            : shipment.source_name
+                ? shipment.source_name
+                : "";
+
+
+    card.innerHTML = `
+
+        <div class="shipment-card-top">
+
+            <div>
+
+                <h3 class="shipment-card-customer">
+                    ${customerName}
+                </h3>
+
+                ${
+                    sourceLabel
+
+                        ? `
+                            <div
+                                style="
+                                    margin-top:3px;
+                                    font-size:11px;
+                                    color:#94a3b8;
+                                "
+                            >
+                                ${sourceLabel}
+                            </div>
+                        `
+
+                        : ""
+                }
+
+            </div>
+
+
+            <span
+                class="
+                    shipment-card-status
+                    ${getDriverStatusClass(
+                        status
+                    )}
+                "
+            >
+                ${status}
+            </span>
+
+        </div>
+
+
+        <div class="shipment-card-address">
+
+            📍
+
+            ${getShipmentMainAddress(
+                shipment
+            )}
+
+        </div>
+
+
+        <div class="shipment-card-phone">
+
+            📞 ${phone}
+
+        </div>
+
+
+        <div
+            style="
+                margin-top:6px;
+                font-size:13px;
+                color:#64748b;
+            "
+        >
+            ${buildingDetails}
+        </div>
+
+
+        ${
+            shipment.building_code
+
+                ? `
+                    <div
+                        style="
+                            margin-top:6px;
+                            font-size:13px;
+                            font-weight:700;
+                        "
+                    >
+                        🔐 קוד בניין:
+                        ${shipment.building_code}
+                    </div>
+                `
+
+                : ""
+        }
+
+
+        <div class="shipment-card-footer">
+
+            <span class="shipment-card-eta">
+
+                ${
+                    status === "נמסר"
+
+                        ? "✅ נמסר"
+
+                        : status === "לא נמסר"
+
+                            ? "❌ לא נמסר"
+
+                            : "ממתין למסירה"
+                }
+
+            </span>
+
+
+            <span class="shipment-open-text">
+
+                פרטים >
+
+            </span>
+
+        </div>
+
+    `;
+
+
+    return card;
+
+}
+
+
+// =========================================================
+// CREATE COMPLETED TODAY SECTION
+// =========================================================
+
+function getCompletedTodayContainer() {
+
+    let section =
+        document.getElementById(
+            "completedTodaySection"
+        );
+
+
+    if (
+        section
+    ) {
+
+        return section;
+
+    }
+
+
+    if (
+        !driverShipmentsList
+    ) {
+
+        return null;
+
+    }
+
+
+    section =
+        document.createElement(
+            "section"
+        );
+
+
+    section.id =
+        "completedTodaySection";
+
+
+    section.style.marginTop =
+        "28px";
+
+
+    section.innerHTML = `
+
+        <div
+            style="
+                display:flex;
+                justify-content:space-between;
+                align-items:center;
+                margin-bottom:12px;
+            "
+        >
+
+            <div>
+
+                <h2
+                    style="
+                        margin:0;
+                        font-size:18px;
+                    "
+                >
+                    הושלמו היום
+                </h2>
+
+                <div
+                    id="completedTodaySubtitle"
+                    style="
+                        margin-top:4px;
+                        font-size:13px;
+                        color:#64748b;
+                    "
+                >
+                </div>
+
+            </div>
+
+
+            <span
+                id="completedTodayCount"
+                style="
+                    min-width:32px;
+                    height:32px;
+                    padding:0 8px;
+                    display:flex;
+                    align-items:center;
+                    justify-content:center;
+                    border-radius:16px;
+                    background:#e2e8f0;
+                    font-weight:700;
+                "
+            >
+                0
+            </span>
+
+        </div>
+
+
+        <div id="completedTodayList"></div>
+
+    `;
+
+
+    driverShipmentsList
+        .insertAdjacentElement(
+            "afterend",
+            section
+        );
+
+
+    return section;
+
+}
+
+
+// =========================================================
+// RENDER ACTIVE + COMPLETED TODAY
 // =========================================================
 
 function renderDriverShipments() {
@@ -1236,12 +1669,24 @@ function renderDriverShipments() {
     }
 
 
+    const activeShipments =
+        getActiveDriverShipments();
+
+
+    const completedToday =
+        getCompletedTodayShipments();
+
+
+    // =====================================================
+    // ACTIVE
+    // =====================================================
+
     driverShipmentsList.innerHTML =
         "";
 
 
     if (
-        driverShipments.length ===
+        activeShipments.length ===
         0
     ) {
 
@@ -1250,233 +1695,148 @@ function renderDriverShipments() {
             <div class="driver-empty-state">
 
                 <strong>
-                    עדיין אין משלוחים
+                    אין כרגע משלוחים פעילים
                 </strong>
 
-                לחץ על "הוסף משלוח"
-                והזן את המשלוחים שלך.
+                <div style="margin-top:6px;">
+
+                    משלוחים שסיימת היום מופיעים
+                    באזור "הושלמו היום".
+
+                </div>
 
             </div>
 
         `;
 
+    }
 
-        updateDriverCounters();
+    else {
 
+        activeShipments.forEach(
 
-        return;
+            shipment => {
+
+                driverShipmentsList
+                    .appendChild(
+                        createDriverShipmentCard(
+                            shipment
+                        )
+                    );
+
+            }
+
+        );
 
     }
 
 
-    driverShipments.forEach(
+    // =====================================================
+    // COMPLETED TODAY
+    // =====================================================
 
-        shipment => {
-
-            const card =
-                document.createElement(
-                    "button"
-                );
+    const completedSection =
+        getCompletedTodayContainer();
 
 
-            card.type =
-                "button";
+    if (
+        completedSection
+    ) {
 
-
-            card.className =
-                "driver-shipment-card";
-
-
-            card.addEventListener(
-
-                "click",
-
-                function () {
-
-                    openShipmentDetails(
-                        shipment.id
-                    );
-
-                }
-
+        const completedList =
+            document.getElementById(
+                "completedTodayList"
             );
 
 
-            const customerName =
-                shipment.customer ||
-                "לקוח";
+        const completedCount =
+            document.getElementById(
+                "completedTodayCount"
+            );
 
 
-            const phone =
-                shipment.phone ||
-                "ללא טלפון";
+        const completedSubtitle =
+            document.getElementById(
+                "completedTodaySubtitle"
+            );
 
 
-            const status =
-                shipment.status ||
-                "משויך";
+        if (
+            completedCount
+        ) {
 
-
-            const buildingDetails =
-                getShipmentBuildingDetails(
-                    shipment
-                );
-
-
-            const sourceLabel =
-                shipment.source_type ===
-                    "DRIVER_MANUAL"
-
-                    ? "ידני"
-
-                    : shipment.source_name
-                        ? shipment.source_name
-                        : "";
-
-
-            card.innerHTML = `
-
-                <div class="shipment-card-top">
-
-                    <div>
-
-                        <h3 class="shipment-card-customer">
-                            ${customerName}
-                        </h3>
-
-                        ${
-                            sourceLabel
-
-                                ? `
-                                    <div
-                                        style="
-                                            margin-top:3px;
-                                            font-size:11px;
-                                            color:#94a3b8;
-                                        "
-                                    >
-                                        ${sourceLabel}
-                                    </div>
-                                `
-
-                                : ""
-                        }
-
-                    </div>
-
-
-                    <span
-                        class="
-                            shipment-card-status
-                            ${getDriverStatusClass(
-                                status
-                            )}
-                        "
-                    >
-                        ${status}
-                    </span>
-
-                </div>
-
-
-                <div class="shipment-card-address">
-
-                    📍
-
-                    ${getShipmentMainAddress(
-                        shipment
-                    )}
-
-                </div>
-
-
-                <div class="shipment-card-phone">
-
-                    📞 ${phone}
-
-                </div>
-
-
-                <div
-                    style="
-                        margin-top:6px;
-                        font-size:13px;
-                        color:#64748b;
-                    "
-                >
-                    ${buildingDetails}
-                </div>
-
-
-                ${
-                    shipment.building_code
-
-                        ? `
-                            <div
-                                style="
-                                    margin-top:6px;
-                                    font-size:13px;
-                                    font-weight:700;
-                                "
-                            >
-                                🔐 קוד בניין:
-                                ${shipment.building_code}
-                            </div>
-                        `
-
-                        : ""
-                }
-
-
-                ${
-                    shipment.delivery_instructions
-
-                        ? `
-                            <div
-                                style="
-                                    margin-top:6px;
-                                    font-size:13px;
-                                    color:#334155;
-                                "
-                            >
-                                📝
-                                ${shipment.delivery_instructions}
-                            </div>
-                        `
-
-                        : ""
-                }
-
-
-                <div class="shipment-card-footer">
-
-                    <span class="shipment-card-eta">
-
-                        ETA:
-                        עדיין לא חושב
-
-                    </span>
-
-
-                    <span class="shipment-open-text">
-
-                        פרטים >
-
-                    </span>
-
-                </div>
-
-            `;
-
-
-            driverShipmentsList
-                .appendChild(
-                    card
-                );
+            completedCount.textContent =
+                completedToday.length;
 
         }
 
-    );
+
+        if (
+            completedSubtitle
+        ) {
+
+            completedSubtitle.textContent =
+                completedToday.length === 0
+
+                    ? "עדיין לא הסתיימו משלוחים היום"
+
+                    : "משלוחים שנמסרו או לא נמסרו היום";
+
+        }
+
+
+        if (
+            completedList
+        ) {
+
+            completedList.innerHTML =
+                "";
+
+
+            if (
+                completedToday.length ===
+                0
+            ) {
+
+                completedList.innerHTML = `
+
+                    <div
+                        style="
+                            padding:14px;
+                            text-align:center;
+                            color:#94a3b8;
+                            font-size:13px;
+                        "
+                    >
+                        אין עדיין משלוחים שהסתיימו היום
+                    </div>
+
+                `;
+
+            }
+
+            else {
+
+                completedToday.forEach(
+
+                    shipment => {
+
+                        completedList
+                            .appendChild(
+                                createDriverShipmentCard(
+                                    shipment
+                                )
+                            );
+
+                    }
+
+                );
+
+            }
+
+        }
+
+    }
 
 
     updateDriverCounters();
@@ -1789,8 +2149,6 @@ if (
     );
 
 }
-
-
 // =========================================================
 // GEOCODE SHIPMENT
 // =========================================================
