@@ -179,6 +179,13 @@ const driverShipmentsList =
         "driverShipmentsList"
     );
 
+const driverShipmentsSection =
+    driverShipmentsList
+        ? driverShipmentsList.closest(
+            ".shipments-section"
+        )
+        : null;
+
 const shipmentCountBadge =
     document.getElementById(
         "shipmentCountBadge"
@@ -1577,6 +1584,30 @@ function createDriverShipmentCard(
 
 
     return card;
+
+}
+
+
+// =========================================================
+// DRIVER WORK VIEW
+// =========================================================
+
+function setDriverWorkView(
+    hasActiveRoute
+) {
+
+    // Before a route is created, show the regular shipment list.
+    // After a route is created, show only the ordered route stops.
+    if (
+        driverShipmentsSection
+    ) {
+
+        driverShipmentsSection.style.display =
+            hasActiveRoute
+                ? "none"
+                : "";
+
+    }
 
 }
 
@@ -5363,6 +5394,11 @@ async function loadActiveRouteFromDatabase() {
         !route
     ) {
 
+        setDriverWorkView(
+            false
+        );
+
+
         optimizedRouteResult =
             null;
 
@@ -5392,6 +5428,11 @@ async function loadActiveRouteFromDatabase() {
         return;
 
     }
+
+
+    setDriverWorkView(
+        true
+    );
 
 
     const {
@@ -5704,6 +5745,11 @@ function renderOptimizedRoute(
         return;
 
     }
+
+
+    setDriverWorkView(
+        true
+    );
 
 
     if (
