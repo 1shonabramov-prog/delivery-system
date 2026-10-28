@@ -1582,123 +1582,7 @@ function createDriverShipmentCard(
 
 
 // =========================================================
-// CREATE COMPLETED TODAY SECTION
-// =========================================================
-
-function getCompletedTodayContainer() {
-
-    let section =
-        document.getElementById(
-            "completedTodaySection"
-        );
-
-
-    if (
-        section
-    ) {
-
-        return section;
-
-    }
-
-
-    if (
-        !driverShipmentsList
-    ) {
-
-        return null;
-
-    }
-
-
-    section =
-        document.createElement(
-            "section"
-        );
-
-
-    section.id =
-        "completedTodaySection";
-
-
-    section.style.marginTop =
-        "28px";
-
-
-    section.innerHTML = `
-
-        <div
-            style="
-                display:flex;
-                justify-content:space-between;
-                align-items:center;
-                margin-bottom:12px;
-            "
-        >
-
-            <div>
-
-                <h2
-                    style="
-                        margin:0;
-                        font-size:18px;
-                    "
-                >
-                    הושלמו היום
-                </h2>
-
-                <div
-                    id="completedTodaySubtitle"
-                    style="
-                        margin-top:4px;
-                        font-size:13px;
-                        color:#64748b;
-                    "
-                >
-                </div>
-
-            </div>
-
-
-            <span
-                id="completedTodayCount"
-                style="
-                    min-width:32px;
-                    height:32px;
-                    padding:0 8px;
-                    display:flex;
-                    align-items:center;
-                    justify-content:center;
-                    border-radius:16px;
-                    background:#e2e8f0;
-                    font-weight:700;
-                "
-            >
-                0
-            </span>
-
-        </div>
-
-
-        <div id="completedTodayList"></div>
-
-    `;
-
-
-    driverShipmentsList
-        .insertAdjacentElement(
-            "afterend",
-            section
-        );
-
-
-    return section;
-
-}
-
-
-// =========================================================
-// RENDER ACTIVE + COMPLETED TODAY
+// RENDER ACTIVE SHIPMENTS ONLY
 // =========================================================
 
 function renderDriverShipments() {
@@ -1715,14 +1599,6 @@ function renderDriverShipments() {
     const activeShipments =
         getActiveDriverShipments();
 
-
-    const completedToday =
-        getCompletedTodayShipments();
-
-
-    // =====================================================
-    // ACTIVE
-    // =====================================================
 
     driverShipmentsList.innerHTML =
         "";
@@ -1742,10 +1618,7 @@ function renderDriverShipments() {
                 </strong>
 
                 <div style="margin-top:6px;">
-
-                    משלוחים שסיימת היום מופיעים
-                    באזור "הושלמו היום".
-
+                    משלוחים שסיימת נמצאים בדוחות והכנסות.
                 </div>
 
             </div>
@@ -1774,842 +1647,7 @@ function renderDriverShipments() {
     }
 
 
-    // =====================================================
-    // COMPLETED TODAY
-    // =====================================================
-
-    const completedSection =
-        getCompletedTodayContainer();
-
-
-    if (
-        completedSection
-    ) {
-
-        const completedList =
-            document.getElementById(
-                "completedTodayList"
-            );
-
-
-        const completedCount =
-            document.getElementById(
-                "completedTodayCount"
-            );
-
-
-        const completedSubtitle =
-            document.getElementById(
-                "completedTodaySubtitle"
-            );
-
-
-        if (
-            completedCount
-        ) {
-
-            completedCount.textContent =
-                completedToday.length;
-
-        }
-
-
-        if (
-            completedSubtitle
-        ) {
-
-            completedSubtitle.textContent =
-                completedToday.length === 0
-
-                    ? "עדיין לא הסתיימו משלוחים היום"
-
-                    : "משלוחים שנמסרו או לא נמסרו היום";
-
-        }
-
-
-        if (
-            completedList
-        ) {
-
-            completedList.innerHTML =
-                "";
-
-
-            if (
-                completedToday.length ===
-                0
-            ) {
-
-                completedList.innerHTML = `
-
-                    <div
-                        style="
-                            padding:14px;
-                            text-align:center;
-                            color:#94a3b8;
-                            font-size:13px;
-                        "
-                    >
-                        אין עדיין משלוחים שהסתיימו היום
-                    </div>
-
-                `;
-
-            }
-
-            else {
-
-                completedToday.forEach(
-
-                    shipment => {
-
-                        completedList
-                            .appendChild(
-                                createDriverShipmentCard(
-                                    shipment
-                                )
-                            );
-
-                    }
-
-                );
-
-            }
-
-        }
-
-    }
-
-
     updateDriverCounters();
-
-}
-
-
-// =========================================================
-// GOOGLE PLACES - BROWSER API KEY
-// =========================================================
-
-function getGoogleMapsBrowserApiKey() {
-
-    try {
-
-        if (
-            typeof GOOGLE_MAPS_API_KEY !==
-                "undefined"
-            &&
-            GOOGLE_MAPS_API_KEY
-        ) {
-
-            return String(
-                GOOGLE_MAPS_API_KEY
-            ).trim();
-
-        }
-
-    }
-    catch (
-        error
-    ) {
-    }
-
-
-    try {
-
-        if (
-            typeof GOOGLE_MAPS_BROWSER_API_KEY !==
-                "undefined"
-            &&
-            GOOGLE_MAPS_BROWSER_API_KEY
-        ) {
-
-            return String(
-                GOOGLE_MAPS_BROWSER_API_KEY
-            ).trim();
-
-        }
-
-    }
-    catch (
-        error
-    ) {
-    }
-
-
-    try {
-
-        if (
-            typeof MAPS_API_KEY !==
-                "undefined"
-            &&
-            MAPS_API_KEY
-        ) {
-
-            return String(
-                MAPS_API_KEY
-            ).trim();
-
-        }
-
-    }
-    catch (
-        error
-    ) {
-    }
-
-
-    return (
-        window.GOOGLE_MAPS_API_KEY
-        ||
-        window.GOOGLE_MAPS_BROWSER_API_KEY
-        ||
-        window.MAPS_API_KEY
-        ||
-        ""
-    );
-
-}
-
-
-// =========================================================
-// GOOGLE MAPS JAVASCRIPT LOADER
-// =========================================================
-
-function loadGoogleMapsPlacesLibrary() {
-
-    return new Promise(
-
-        (
-            resolve,
-            reject
-        ) => {
-
-            if (
-                window.google
-                &&
-                google.maps
-                &&
-                typeof google.maps.importLibrary ===
-                    "function"
-            ) {
-
-                resolve();
-
-                return;
-
-            }
-
-
-            const apiKey =
-                getGoogleMapsBrowserApiKey();
-
-
-            if (
-                !apiKey
-            ) {
-
-                reject(
-                    new Error(
-                        "Google Maps browser API key was not found in google-maps-config.js"
-                    )
-                );
-
-                return;
-
-            }
-
-
-            if (
-                document.getElementById(
-                    "driverGoogleMapsScript"
-                )
-            ) {
-
-                let attempts =
-                    0;
-
-
-                const interval =
-                    setInterval(
-                        function () {
-
-                            attempts++;
-
-
-                            if (
-                                window.google
-                                &&
-                                google.maps
-                                &&
-                                typeof google.maps.importLibrary ===
-                                    "function"
-                            ) {
-
-                                clearInterval(
-                                    interval
-                                );
-
-                                resolve();
-
-                                return;
-
-                            }
-
-
-                            if (
-                                attempts >=
-                                100
-                            ) {
-
-                                clearInterval(
-                                    interval
-                                );
-
-                                reject(
-                                    new Error(
-                                        "Google Maps JavaScript API did not finish loading."
-                                    )
-                                );
-
-                            }
-
-                        },
-                        100
-                    );
-
-
-                return;
-
-            }
-
-
-            const script =
-                document.createElement(
-                    "script"
-                );
-
-
-            script.id =
-                "driverGoogleMapsScript";
-
-
-            script.src =
-                "https://maps.googleapis.com/maps/api/js"
-                +
-                "?key="
-                +
-                encodeURIComponent(
-                    apiKey
-                )
-                +
-                "&v=weekly"
-                +
-                "&loading=async"
-                +
-                "&language=he"
-                +
-                "&region=IL";
-
-
-            script.async =
-                true;
-
-
-            script.defer =
-                true;
-
-
-            script.onload =
-                function () {
-
-                    resolve();
-
-                };
-
-
-            script.onerror =
-                function () {
-
-                    reject(
-                        new Error(
-                            "Failed loading Google Maps JavaScript API."
-                        )
-                    );
-
-                };
-
-
-            document.head.appendChild(
-                script
-            );
-
-        }
-
-    );
-
-}
-
-
-// =========================================================
-// GOOGLE PLACE COMPONENT HELPERS
-// =========================================================
-
-function getGoogleAddressComponent(
-    addressComponents,
-    types
-) {
-
-    const component =
-        (
-            addressComponents
-            ||
-            []
-        ).find(
-
-            item => {
-
-                const componentTypes =
-                    item.types
-                    ||
-                    [];
-
-
-                return types.some(
-                    type =>
-                        componentTypes.includes(
-                            type
-                        )
-                );
-
-            }
-
-        );
-
-
-    if (
-        !component
-    ) {
-
-        return "";
-
-    }
-
-
-    return (
-        component.longText
-        ||
-        component.shortText
-        ||
-        ""
-    );
-
-}
-
-
-function clearGooglePlaceSelection(
-    clearSearchText = false
-) {
-
-    setInputValue(
-        "driverShipmentGooglePlaceId",
-        ""
-    );
-
-    setInputValue(
-        "driverShipmentFormattedAddress",
-        ""
-    );
-
-    setInputValue(
-        "driverShipmentLatitude",
-        ""
-    );
-
-    setInputValue(
-        "driverShipmentLongitude",
-        ""
-    );
-
-
-    if (
-        clearSearchText
-        &&
-        driverShipmentAddressSearch
-    ) {
-
-        driverShipmentAddressSearch.value =
-            "";
-
-    }
-
-
-    if (
-        driverShipmentAddressSelected
-    ) {
-
-        driverShipmentAddressSelected.classList
-            .add(
-                "hidden"
-            );
-
-    }
-
-}
-
-
-function showGooglePlaceSelection(
-    formattedAddress
-) {
-
-    if (
-        !driverShipmentAddressSelected
-    ) {
-
-        return;
-
-    }
-
-
-    driverShipmentAddressSelected.textContent =
-        formattedAddress
-            ? `✅ נבחרה כתובת: ${formattedAddress}`
-            : "✅ כתובת נבחרה מ-Google";
-
-
-    driverShipmentAddressSelected.classList
-        .remove(
-            "hidden"
-        );
-
-}
-
-
-// =========================================================
-// GOOGLE PLACES AUTOCOMPLETE
-// =========================================================
-
-async function initializeGooglePlacesAutocomplete() {
-
-    if (
-        googlePlacesReady
-    ) {
-
-        return true;
-
-    }
-
-
-    const originalInput =
-        document.getElementById(
-            "driverShipmentAddressSearch"
-        );
-
-
-    if (
-        !originalInput
-    ) {
-
-        return false;
-
-    }
-
-
-    try {
-
-        await loadGoogleMapsPlacesLibrary();
-
-
-        const {
-            PlaceAutocompleteElement
-        } =
-            await google.maps.importLibrary(
-                "places"
-            );
-
-
-        const autocomplete =
-            new PlaceAutocompleteElement({
-                includedRegionCodes: [
-                    "il"
-                ]
-            });
-
-
-        autocomplete.id =
-            "driverShipmentAddressSearch";
-
-
-        autocomplete.placeholder =
-            "התחל להקליד רחוב ומספר...";
-
-
-        autocomplete.style.width =
-            "100%";
-
-
-        autocomplete.style.display =
-            "block";
-
-
-        originalInput.replaceWith(
-            autocomplete
-        );
-
-
-        driverShipmentAddressSearch =
-            autocomplete;
-
-
-        googlePlaceAutocomplete =
-            autocomplete;
-
-
-        autocomplete.addEventListener(
-
-            "gmp-select",
-
-            async function (
-                event
-            ) {
-
-                try {
-
-                    const prediction =
-                        event.placePrediction;
-
-
-                    if (
-                        !prediction
-                    ) {
-
-                        return;
-
-                    }
-
-
-                    const place =
-                        prediction.toPlace();
-
-
-                    await place.fetchFields({
-                        fields: [
-                            "id",
-                            "formattedAddress",
-                            "location",
-                            "addressComponents"
-                        ]
-                    });
-
-
-                    const addressComponents =
-                        place.addressComponents
-                        ||
-                        [];
-
-
-                    const city =
-                        getGoogleAddressComponent(
-                            addressComponents,
-                            [
-                                "locality",
-                                "postal_town"
-                            ]
-                        )
-                        ||
-                        getGoogleAddressComponent(
-                            addressComponents,
-                            [
-                                "administrative_area_level_2"
-                            ]
-                        );
-
-
-                    const street =
-                        getGoogleAddressComponent(
-                            addressComponents,
-                            [
-                                "route"
-                            ]
-                        );
-
-
-                    const houseNumber =
-                        getGoogleAddressComponent(
-                            addressComponents,
-                            [
-                                "street_number"
-                            ]
-                        );
-
-
-                    const latitude =
-                        place.location
-                            ? place.location.lat()
-                            : null;
-
-
-                    const longitude =
-                        place.location
-                            ? place.location.lng()
-                            : null;
-
-
-                    setInputValue(
-                        "driverShipmentCity",
-                        city
-                    );
-
-                    setInputValue(
-                        "driverShipmentStreet",
-                        street
-                    );
-
-                    setInputValue(
-                        "driverShipmentHouseNumber",
-                        houseNumber
-                    );
-
-                    setInputValue(
-                        "driverShipmentGooglePlaceId",
-                        place.id
-                        ||
-                        ""
-                    );
-
-                    setInputValue(
-                        "driverShipmentFormattedAddress",
-                        place.formattedAddress
-                        ||
-                        ""
-                    );
-
-                    setInputValue(
-                        "driverShipmentLatitude",
-                        latitude !== null
-                            ? String(
-                                latitude
-                            )
-                            : ""
-                    );
-
-                    setInputValue(
-                        "driverShipmentLongitude",
-                        longitude !== null
-                            ? String(
-                                longitude
-                            )
-                            : ""
-                    );
-
-
-                    autocomplete.value =
-                        place.formattedAddress
-                        ||
-                        prediction.text?.text
-                        ||
-                        "";
-
-
-                    showGooglePlaceSelection(
-                        place.formattedAddress
-                        ||
-                        ""
-                    );
-
-                }
-
-                catch (
-                    error
-                ) {
-
-                    console.error(
-                        "Failed reading selected Google place:",
-                        error
-                    );
-
-
-                    alert(
-                        "לא הצלחנו לקרוא את הכתובת שנבחרה מ-Google. אפשר לנסות לבחור אותה שוב או להזין את הכתובת ידנית."
-                    );
-
-                }
-
-            }
-
-        );
-
-
-        const manualAddressInputs = [
-            "driverShipmentCity",
-            "driverShipmentStreet",
-            "driverShipmentHouseNumber"
-        ];
-
-
-        manualAddressInputs.forEach(
-
-            inputId => {
-
-                const input =
-                    document.getElementById(
-                        inputId
-                    );
-
-
-                if (
-                    !input
-                ) {
-
-                    return;
-
-                }
-
-
-                input.addEventListener(
-
-                    "input",
-
-                    function () {
-
-                        clearGooglePlaceSelection(
-                            false
-                        );
-
-                    }
-
-                );
-
-            }
-
-        );
-
-
-        googlePlacesReady =
-            true;
-
-
-        return true;
-
-    }
-
-    catch (
-        error
-    ) {
-
-        console.error(
-            "Google Places initialization failed:",
-            error
-        );
-
-
-        googlePlacesReady =
-            false;
-
-
-        return false;
-
-    }
 
 }
 
@@ -4223,6 +3261,327 @@ if (
 
 
 // =========================================================
+// ACTIVE ROUTE HELPERS
+// =========================================================
+
+async function getCurrentDatabaseRoute() {
+
+    if (
+        !currentProfile
+    ) {
+
+        return null;
+
+    }
+
+
+    const {
+        data,
+        error
+    } =
+        await supabaseClient
+            .from(
+                "driver_routes"
+            )
+            .select(
+                `
+                id,
+                driver_id,
+                created_at,
+                route_date,
+                planned_start_at,
+                started_at,
+                completed_at,
+                start_address,
+                end_address,
+                status,
+                total_distance_meters,
+                total_duration_seconds,
+                estimated_end_at,
+                stop_count,
+                remaining_stop_count
+                `
+            )
+            .eq(
+                "driver_id",
+                currentProfile.id
+            )
+            .in(
+                "status",
+                [
+                    "PLANNED",
+                    "ACTIVE"
+                ]
+            )
+            .order(
+                "created_at",
+                {
+                    ascending:
+                        false
+                }
+            )
+            .limit(
+                1
+            )
+            .maybeSingle();
+
+
+    if (
+        error
+    ) {
+
+        console.error(
+            "Failed loading current driver route:",
+            error
+        );
+
+        return null;
+
+    }
+
+
+    return data || null;
+
+}
+
+
+// =========================================================
+// COMPLETE ROUTE STOP
+// =========================================================
+
+async function completeShipmentInActiveRoute(
+    shipmentId,
+    completionStatus,
+    completedAt
+) {
+
+    try {
+
+        const route =
+            await getCurrentDatabaseRoute();
+
+
+        if (
+            !route
+        ) {
+
+            return true;
+
+        }
+
+
+        const {
+            data: routeStop,
+            error: stopLoadError
+        } =
+            await supabaseClient
+                .from(
+                    "driver_route_stops"
+                )
+                .select(
+                    `
+                    id,
+                    route_id,
+                    shipment_id,
+                    completed_at,
+                    completion_status
+                    `
+                )
+                .eq(
+                    "route_id",
+                    route.id
+                )
+                .eq(
+                    "shipment_id",
+                    shipmentId
+                )
+                .maybeSingle();
+
+
+        if (
+            stopLoadError
+        ) {
+
+            console.error(
+                "Failed loading route stop:",
+                stopLoadError
+            );
+
+            return false;
+
+        }
+
+
+        if (
+            !routeStop
+        ) {
+
+            return true;
+
+        }
+
+
+        if (
+            !routeStop.completed_at
+        ) {
+
+            const {
+                error: stopUpdateError
+            } =
+                await supabaseClient
+                    .from(
+                        "driver_route_stops"
+                    )
+                    .update(
+                        {
+                            completed_at:
+                                completedAt,
+
+                            completion_status:
+                                completionStatus
+                        }
+                    )
+                    .eq(
+                        "id",
+                        routeStop.id
+                    );
+
+
+            if (
+                stopUpdateError
+            ) {
+
+                console.error(
+                    "Failed completing route stop:",
+                    stopUpdateError
+                );
+
+                return false;
+
+            }
+
+        }
+
+
+        const {
+            count,
+            error: countError
+        } =
+            await supabaseClient
+                .from(
+                    "driver_route_stops"
+                )
+                .select(
+                    "id",
+                    {
+                        count:
+                            "exact",
+
+                        head:
+                            true
+                    }
+                )
+                .eq(
+                    "route_id",
+                    route.id
+                )
+                .is(
+                    "completed_at",
+                    null
+                );
+
+
+        if (
+            countError
+        ) {
+
+            console.error(
+                "Failed counting remaining route stops:",
+                countError
+            );
+
+            return false;
+
+        }
+
+
+        const remaining =
+            Number(
+                count || 0
+            );
+
+
+        const routeUpdate = {
+            remaining_stop_count:
+                remaining
+        };
+
+
+        if (
+            remaining ===
+            0
+        ) {
+
+            routeUpdate.status =
+                "COMPLETED";
+
+            routeUpdate.completed_at =
+                completedAt;
+
+        }
+
+
+        const {
+            error: routeUpdateError
+        } =
+            await supabaseClient
+                .from(
+                    "driver_routes"
+                )
+                .update(
+                    routeUpdate
+                )
+                .eq(
+                    "id",
+                    route.id
+                );
+
+
+        if (
+            routeUpdateError
+        ) {
+
+            console.error(
+                "Failed updating route remaining count:",
+                routeUpdateError
+            );
+
+            return false;
+
+        }
+
+
+        return true;
+
+    }
+
+    catch (
+        error
+    ) {
+
+        console.error(
+            "completeShipmentInActiveRoute failed:",
+            error
+        );
+
+        return false;
+
+    }
+
+}
+
+
+// =========================================================
 // MARK DELIVERED
 // =========================================================
 
@@ -4309,11 +3668,9 @@ if (
                     error
                 );
 
-
                 alert(
                     "לא ניתן היה לעדכן את המשלוח."
                 );
-
 
                 return;
 
@@ -4339,10 +3696,20 @@ if (
                 rate;
 
 
+            await completeShipmentInActiveRoute(
+                shipment.id,
+                "DELIVERED",
+                deliveredAt
+            );
+
+
             closeShipmentDetails();
 
 
             renderDriverShipments();
+
+
+            await loadActiveRouteFromDatabase();
 
         }
 
@@ -4443,11 +3810,9 @@ if (
                     error
                 );
 
-
                 alert(
                     "לא ניתן היה לעדכן את המשלוח."
                 );
-
 
                 return;
 
@@ -4470,22 +3835,30 @@ if (
                 0;
 
 
+            await completeShipmentInActiveRoute(
+                shipment.id,
+                "FAILED",
+                failedAt
+            );
+
+
             closeShipmentDetails();
 
 
             renderDriverShipments();
+
+
+            await loadActiveRouteFromDatabase();
 
         }
 
     );
 
 }
+
 // =========================================================
 // ROUTE RESULT STATE
 // =========================================================
-
-const DRIVER_OPTIMIZED_ROUTE_STORAGE_KEY =
-    "delivery_system_optimized_route";
 
 let optimizedRouteResult =
     null;
@@ -4602,17 +3975,6 @@ function getRouteStorageKey() {
         ? `${DRIVER_ROUTE_STORAGE_KEY}_${currentProfile.id}`
 
         : DRIVER_ROUTE_STORAGE_KEY;
-
-}
-
-
-function getOptimizedRouteStorageKey() {
-
-    return currentProfile
-
-        ? `${DRIVER_OPTIMIZED_ROUTE_STORAGE_KEY}_${currentProfile.id}`
-
-        : DRIVER_OPTIMIZED_ROUTE_STORAGE_KEY;
 
 }
 
@@ -5237,7 +4599,7 @@ async function ensureActiveShipmentsGeocoded() {
 
 
 // =========================================================
-// SAVE OPTIMIZED ROUTE
+// SAVE CURRENT ROUTE RESULT IN MEMORY
 // =========================================================
 
 function saveOptimizedRoute(
@@ -5247,34 +4609,17 @@ function saveOptimizedRoute(
     optimizedRouteResult =
         result;
 
-
-    localStorage.setItem(
-
-        getOptimizedRouteStorageKey(),
-
-        JSON.stringify(
-            result
-        )
-
-    );
-
 }
 
 
 // =========================================================
-// LOAD SAVED OPTIMIZED ROUTE
+// LOAD ACTIVE ROUTE FROM DATABASE
 // =========================================================
 
-function loadSavedOptimizedRoute() {
-
-    const saved =
-        localStorage.getItem(
-            getOptimizedRouteStorageKey()
-        );
-
+async function loadActiveRouteFromDatabase() {
 
     if (
-        !saved
+        !currentProfile
     ) {
 
         return;
@@ -5282,30 +4627,336 @@ function loadSavedOptimizedRoute() {
     }
 
 
-    try {
+    const route =
+        await getCurrentDatabaseRoute();
+
+
+    if (
+        !route
+    ) {
 
         optimizedRouteResult =
-            JSON.parse(
-                saved
+            null;
+
+
+        if (
+            optimizedRouteList
+        ) {
+
+            optimizedRouteList.innerHTML =
+                "";
+
+        }
+
+
+        if (
+            routeSummarySection
+        ) {
+
+            routeSummarySection.classList
+                .add(
+                    "hidden"
+                );
+
+        }
+
+
+        return;
+
+    }
+
+
+    const {
+        data: routeStops,
+        error: stopsError
+    } =
+        await supabaseClient
+            .from(
+                "driver_route_stops"
+            )
+            .select(
+                `
+                id,
+                route_id,
+                shipment_id,
+                stop_order,
+                eta,
+                travel_distance_meters,
+                travel_duration_seconds,
+                completed_at,
+                completion_status
+                `
+            )
+            .eq(
+                "route_id",
+                route.id
+            )
+            .is(
+                "completed_at",
+                null
+            )
+            .order(
+                "stop_order",
+                {
+                    ascending:
+                        true
+                }
             );
 
 
-        renderOptimizedRoute(
-            optimizedRouteResult
-        );
-
-    }
-
-    catch (
-        error
+    if (
+        stopsError
     ) {
 
         console.error(
-            "Failed loading optimized route:",
-            error
+            "Failed loading active route stops:",
+            stopsError
         );
 
+        return;
+
     }
+
+
+    const activeStops =
+        routeStops || [];
+
+
+    const shipmentIds =
+        activeStops.map(
+            stop =>
+                stop.shipment_id
+        );
+
+
+    let shipmentsById =
+        new Map();
+
+
+    if (
+        shipmentIds.length >
+        0
+    ) {
+
+        const {
+            data: routeShipments,
+            error: shipmentsError
+        } =
+            await supabaseClient
+                .from(
+                    "shipments"
+                )
+                .select(
+                    `
+                    id,
+                    shipment_number,
+                    customer,
+                    phone,
+                    city,
+                    street,
+                    house_number,
+                    entrance,
+                    floor,
+                    apartment,
+                    building_code,
+                    address_notes,
+                    delivery_instructions,
+                    notes,
+                    status,
+                    latitude,
+                    longitude,
+                    google_place_id,
+                    formatted_address
+                    `
+                )
+                .in(
+                    "id",
+                    shipmentIds
+                );
+
+
+        if (
+            shipmentsError
+        ) {
+
+            console.error(
+                "Failed loading route shipments:",
+                shipmentsError
+            );
+
+            return;
+
+        }
+
+
+        shipmentsById =
+            new Map(
+                (routeShipments || [])
+                    .map(
+                        shipment => [
+                            shipment.id,
+                            shipment
+                        ]
+                    )
+            );
+
+    }
+
+
+    const stops =
+        activeStops
+            .map(
+                (
+                    stop,
+                    index
+                ) => {
+
+                    const shipment =
+                        shipmentsById.get(
+                            stop.shipment_id
+                        );
+
+
+                    if (
+                        !shipment
+                    ) {
+
+                        return null;
+
+                    }
+
+
+                    return {
+                        order:
+                            index + 1,
+
+                        original_order:
+                            stop.stop_order,
+
+                        shipment_id:
+                            shipment.id,
+
+                        shipment_number:
+                            shipment.shipment_number,
+
+                        customer:
+                            shipment.customer,
+
+                        phone:
+                            shipment.phone,
+
+                        city:
+                            shipment.city,
+
+                        street:
+                            shipment.street,
+
+                        house_number:
+                            shipment.house_number,
+
+                        entrance:
+                            shipment.entrance,
+
+                        floor:
+                            shipment.floor,
+
+                        apartment:
+                            shipment.apartment,
+
+                        building_code:
+                            shipment.building_code,
+
+                        address_notes:
+                            shipment.address_notes,
+
+                        delivery_instructions:
+                            shipment.delivery_instructions,
+
+                        notes:
+                            shipment.notes,
+
+                        latitude:
+                            shipment.latitude,
+
+                        longitude:
+                            shipment.longitude,
+
+                        google_place_id:
+                            shipment.google_place_id,
+
+                        formatted_address:
+                            shipment.formatted_address,
+
+                        eta:
+                            stop.eta,
+
+                        travel_distance_meters:
+                            stop.travel_distance_meters ||
+                            0,
+
+                        travel_duration_seconds:
+                            stop.travel_duration_seconds ||
+                            0
+                    };
+
+                }
+            )
+            .filter(
+                Boolean
+            );
+
+
+    const result = {
+        success:
+            true,
+
+        route_id:
+            route.id,
+
+        route_status:
+            route.status,
+
+        start_address:
+            route.start_address,
+
+        end_address:
+            route.end_address,
+
+        vehicle_start_time:
+            route.started_at ||
+            route.planned_start_at,
+
+        vehicle_end_time:
+            route.estimated_end_at,
+
+        total_duration_seconds:
+            route.total_duration_seconds ||
+            0,
+
+        total_distance_meters:
+            route.total_distance_meters ||
+            0,
+
+        stop_count:
+            route.stop_count ||
+            stops.length,
+
+        remaining_stop_count:
+            stops.length,
+
+        stops:
+            stops
+    };
+
+
+    saveOptimizedRoute(
+        result
+    );
+
+
+    renderOptimizedRoute(
+        result
+    );
 
 }
 
@@ -6141,7 +5792,7 @@ async function initializeDriverApp() {
     await loadDriverShipments();
 
 
-    loadSavedOptimizedRoute();
+    await loadActiveRouteFromDatabase();
 
 }
 
