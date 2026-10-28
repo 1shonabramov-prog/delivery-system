@@ -3186,6 +3186,74 @@ let optimizedRouteResult =
 
 
 // =========================================================
+// CREATE "START NOW" BUTTON
+// =========================================================
+
+let startRouteNowButton =
+    null;
+
+
+function createStartRouteNowButton() {
+
+    if (
+        startRouteNowButton
+        ||
+        !calculateRouteButton
+    ) {
+
+        return;
+
+    }
+
+
+    startRouteNowButton =
+        document.createElement(
+            "button"
+        );
+
+
+    startRouteNowButton.type =
+        "button";
+
+
+    startRouteNowButton.id =
+        "startRouteNowButton";
+
+
+    startRouteNowButton.className =
+        "primary-action-button";
+
+
+    startRouteNowButton.textContent =
+        "▶ התחל עכשיו";
+
+
+    startRouteNowButton.style.marginTop =
+        "10px";
+
+
+    startRouteNowButton.style.width =
+        "100%";
+
+
+    calculateRouteButton.insertAdjacentElement(
+        "afterend",
+        startRouteNowButton
+    );
+
+
+    startRouteNowButton.addEventListener(
+
+        "click",
+
+        startRouteNow
+
+    );
+
+}
+
+
+// =========================================================
 // ROUTE PLANNER TOGGLE
 // =========================================================
 
@@ -3244,6 +3312,61 @@ function getOptimizedRouteStorageKey() {
 
 
 // =========================================================
+// LOCAL DATE / TIME HELPERS
+// =========================================================
+
+function getLocalDateValue(
+    date = new Date()
+) {
+
+    const local =
+        new Date(
+            date.getTime()
+            -
+            date.getTimezoneOffset() *
+            60000
+        );
+
+
+    return local
+        .toISOString()
+        .split(
+            "T"
+        )[0];
+
+}
+
+
+function getLocalTimeValue(
+    date = new Date()
+) {
+
+    const hours =
+        String(
+            date.getHours()
+        )
+            .padStart(
+                2,
+                "0"
+            );
+
+
+    const minutes =
+        String(
+            date.getMinutes()
+        )
+            .padStart(
+                2,
+                "0"
+            );
+
+
+    return `${hours}:${minutes}`;
+
+}
+
+
+// =========================================================
 // LOAD ROUTE SETTINGS
 // =========================================================
 
@@ -3263,25 +3386,20 @@ function loadRouteSettings() {
             routeDate
         ) {
 
-            const now =
-                new Date();
-
-
-            const localDate =
-                new Date(
-                    now.getTime()
-                    -
-                    now.getTimezoneOffset() *
-                    60000
-                )
-                    .toISOString()
-                    .split(
-                        "T"
-                    )[0];
-
-
             routeDate.value =
-                localDate;
+                getLocalDateValue();
+
+        }
+
+
+        if (
+            routeStartTime
+            &&
+            !routeStartTime.value
+        ) {
+
+            routeStartTime.value =
+                getLocalTimeValue();
 
         }
 
@@ -3304,8 +3422,9 @@ function loadRouteSettings() {
         ) {
 
             routeDate.value =
-                settings.date ||
-                "";
+                settings.date
+                ||
+                getLocalDateValue();
 
         }
 
@@ -3315,8 +3434,9 @@ function loadRouteSettings() {
         ) {
 
             routeStartTime.value =
-                settings.startTime ||
-                "";
+                settings.startTime
+                ||
+                getLocalTimeValue();
 
         }
 
@@ -3326,7 +3446,8 @@ function loadRouteSettings() {
         ) {
 
             routeStartAddress.value =
-                settings.startAddress ||
+                settings.startAddress
+                ||
                 "";
 
         }
@@ -3337,7 +3458,8 @@ function loadRouteSettings() {
         ) {
 
             routeEndAddress.value =
-                settings.endAddress ||
+                settings.endAddress
+                ||
                 "";
 
         }
@@ -3958,7 +4080,8 @@ function renderOptimizedRoute(
 
 
     const stops =
-        result.stops ||
+        result.stops
+        ||
         [];
 
 
@@ -3974,6 +4097,7 @@ function renderOptimizedRoute(
 
             item.type =
                 "button";
+
 
             item.className =
                 "driver-shipment-card";
@@ -4044,7 +4168,6 @@ function renderOptimizedRoute(
                 <div class="shipment-card-address">
 
                     📍
-
                     ${stop.street || ""}
                     ${stop.house_number || ""},
                     ${stop.city || ""}
@@ -4106,6 +4229,262 @@ function renderOptimizedRoute(
             .remove(
                 "hidden"
             );
+
+    }
+
+}
+
+
+// =========================================================
+// SAVE ACTUAL ROUTE START TIME
+// =========================================================
+
+async function saveActualRouteStartTime(
+    startedAt
+) {
+
+    if (
+        !currentProfile
+    ) {
+
+        return false;
+
+    }
+
+
+    const activeIds =
+        driverShipments
+            .filter(
+
+                shipment =>
+                    shipment.status !==
+                        "נמסר"
+
+                    &&
+
+                    shipment.status !==
+                        "לא נמסר"
+
+            )
+            .map(
+                shipment =>
+                    shipment.id
+            );
+
+
+    if (
+        activeIds.length ===
+        0
+    ) {
+
+        return false;
+
+    }
+
+
+    const {
+        error
+    } =
+        await supabaseClient
+            .from(
+                "shipments"
+            )
+            .update(
+                {
+                    route_started_at:
+                        startedAt
+                }
+            )
+            .eq(
+                "driver_id",
+                currentProfile.id
+            )
+            .in(
+                "id",
+                activeIds
+            );
+
+
+    if (
+        error
+    ) {
+
+        console.error(
+            "Failed saving route_started_at:",
+            error
+        );
+
+
+        return false;
+
+    }
+
+
+    driverShipments.forEach(
+
+        shipment => {
+
+            if (
+                activeIds.includes(
+                    shipment.id
+                )
+            ) {
+
+                shipment.route_started_at =
+                    startedAt;
+
+            }
+
+        }
+
+    );
+
+
+    return true;
+
+}
+
+
+// =========================================================
+// START ROUTE NOW
+// =========================================================
+
+async function startRouteNow() {
+
+    const now =
+        new Date();
+
+
+    if (
+        routeDate
+    ) {
+
+        routeDate.value =
+            getLocalDateValue(
+                now
+            );
+
+    }
+
+
+    if (
+        routeStartTime
+    ) {
+
+        routeStartTime.value =
+            getLocalTimeValue(
+                now
+            );
+
+    }
+
+
+    const settings =
+        getCurrentRouteSettings();
+
+
+    if (
+        !settings.startAddress
+        ||
+        !settings.endAddress
+    ) {
+
+        alert(
+            "לפני התחלת המסלול יש להזין כתובת התחלה וכתובת סיום."
+        );
+
+
+        return;
+
+    }
+
+
+    if (
+        !validateRouteSettings(
+            settings
+        )
+    ) {
+
+        return;
+
+    }
+
+
+    if (
+        startRouteNowButton
+    ) {
+
+        startRouteNowButton.disabled =
+            true;
+
+        startRouteNowButton.textContent =
+            "מתחיל מסלול...";
+
+    }
+
+
+    if (
+        routePlannerMessage
+    ) {
+
+        routePlannerMessage.textContent =
+            "שומר את שעת ההתחלה בפועל ומחשב מסלול מחדש...";
+
+    }
+
+
+    const startedAt =
+        now.toISOString();
+
+
+    const saved =
+        await saveActualRouteStartTime(
+            startedAt
+        );
+
+
+    if (
+        !saved
+    ) {
+
+        if (
+            startRouteNowButton
+        ) {
+
+            startRouteNowButton.disabled =
+                false;
+
+            startRouteNowButton.textContent =
+                "▶ התחל עכשיו";
+
+        }
+
+
+        alert(
+            "לא הצלחנו לשמור את שעת התחלת המסלול."
+        );
+
+
+        return;
+
+    }
+
+
+    saveCurrentRouteSettings();
+
+
+    await calculateDriverRoute();
+
+
+    if (
+        startRouteNowButton
+    ) {
+
+        startRouteNowButton.disabled =
+            false;
+
+        startRouteNowButton.textContent =
+            "▶ התחל עכשיו";
 
     }
 
@@ -4181,10 +4560,6 @@ async function calculateDriverRoute() {
 
     try {
 
-        // =====================================================
-        // FIRST MAKE SURE EVERY ACTIVE SHIPMENT HAS COORDINATES
-        // =====================================================
-
         const geocodingReady =
             await ensureActiveShipmentsGeocoded();
 
@@ -4207,10 +4582,6 @@ async function calculateDriverRoute() {
 
         }
 
-
-        // =====================================================
-        // CALL EDGE FUNCTION
-        // =====================================================
 
         const {
             data,
@@ -4248,7 +4619,7 @@ async function calculateDriverRoute() {
 
 
             alert(
-                "לא הצלחנו לחשב את המסלול. נבדוק את ה-Edge Function."
+                "לא הצלחנו לחשב את המסלול."
             );
 
 
@@ -4258,9 +4629,10 @@ async function calculateDriverRoute() {
 
 
         if (
-            !data ||
+            !data
+            ||
             data.success !==
-            true
+                true
         ) {
 
             console.error(
@@ -4269,46 +4641,17 @@ async function calculateDriverRoute() {
             );
 
 
-            if (
-                data?.missing_shipments?.length
-            ) {
-
-                const names =
-                    data.missing_shipments
-                        .map(
-                            shipment =>
-                                shipment.customer ||
-                                shipment.address
-                        )
-                        .join(
-                            "\n"
-                        );
-
-
-                alert(
-                    `יש משלוחים ללא מיקום תקין:\n${names}`
-                );
-
-            }
-
-            else {
-
-                alert(
-                    data?.error ||
-                    "לא הצלחנו לחשב את המסלול."
-                );
-
-            }
+            alert(
+                data?.error
+                ||
+                "לא הצלחנו לחשב את המסלול."
+            );
 
 
             return;
 
         }
 
-
-        // =====================================================
-        // SUCCESS
-        // =====================================================
 
         saveOptimizedRoute(
             data
@@ -4479,6 +4822,9 @@ async function initializeDriverApp() {
 
 
     initializeDriverHeader();
+
+
+    createStartRouteNowButton();
 
 
     loadRouteSettings();
