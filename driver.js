@@ -5136,9 +5136,8 @@ if (
 
         function () {
 
-            alert(
-                "מסך הדוחות וההכנסות יחובר בהמשך."
-            );
+            window.location.href =
+                "driver-history.html";
 
         }
 
