@@ -7,7 +7,7 @@
 // לא ה-Delivery Geocoding Server Key
 
 const GOOGLE_MAPS_API_KEY =
-    "שים-כאן-את-אותו-API-KEY-שכבר-יש-לך";
+    "AIzaSyDGToSoNAmIF0TKeQU1S0P-GNqI8r6UsqQ";
 
 
 // =========================================================
