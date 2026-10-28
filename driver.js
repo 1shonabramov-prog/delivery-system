@@ -5597,7 +5597,7 @@ async function loadActiveRouteFromDatabase() {
 
                     return {
                         order:
-                            index + 1,
+                            stop.stop_order,
 
                         original_order:
                             stop.stop_order,
