@@ -44,6 +44,9 @@ let selectedShipmentId =
 let routeNeedsRecalculation =
     false;
 
+let saveShipmentAndContinue =
+    false;
+
 
 // =========================================================
 // DOM ELEMENTS
@@ -130,6 +133,11 @@ const editingDriverShipmentId =
 const saveDriverShipmentButton =
     document.getElementById(
         "saveDriverShipmentButton"
+    );
+
+const saveAndAddAnotherShipmentButton =
+    document.getElementById(
+        "saveAndAddAnotherShipmentButton"
     );
 
 
@@ -3903,6 +3911,25 @@ function resetDriverShipmentForm() {
 
     }
 
+
+    if (
+        saveAndAddAnotherShipmentButton
+    ) {
+
+        saveAndAddAnotherShipmentButton.classList
+            .remove(
+                "hidden"
+            );
+
+        saveAndAddAnotherShipmentButton.disabled =
+            false;
+
+    }
+
+
+    saveShipmentAndContinue =
+        false;
+
 }
 
 
@@ -4138,6 +4165,22 @@ function openEditDriverShipmentModal(
     }
 
 
+    if (
+        saveAndAddAnotherShipmentButton
+    ) {
+
+        saveAndAddAnotherShipmentButton.classList
+            .add(
+                "hidden"
+            );
+
+    }
+
+
+    saveShipmentAndContinue =
+        false;
+
+
     addShipmentModal.classList
         .remove(
             "hidden"
@@ -4294,6 +4337,66 @@ async function geocodeDriverShipment(
     }
 
 }
+// =========================================================
+// NORMAL SAVE MODE
+// =========================================================
+
+if (
+    saveDriverShipmentButton
+) {
+
+    saveDriverShipmentButton.addEventListener(
+
+        "click",
+
+        function () {
+
+            saveShipmentAndContinue =
+                false;
+
+        }
+
+    );
+
+}
+
+
+// =========================================================
+// SAVE AND ADD ANOTHER
+// =========================================================
+
+if (
+    saveAndAddAnotherShipmentButton
+) {
+
+    saveAndAddAnotherShipmentButton.addEventListener(
+
+        "click",
+
+        function () {
+
+            if (
+                !driverAddShipmentForm
+            ) {
+
+                return;
+
+            }
+
+
+            saveShipmentAndContinue =
+                true;
+
+
+            driverAddShipmentForm.requestSubmit();
+
+        }
+
+    );
+
+}
+
+
 // =========================================================
 // SAVE NEW / EDITED SHIPMENT
 // =========================================================
@@ -4555,6 +4658,27 @@ if (
                     editingId
                         ? "שומר שינויים..."
                         : "שומר משלוח...";
+
+            }
+
+
+            if (
+                saveAndAddAnotherShipmentButton
+            ) {
+
+                saveAndAddAnotherShipmentButton.disabled =
+                    true;
+
+                if (
+                    saveShipmentAndContinue
+                    &&
+                    !editingId
+                ) {
+
+                    saveAndAddAnotherShipmentButton.textContent =
+                        "שומר ומכין הבא...";
+
+                }
 
             }
 
@@ -4955,6 +5079,23 @@ if (
                 }
 
 
+                if (
+                    saveAndAddAnotherShipmentButton
+                ) {
+
+                    saveAndAddAnotherShipmentButton.disabled =
+                        false;
+
+                    saveAndAddAnotherShipmentButton.textContent =
+                        "שמור והוסף עוד";
+
+                }
+
+
+                saveShipmentAndContinue =
+                    false;
+
+
                 alert(
                     "לא ניתן היה לשמור את המשלוח."
                 );
@@ -5022,16 +5163,76 @@ if (
             }
 
 
-            driverAddShipmentForm.reset();
+            const shouldAddAnother =
+                saveShipmentAndContinue;
 
 
-            closeDriverAddShipmentModal();
+            saveShipmentAndContinue =
+                false;
+
+
+            if (
+                saveAndAddAnotherShipmentButton
+            ) {
+
+                saveAndAddAnotherShipmentButton.disabled =
+                    false;
+
+                saveAndAddAnotherShipmentButton.textContent =
+                    "שמור והוסף עוד";
+
+            }
 
 
             renderDriverShipments();
 
 
             showRouteRecalculationWarning();
+
+
+            if (
+                shouldAddAnother
+            ) {
+
+                resetDriverShipmentForm();
+
+
+                showDriverToast(
+                    "המשלוח נשמר ✓ אפשר להזין את הבא"
+                );
+
+
+                setTimeout(
+
+                    function () {
+
+                        if (
+                            driverShipmentAddressSearch
+                            &&
+                            typeof driverShipmentAddressSearch.focus ===
+                                "function"
+                        ) {
+
+                            driverShipmentAddressSearch.focus();
+
+                        }
+
+                    },
+
+                    120
+
+                );
+
+            }
+
+            else {
+
+                driverAddShipmentForm.reset();
+
+
+                closeDriverAddShipmentModal();
+
+            }
 
         }
 

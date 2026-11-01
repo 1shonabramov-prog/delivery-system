@@ -2175,3 +2175,40 @@ gmp-place-autocomplete#routeEndAddress {
 #routeEndAddress {
     padding-left: 58px;
 }
+/* Save + Add another */
+
+.editor-actions {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+}
+
+.save-another-button {
+    grid-column: 1 / -1;
+
+    min-height: 58px;
+
+    border: 1px solid rgba(57, 189, 255, .45);
+    border-radius: 18px;
+
+    background: rgba(25, 116, 255, .12);
+    color: #67c9ff;
+
+    font-size: 16px;
+    font-weight: 850;
+
+    cursor: pointer;
+}
+
+.save-another-button:active {
+    background: rgba(25, 116, 255, .22);
+}
+
+.save-another-button:disabled {
+    opacity: .55;
+    cursor: default;
+}
+
+.save-another-button.hidden {
+    display: none;
+}
