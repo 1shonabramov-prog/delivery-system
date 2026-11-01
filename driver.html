@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
     <meta name="theme-color" content="#06101d">
     <title>YB GO - שליח</title>
-    <link rel="stylesheet" href="driver.css?v=20261101-v3">
+    <link rel="stylesheet" href="driver.css?v=20261101-v4">
 </head>
 <body>
 
@@ -27,14 +27,32 @@
     <main class="driver-app">
 
         <section class="welcome-card glass">
-            <div>
+            <div class="welcome-copy">
+                <div class="welcome-kicker">
+                    <span class="brand-spark"></span>
+                    <span>YB GO DRIVER</span>
+                </div>
                 <p class="eyebrow">שלום</p>
                 <h1 id="driverName">שליח</h1>
                 <p id="driverDate" class="driver-date"></p>
+
+                <div class="welcome-route-line" aria-hidden="true">
+                    <span class="route-node active"></span>
+                    <span class="route-beam"></span>
+                    <span class="route-node"></span>
+                    <span class="route-beam"></span>
+                    <span class="route-node"></span>
+                </div>
             </div>
-            <div class="online-pill">
-                <span class="online-dot"></span>
-                מוכן לעבודה
+
+            <div class="welcome-status-stack">
+                <div class="online-pill">
+                    <span class="online-dot"></span>
+                    מוכן לעבודה
+                </div>
+                <div class="tech-orb" aria-hidden="true">
+                    <span></span>
+                </div>
             </div>
         </section>
 
@@ -272,18 +290,18 @@
                 </div>
             </div>
 
-            <div class="form-group">
-                <label for="driverShipmentCustomer">שם לקוח <small>אופציונלי</small></label>
-                <input id="driverShipmentCustomer" type="text" placeholder="שם לקוח (אופציונלי)">
-            </div>
-
-            <div class="form-group">
+            <div class="form-group quick-note-group">
                 <label for="driverShipmentAddressNotes">הערה מהירה</label>
                 <textarea id="driverShipmentAddressNotes" rows="2" placeholder="לדוגמה: להשאיר ליד הדלת"></textarea>
             </div>
 
             <details class="advanced-details">
                 <summary>פרטים נוספים</summary>
+
+                <div class="form-group">
+                    <label for="driverShipmentCustomer">שם לקוח <small>אופציונלי</small></label>
+                    <input id="driverShipmentCustomer" type="text" placeholder="שם לקוח (אופציונלי)">
+                </div>
 
                 <div class="form-group">
                     <label for="driverShipmentDeliveryInstructions">הוראות מסירה</label>
@@ -350,6 +368,11 @@
         </div>
 
         <article class="delivery-hero-card">
+            <div class="stop-chip">
+                <span class="stop-chip-dot"></span>
+                תחנה פעילה
+            </div>
+
             <div class="hero-visual" aria-hidden="true">
                 <div class="map-pin">
                     <span></span>
@@ -409,32 +432,39 @@
             </button>
         </div>
 
-        <section class="secondary-delivery-info">
-            <div class="secondary-info-row">
-                <span>טלפון</span>
-                <a id="deliveryPhone" href="#"></a>
-            </div>
+        <details class="delivery-more-details">
+            <summary>
+                <span>פרטים נוספים</span>
+                <span class="details-chevron">⌄</span>
+            </summary>
 
-            <div class="secondary-info-row">
-                <span>הערת כתובת</span>
-                <span id="deliveryAddressNotes">-</span>
-            </div>
+            <section class="secondary-delivery-info">
+                <div class="secondary-info-row">
+                    <span>טלפון</span>
+                    <a id="deliveryPhone" href="#"></a>
+                </div>
 
-            <div class="secondary-info-row">
-                <span>הוראות מסירה</span>
-                <span id="deliveryInstructions">-</span>
-            </div>
+                <div class="secondary-info-row">
+                    <span>הערת כתובת</span>
+                    <span id="deliveryAddressNotes">-</span>
+                </div>
 
-            <div class="secondary-info-row">
-                <span>הערות כלליות</span>
-                <span id="deliveryNotes">-</span>
-            </div>
-        </section>
+                <div class="secondary-info-row">
+                    <span>הוראות מסירה</span>
+                    <span id="deliveryInstructions">-</span>
+                </div>
 
-        <button id="editDriverShipmentButton" class="edit-shipment-button" type="button">
-            <span>✎</span>
-            ערוך פרטי משלוח
-        </button>
+                <div class="secondary-info-row">
+                    <span>הערות כלליות</span>
+                    <span id="deliveryNotes">-</span>
+                </div>
+            </section>
+
+            <button id="editDriverShipmentButton" class="edit-shipment-button" type="button">
+                <span>✎</span>
+                ערוך פרטי משלוח
+            </button>
+        </details>
 
         <div id="deliveryRouteUpdateMessage" class="route-message hidden">
             הכתובת השתנתה. לאחר השמירה ניתן לחשב את המסלול מחדש.

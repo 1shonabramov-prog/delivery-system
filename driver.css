@@ -1347,3 +1347,620 @@ textarea:focus {
         padding: 8px 10px;
     }
 }
+
+
+/* =========================================================
+   YB GO V4 — PREMIUM PRODUCT LAYER
+   ========================================================= */
+
+:root {
+    --electric: #1ea7ff;
+    --electric-2: #2158ff;
+    --electric-soft: rgba(30,167,255,.12);
+    --glass-edge: rgba(98,190,255,.32);
+    --deep-card: rgba(8, 22, 40, .92);
+}
+
+body {
+    background:
+        radial-gradient(circle at 50% -18%, rgba(27,126,255,.24), transparent 34%),
+        radial-gradient(circle at 88% 32%, rgba(29,154,255,.08), transparent 22%),
+        linear-gradient(180deg, #06111f 0%, #040a12 56%, #02060b 100%);
+}
+
+.app-shell {
+    padding-top: max(8px, env(safe-area-inset-top));
+}
+
+.topbar {
+    min-height: 66px;
+    padding-inline: 16px;
+    border-color: rgba(104,182,255,.28);
+    background:
+        radial-gradient(circle at 84% 50%, rgba(33,121,255,.10), transparent 28%),
+        linear-gradient(145deg, rgba(13,31,54,.95), rgba(6,16,29,.96));
+}
+
+.brand-text {
+    font-size: 24px;
+    letter-spacing: -.8px;
+}
+
+.brand-cube {
+    width: 30px;
+    height: 30px;
+}
+
+.welcome-card {
+    min-height: 164px;
+    padding: 22px 22px 19px;
+    border-color: rgba(91,175,255,.30);
+    background:
+        radial-gradient(circle at 83% 15%, rgba(21,128,255,.18), transparent 26%),
+        radial-gradient(circle at 0% 100%, rgba(38,104,255,.09), transparent 34%),
+        linear-gradient(145deg, rgba(15,35,61,.95), rgba(6,17,31,.97));
+}
+
+.welcome-card::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    background:
+        linear-gradient(122deg, transparent 0 63%, rgba(50,138,255,.07) 63% 64%, transparent 64%),
+        linear-gradient(122deg, transparent 0 73%, rgba(45,118,255,.035) 73% 74%, transparent 74%);
+}
+
+.welcome-copy,
+.welcome-status-stack {
+    position: relative;
+    z-index: 2;
+}
+
+.welcome-kicker {
+    display: inline-flex;
+    align-items: center;
+    gap: 7px;
+    margin-bottom: 12px;
+    color: #78c6ff;
+    font-size: 10px;
+    font-weight: 900;
+    letter-spacing: .9px;
+}
+
+.brand-spark {
+    width: 7px;
+    height: 7px;
+    border-radius: 3px;
+    background: linear-gradient(145deg, #4ed8ff, #1766ff);
+    box-shadow: 0 0 14px rgba(46,158,255,.75);
+}
+
+.welcome-card .eyebrow {
+    margin-bottom: 3px;
+    color: #8db7df;
+}
+
+.welcome-card h1 {
+    font-size: clamp(30px, 7.8vw, 38px);
+    letter-spacing: -1.2px;
+}
+
+.welcome-status-stack {
+    align-self: stretch;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    align-items: flex-end;
+}
+
+.tech-orb {
+    width: 54px;
+    height: 54px;
+    border-radius: 18px;
+    display: grid;
+    place-items: center;
+    border: 1px solid rgba(77,177,255,.30);
+    background:
+        radial-gradient(circle at 35% 30%, rgba(83,213,255,.28), transparent 26%),
+        linear-gradient(145deg, rgba(22,74,140,.55), rgba(11,29,53,.82));
+    box-shadow: 0 0 26px rgba(27,116,255,.13);
+}
+
+.tech-orb span {
+    width: 19px;
+    height: 19px;
+    border-radius: 50%;
+    border: 3px solid #74d3ff;
+    box-shadow: 0 0 14px rgba(69,197,255,.58);
+}
+
+.welcome-route-line {
+    width: min(260px, 78vw);
+    display: flex;
+    align-items: center;
+    margin-top: 18px;
+    direction: ltr;
+}
+
+.route-node {
+    flex: 0 0 auto;
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+    border: 2px solid rgba(115,169,230,.55);
+    background: #101d30;
+}
+
+.route-node.active {
+    border-color: #61d0ff;
+    background: #188dff;
+    box-shadow: 0 0 15px rgba(39,152,255,.65);
+}
+
+.route-beam {
+    flex: 1 1 auto;
+    height: 2px;
+    background: linear-gradient(90deg, rgba(32,121,255,.18), #178fff, rgba(50,174,255,.28));
+}
+
+.summary-grid {
+    gap: 9px;
+}
+
+.summary-card {
+    min-height: 92px;
+    border-color: rgba(91,169,255,.22);
+    background:
+        linear-gradient(145deg, rgba(18,39,66,.94), rgba(7,17,31,.97));
+    box-shadow: 0 12px 30px rgba(0,0,0,.18);
+}
+
+.summary-number {
+    font-size: 29px;
+    letter-spacing: -.7px;
+}
+
+.main-actions {
+    margin-top: 11px;
+}
+
+.primary-action-button {
+    min-height: 61px;
+    background:
+        linear-gradient(135deg, #16b0ff 0%, #168dff 40%, #2558ff 100%);
+    border: 1px solid rgba(91,208,255,.34);
+    box-shadow:
+        0 14px 32px rgba(20,110,255,.28),
+        inset 0 1px 0 rgba(255,255,255,.20);
+}
+
+.shipments-section {
+    background:
+        radial-gradient(circle at 96% 8%, rgba(20,126,255,.10), transparent 22%),
+        linear-gradient(145deg, rgba(12,30,52,.93), rgba(5,15,27,.96));
+}
+
+.shipments-section .section-heading h2 {
+    font-size: 25px;
+}
+
+.driver-shipment-card {
+    position: relative;
+    overflow: hidden;
+    border-color: rgba(83,166,255,.28);
+    background:
+        radial-gradient(circle at 95% 0%, rgba(23,125,255,.12), transparent 24%),
+        linear-gradient(145deg, rgba(19,40,68,.97), rgba(6,16,29,.99));
+}
+
+.driver-shipment-card::after {
+    content: "";
+    position: absolute;
+    width: 120px;
+    height: 120px;
+    left: -54px;
+    bottom: -54px;
+    border-radius: 50%;
+    background: rgba(20,116,255,.10);
+    filter: blur(22px);
+}
+
+/* ADD SHIPMENT — closer to premium mockup */
+
+.shipment-editor {
+    padding-inline: 18px;
+}
+
+.editor-heading {
+    margin-bottom: 20px;
+}
+
+.editor-heading h2 {
+    font-size: 32px;
+}
+
+.address-search-card {
+    padding: 15px;
+    border-color: rgba(59,180,255,.54);
+    background:
+        radial-gradient(circle at 86% 10%, rgba(36,157,255,.13), transparent 26%),
+        linear-gradient(145deg, rgba(19,44,74,.96), rgba(7,21,38,.98));
+    box-shadow:
+        0 18px 42px rgba(0,0,0,.24),
+        0 0 24px rgba(27,136,255,.06);
+}
+
+.search-field-shell input {
+    min-height: 68px;
+    font-size: 17px;
+    border-radius: 20px;
+    border-color: rgba(51,195,255,.64);
+    background:
+        linear-gradient(145deg, rgba(19,45,75,.94), rgba(9,27,48,.98));
+    box-shadow:
+        0 0 0 1px rgba(57,187,255,.05),
+        0 0 28px rgba(18,138,255,.08);
+}
+
+.search-field-shell .field-icon {
+    font-size: 22px;
+    color: #66c9ff;
+}
+
+.smart-form > .form-group,
+.compact-grid,
+.quick-note-group {
+    margin-top: 2px;
+}
+
+.compact-grid.three {
+    gap: 10px;
+}
+
+.compact-grid.three .form-group input {
+    min-height: 58px;
+    text-align: center;
+    font-size: 17px;
+}
+
+.input-with-icon input {
+    min-height: 58px;
+}
+
+.quick-note-group textarea {
+    min-height: 62px;
+}
+
+.manual-address-details,
+.advanced-details {
+    background:
+        linear-gradient(145deg, rgba(16,33,55,.70), rgba(7,17,29,.76));
+    border-color: rgba(90,159,241,.14);
+}
+
+.quick-tools {
+    margin-top: 5px;
+}
+
+.tool-button {
+    min-height: 62px;
+}
+
+.editor-actions {
+    padding-top: 18px;
+}
+
+.editor-actions .save-button {
+    min-height: 61px;
+    font-size: 16px;
+}
+
+/* ACTIVE DELIVERY — closer to mockup */
+
+.delivery-workspace {
+    padding-inline: 16px;
+    background:
+        radial-gradient(circle at 84% 0%, rgba(24,128,255,.18), transparent 24%),
+        radial-gradient(circle at 0% 34%, rgba(29,95,255,.07), transparent 26%),
+        linear-gradient(180deg, #091727, #050d17 84%);
+}
+
+.delivery-topbar {
+    padding-top: 9px;
+}
+
+.active-route-head {
+    margin-top: 9px;
+    margin-bottom: 15px;
+}
+
+.active-route-head .eyebrow {
+    color: #77c6ff;
+    font-size: 12px;
+}
+
+.active-route-head h2 {
+    font-size: 31px;
+}
+
+.delivery-hero-card {
+    min-height: 280px;
+    grid-template-columns: .95fr 1.35fr;
+    border-color: rgba(64,180,255,.58);
+    background:
+        radial-gradient(circle at 17% 44%, rgba(25,128,255,.22), transparent 33%),
+        radial-gradient(circle at 86% 10%, rgba(34,110,255,.09), transparent 25%),
+        linear-gradient(145deg, rgba(18,46,79,.98), rgba(6,20,36,.99));
+    box-shadow:
+        0 20px 52px rgba(0,0,0,.28),
+        0 0 0 1px rgba(31,148,255,.04),
+        inset 0 1px 0 rgba(255,255,255,.04);
+}
+
+.stop-chip {
+    position: absolute;
+    top: 15px;
+    left: 15px;
+    z-index: 6;
+    display: inline-flex;
+    align-items: center;
+    gap: 7px;
+    padding: 7px 10px;
+    border-radius: 999px;
+    color: #9bd2ff;
+    background: rgba(15,47,82,.72);
+    border: 1px solid rgba(89,179,255,.22);
+    font-size: 9px;
+    font-weight: 850;
+    backdrop-filter: blur(10px);
+}
+
+.stop-chip-dot {
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: #29a8ff;
+    box-shadow: 0 0 10px rgba(40,169,255,.75);
+}
+
+.hero-content {
+    padding-top: 18px;
+}
+
+.delivery-number {
+    background: rgba(255,255,255,.04);
+    border-color: rgba(118,183,255,.18);
+}
+
+#deliveryAddressButton {
+    font-size: clamp(21px, 5.6vw, 28px);
+    letter-spacing: -.45px;
+}
+
+.hero-building-line {
+    font-size: 15px;
+}
+
+.hero-chips {
+    margin-top: 18px;
+}
+
+.info-chip {
+    min-width: 92px;
+    padding: 10px 12px;
+    border-color: rgba(114,184,255,.19);
+    background: rgba(255,255,255,.045);
+}
+
+.info-chip strong {
+    font-size: 13px;
+    color: #70caff;
+}
+
+.building-one {
+    width: 94px;
+    height: 96px;
+    right: 17px;
+    bottom: 28px;
+    background:
+        linear-gradient(145deg, rgba(29,112,201,.70), rgba(5,31,59,.86));
+    box-shadow: 0 0 36px rgba(28,124,255,.14);
+}
+
+.building-two {
+    width: 65px;
+    height: 128px;
+    left: 5px;
+    bottom: 30px;
+}
+
+.map-pin {
+    width: 42px;
+    height: 42px;
+    right: 60px;
+    bottom: 148px;
+    box-shadow: 0 0 34px rgba(37,178,255,.90);
+}
+
+.delivery-actions-grid {
+    gap: 11px;
+    margin-top: 13px;
+}
+
+.delivery-action-button {
+    min-height: 66px;
+    border-radius: 21px;
+    font-size: 17px;
+}
+
+.waze-button {
+    background:
+        linear-gradient(135deg, #17b6ff 0%, #168bff 42%, #2456ff 100%);
+    box-shadow:
+        0 15px 36px rgba(21,103,255,.29),
+        inset 0 1px 0 rgba(255,255,255,.18);
+}
+
+.delivery-status-actions {
+    margin-top: 12px;
+}
+
+.yb-delivery-slider,
+.delivered-button {
+    height: 74px;
+    border-radius: 25px;
+    border-color: rgba(64,210,255,.82);
+    background:
+        radial-gradient(circle at 92% 50%, rgba(73,216,255,.24), transparent 21%),
+        linear-gradient(135deg, rgba(8,76,176,.94), rgba(31,82,228,.90));
+    box-shadow:
+        0 0 0 1px rgba(48,175,255,.08),
+        0 0 34px rgba(24,127,255,.27),
+        inset 0 0 28px rgba(59,198,255,.10);
+}
+
+.yb-slide-label {
+    font-size: 18px;
+    letter-spacing: -.25px;
+}
+
+.yb-slide-thumb {
+    width: 59px;
+    height: 59px;
+    top: 6px;
+    right: 6px;
+    border-radius: 20px;
+    background: linear-gradient(145deg, #7ce9ff, #1594ff);
+    box-shadow:
+        0 0 30px rgba(52,196,255,.74),
+        inset 0 1px 0 rgba(255,255,255,.78);
+}
+
+.failed-button {
+    min-height: 54px;
+    border-radius: 19px;
+}
+
+.delivery-more-details {
+    margin-top: 11px;
+    border-radius: 18px;
+    overflow: hidden;
+    border: 1px solid rgba(101,166,245,.13);
+    background: rgba(255,255,255,.018);
+}
+
+.delivery-more-details summary {
+    list-style: none;
+    cursor: pointer;
+    min-height: 48px;
+    padding: 0 13px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    color: #9cb7d5;
+    font-size: 12px;
+    font-weight: 800;
+}
+
+.delivery-more-details summary::-webkit-details-marker {
+    display: none;
+}
+
+.details-chevron {
+    color: #64b9ff;
+    transition: transform .2s ease;
+}
+
+.delivery-more-details[open] .details-chevron {
+    transform: rotate(180deg);
+}
+
+.delivery-more-details .secondary-delivery-info {
+    margin: 0;
+    border: 0;
+    border-top: 1px solid rgba(111,171,246,.10);
+    border-radius: 0;
+}
+
+.delivery-more-details .edit-shipment-button {
+    width: calc(100% - 18px);
+    margin: 9px;
+}
+
+@media (max-width: 520px) {
+    .welcome-card {
+        min-height: 145px;
+        padding: 18px;
+    }
+
+    .welcome-route-line {
+        margin-top: 14px;
+    }
+
+    .summary-card {
+        min-height: 80px;
+    }
+
+    .delivery-hero-card {
+        min-height: 235px;
+        grid-template-columns: .72fr 1.28fr;
+        padding: 13px;
+    }
+
+    .hero-visual {
+        min-height: 190px;
+    }
+
+    .building-one {
+        width: 68px;
+        height: 74px;
+        right: 4px;
+    }
+
+    .building-two {
+        width: 48px;
+        height: 95px;
+        left: 0;
+    }
+
+    .map-pin {
+        width: 32px;
+        height: 32px;
+        right: 27px;
+        bottom: 113px;
+    }
+
+    .delivery-action-button {
+        min-height: 60px;
+        font-size: 15px;
+    }
+
+    .yb-delivery-slider,
+    .delivered-button {
+        height: 66px;
+        border-radius: 22px;
+    }
+
+    .yb-slide-thumb {
+        width: 51px;
+        height: 51px;
+        border-radius: 17px;
+    }
+
+    .yb-slide-label {
+        font-size: 16px;
+    }
+
+    .shipment-editor {
+        padding-inline: 13px;
+    }
+
+    .editor-heading h2 {
+        font-size: 29px;
+    }
+
+    .search-field-shell input {
+        min-height: 63px;
+    }
+}
