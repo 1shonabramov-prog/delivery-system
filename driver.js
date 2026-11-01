@@ -7409,97 +7409,51 @@ function getLocalTimeValue(
 
 function loadRouteSettings() {
 
-    const saved =
-        localStorage.getItem(
-            getRouteStorageKey()
-        );
+    if (
+        routeDate
+    ) {
+
+        routeDate.value =
+            getLocalDateValue();
+
+    }
 
 
     if (
-        !saved
+        routeStartTime
     ) {
 
-        if (
-            routeDate
-        ) {
+        routeStartTime.value =
+            "";
 
-            routeDate.value =
-                getLocalDateValue();
-
-        }
+    }
 
 
-        if (
-            routeStartTime
-            &&
-            !routeStartTime.value
-        ) {
+    if (
+        routeStartAddress
+    ) {
 
-            routeStartTime.value =
-                getLocalTimeValue();
+        routeStartAddress.value =
+            "";
 
-        }
+    }
 
 
-        return;
+    if (
+        routeEndAddress
+    ) {
+
+        routeEndAddress.value =
+            "";
 
     }
 
 
     try {
 
-        const settings =
-            JSON.parse(
-                saved
-            );
-
-
-        if (
-            routeDate
-        ) {
-
-            routeDate.value =
-                settings.date
-                ||
-                getLocalDateValue();
-
-        }
-
-
-        if (
-            routeStartTime
-        ) {
-
-            routeStartTime.value =
-                settings.startTime
-                ||
-                getLocalTimeValue();
-
-        }
-
-
-        if (
-            routeStartAddress
-        ) {
-
-            routeStartAddress.value =
-                settings.startAddress
-                ||
-                "";
-
-        }
-
-
-        if (
-            routeEndAddress
-        ) {
-
-            routeEndAddress.value =
-                settings.endAddress
-                ||
-                "";
-
-        }
+        localStorage.removeItem(
+            getRouteStorageKey()
+        );
 
     }
 
@@ -7507,8 +7461,8 @@ function loadRouteSettings() {
         error
     ) {
 
-        console.error(
-            "Failed loading route settings:",
+        console.warn(
+            "Could not clear old route settings:",
             error
         );
 
@@ -7556,39 +7510,24 @@ function getCurrentRouteSettings() {
 
 function saveCurrentRouteSettings() {
 
-    if (
-        !currentProfile
-    ) {
+    try {
 
-        return;
+        localStorage.removeItem(
+            getRouteStorageKey()
+        );
 
     }
 
+    catch (
+        error
+    ) {
 
-    const settings = {
+        console.warn(
+            "Could not clear old route settings:",
+            error
+        );
 
-        date:
-            routeDate
-                ? routeDate.value
-                : "",
-
-        startTime:
-            routeStartTime
-                ? routeStartTime.value
-                : ""
-
-    };
-
-
-    localStorage.setItem(
-
-        getRouteStorageKey(),
-
-        JSON.stringify(
-            settings
-        )
-
-    );
+    }
 
 }
 
