@@ -1,14 +1,31 @@
 <!DOCTYPE html>
 <html lang="he" dir="rtl">
+
 <head>
+
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-    <meta name="theme-color" content="#06101d">
 
-    <title>YB GO - שליח</title>
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1, viewport-fit=cover"
+    >
 
-    <link rel="stylesheet" href="driver.css?v=20261101-v8">
+    <meta
+        name="theme-color"
+        content="#06101d"
+    >
+
+    <title>
+        YB GO - שליח
+    </title>
+
+    <link
+        rel="stylesheet"
+        href="driver.css?v=20261101-v9"
+    >
+
 </head>
+
 
 <body>
 
@@ -22,15 +39,19 @@
 
     <header class="topbar glass">
 
+
         <div class="brand-lockup">
+
 
             <div
                 class="brand-cube"
                 aria-hidden="true"
             >
+
                 <span></span>
                 <span></span>
                 <span></span>
+
             </div>
 
 
@@ -46,6 +67,7 @@
 
             </div>
 
+
         </div>
 
 
@@ -56,6 +78,7 @@
         >
             יציאה
         </button>
+
 
     </header>
 
@@ -68,6 +91,7 @@
     <main class="driver-app">
 
 
+
         <!-- ================================================= -->
         <!-- WELCOME -->
         <!-- ================================================= -->
@@ -76,6 +100,7 @@
 
 
             <div class="welcome-copy">
+
 
                 <div class="welcome-kicker">
 
@@ -121,7 +146,9 @@
 
                 </div>
 
+
             </div>
+
 
 
             <div class="welcome-status-stack">
@@ -283,6 +310,7 @@
 
             <div class="section-heading">
 
+
                 <div>
 
                     <p class="eyebrow">
@@ -298,6 +326,7 @@
                     </p>
 
                 </div>
+
 
             </div>
 
@@ -638,10 +667,6 @@
     <div class="shipment-editor">
 
 
-        <!-- ================================================= -->
-        <!-- TOP -->
-        <!-- ================================================= -->
-
         <div class="editor-topbar">
 
 
@@ -666,10 +691,6 @@
         </div>
 
 
-
-        <!-- ================================================= -->
-        <!-- HEADING -->
-        <!-- ================================================= -->
 
         <div class="editor-heading">
 
@@ -700,17 +721,11 @@
 
 
 
-        <!-- ================================================= -->
-        <!-- FORM -->
-        <!-- ================================================= -->
-
         <form
             id="driverAddShipmentForm"
             class="smart-form"
         >
 
-
-            <!-- HIDDEN -->
 
             <input
                 id="editingDriverShipmentId"
@@ -744,9 +759,7 @@
 
 
 
-            <!-- ================================================= -->
-            <!-- ADDRESS SEARCH -->
-            <!-- ================================================= -->
+            <!-- ADDRESS -->
 
             <section class="address-search-card">
 
@@ -788,9 +801,7 @@
 
 
 
-            <!-- ================================================= -->
             <!-- MANUAL ADDRESS -->
-            <!-- ================================================= -->
 
             <details class="manual-address-details">
 
@@ -856,9 +867,7 @@
 
 
 
-            <!-- ================================================= -->
             <!-- PHONE -->
-            <!-- ================================================= -->
 
             <div class="form-group">
 
@@ -891,9 +900,7 @@
 
 
 
-            <!-- ================================================= -->
             <!-- FLOOR / APARTMENT / ENTRANCE -->
-            <!-- ================================================= -->
 
             <div class="compact-grid three">
 
@@ -949,9 +956,7 @@
 
 
 
-            <!-- ================================================= -->
             <!-- BUILDING CODE -->
-            <!-- ================================================= -->
 
             <div class="form-group">
 
@@ -984,9 +989,7 @@
 
 
 
-            <!-- ================================================= -->
             <!-- QUICK NOTE -->
-            <!-- ================================================= -->
 
             <div class="form-group quick-note-group">
 
@@ -1007,9 +1010,7 @@
 
 
 
-            <!-- ================================================= -->
             <!-- ADVANCED -->
-            <!-- ================================================= -->
 
             <details class="advanced-details">
 
@@ -1085,9 +1086,7 @@
 
 
 
-            <!-- ================================================= -->
             <!-- FUTURE TOOLS -->
-            <!-- ================================================= -->
 
             <div class="quick-tools">
 
@@ -1134,9 +1133,7 @@
 
 
 
-            <!-- ================================================= -->
             <!-- ACTIONS -->
-            <!-- ================================================= -->
 
             <div class="editor-actions">
 
@@ -1201,10 +1198,6 @@
 
 
 
-        <!-- ================================================= -->
-        <!-- TOP -->
-        <!-- ================================================= -->
-
         <div class="delivery-topbar">
 
 
@@ -1229,10 +1222,6 @@
         </div>
 
 
-
-        <!-- ================================================= -->
-        <!-- ACTIVE ROUTE -->
-        <!-- ================================================= -->
 
         <div class="active-route-head">
 
@@ -1276,10 +1265,6 @@
 
 
 
-        <!-- ================================================= -->
-        <!-- HERO -->
-        <!-- ================================================= -->
-
         <article class="delivery-hero-card">
 
 
@@ -1306,9 +1291,7 @@
 
                 <div class="building-shape building-one"></div>
 
-
                 <div class="building-shape building-two"></div>
-
 
                 <div class="street-line"></div>
 
@@ -1403,9 +1386,7 @@
 
 
 
-        <!-- ================================================= -->
         <!-- QUICK ACTIONS -->
-        <!-- ================================================= -->
 
         <div class="delivery-actions-grid">
 
@@ -1444,9 +1425,7 @@
 
 
 
-        <!-- ================================================= -->
         <!-- DELIVERY STATUS -->
-        <!-- ================================================= -->
 
         <div class="delivery-status-actions">
 
@@ -1473,9 +1452,7 @@
 
 
 
-        <!-- ================================================= -->
         <!-- MORE DETAILS -->
-        <!-- ================================================= -->
 
         <details class="delivery-more-details">
 
@@ -1592,17 +1569,157 @@
 
 
 <!-- ===================================================== -->
+<!-- FAILED DELIVERY REASON -->
+<!-- ===================================================== -->
+
+<div
+    id="failedReasonOverlay"
+    class="bottom-sheet-overlay hidden"
+>
+
+
+    <section class="failed-reason-sheet">
+
+
+        <div class="bottom-sheet-handle"></div>
+
+
+
+        <div class="failed-reason-header">
+
+
+            <div>
+
+
+                <p class="eyebrow">
+                    Delivery status
+                </p>
+
+
+                <h2>
+                    למה לא נמסר?
+                </h2>
+
+
+                <p>
+                    בחירת סיבה היא אופציונלית
+                </p>
+
+
+            </div>
+
+
+
+            <button
+                id="closeFailedReasonButton"
+                class="icon-button modal-close-button"
+                type="button"
+            >
+                ✕
+            </button>
+
+
+        </div>
+
+
+
+        <div class="failed-reasons-grid">
+
+
+            <button
+                type="button"
+                class="failed-reason-option"
+                data-failed-reason="אין מענה"
+            >
+                אין מענה
+            </button>
+
+
+
+            <button
+                type="button"
+                class="failed-reason-option"
+                data-failed-reason="לקוח לא בבית"
+            >
+                לקוח לא בבית
+            </button>
+
+
+
+            <button
+                type="button"
+                class="failed-reason-option"
+                data-failed-reason="כתובת שגויה"
+            >
+                כתובת שגויה
+            </button>
+
+
+
+            <button
+                type="button"
+                class="failed-reason-option"
+                data-failed-reason="לקוח סירב לקבל"
+            >
+                לקוח סירב לקבל
+            </button>
+
+
+
+            <button
+                type="button"
+                class="failed-reason-option"
+                data-failed-reason="לא ניתן להגיע לכתובת"
+            >
+                לא ניתן להגיע לכתובת
+            </button>
+
+
+
+            <button
+                type="button"
+                class="failed-reason-option"
+                data-failed-reason="אחר"
+            >
+                אחר
+            </button>
+
+
+        </div>
+
+
+
+        <button
+            id="failedWithoutReasonButton"
+            class="failed-without-reason"
+            type="button"
+        >
+            סמן כלא נמסר בלי סיבה
+        </button>
+
+
+    </section>
+
+
+</div>
+
+
+
+<!-- ===================================================== -->
 <!-- SCRIPTS -->
 <!-- ===================================================== -->
 
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script
+    src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"
+></script>
 
 <script src="supabase-config.js"></script>
 
 <script src="google-maps-config.js?v=20261101-v3"></script>
 
-<script src="driver.js?v=20261101-v8"></script>
+<script src="driver.js?v=20261101-v9"></script>
 
 
 </body>
+
 </html>

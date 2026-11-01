@@ -2212,3 +2212,114 @@ gmp-place-autocomplete#routeEndAddress {
 .save-another-button.hidden {
     display: none;
 }
+/* =========================================================
+   FAILED REASON SHEET
+   ========================================================= */
+
+.failed-reason-sheet {
+    width: min(100%, 580px);
+    margin: 0 auto;
+
+    padding:
+        10px 16px
+        max(22px, env(safe-area-inset-bottom));
+
+    border-radius: 30px 30px 0 0;
+
+    background:
+        radial-gradient(
+            circle at 85% 0%,
+            rgba(255, 91, 105, .10),
+            transparent 28%
+        ),
+        linear-gradient(
+            180deg,
+            #091522,
+            #050d16
+        );
+
+    border: 1px solid rgba(255, 91, 105, .24);
+    border-bottom: 0;
+
+    box-shadow:
+        0 -30px 80px rgba(0,0,0,.50);
+}
+
+.failed-reason-header {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 16px;
+
+    margin-top: 8px;
+    margin-bottom: 16px;
+}
+
+.failed-reason-header h2 {
+    margin: 0;
+
+    color: #ffffff;
+
+    font-size: 26px;
+    font-weight: 900;
+}
+
+.failed-reason-header p:not(.eyebrow) {
+    margin: 5px 0 0;
+
+    color: #8fa4bd;
+
+    font-size: 12px;
+}
+
+.failed-reasons-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+
+    gap: 10px;
+}
+
+.failed-reason-option {
+    min-height: 58px;
+
+    padding: 10px 12px;
+
+    border-radius: 18px;
+
+    border: 1px solid rgba(255, 91, 105, .24);
+
+    background:
+        linear-gradient(
+            145deg,
+            rgba(68, 18, 28, .22),
+            rgba(20, 10, 16, .64)
+        );
+
+    color: #ff9ca5;
+
+    font-weight: 800;
+
+    cursor: pointer;
+}
+
+.failed-reason-option:active {
+    background: rgba(255, 91, 105, .16);
+}
+
+.failed-without-reason {
+    width: 100%;
+
+    min-height: 52px;
+
+    margin-top: 12px;
+
+    border-radius: 18px;
+
+    border: 1px solid rgba(255,255,255,.10);
+
+    background: rgba(255,255,255,.04);
+
+    color: #a8b9cd;
+
+    font-weight: 800;
+}

@@ -405,6 +405,26 @@ const markFailedButton =
         "markFailedButton"
     );
 
+const failedReasonOverlay =
+    document.getElementById(
+        "failedReasonOverlay"
+    );
+
+const closeFailedReasonButton =
+    document.getElementById(
+        "closeFailedReasonButton"
+    );
+
+const failedReasonButtons =
+    document.querySelectorAll(
+        "[data-failed-reason]"
+    );
+
+const failedWithoutReasonButton =
+    document.getElementById(
+        "failedWithoutReasonButton"
+    );
+
 
 const driverReportsButton =
     document.getElementById(
@@ -6620,6 +6640,184 @@ setupDeliverySlider();
 // MARK FAILED
 // =========================================================
 
+function openFailedReasonSheet() {
+
+    const shipment =
+        getSelectedShipment();
+
+
+    if (
+        !shipment
+        ||
+        !failedReasonOverlay
+    ) {
+
+        return;
+
+    }
+
+
+    failedReasonOverlay.classList
+        .remove(
+            "hidden"
+        );
+
+}
+
+
+function closeFailedReasonSheet() {
+
+    if (
+        !failedReasonOverlay
+    ) {
+
+        return;
+
+    }
+
+
+    failedReasonOverlay.classList
+        .add(
+            "hidden"
+        );
+
+}
+
+
+async function markSelectedShipmentFailed(
+    reason = ""
+) {
+
+    const shipment =
+        getSelectedShipment();
+
+
+    if (
+        !shipment
+    ) {
+
+        return;
+
+    }
+
+
+    const failedAt =
+        new Date()
+            .toISOString();
+
+
+    const cleanReason =
+        String(
+            reason || ""
+        ).trim();
+
+
+    const {
+        error
+    } =
+        await supabaseClient
+            .from(
+                "shipments"
+            )
+            .update(
+                {
+                    status:
+                        "לא נמסר",
+
+                    failed_at:
+                        failedAt,
+
+                    failed_reason:
+                        cleanReason
+                            ? cleanReason
+                            : null,
+
+                    delivered_at:
+                        null,
+
+                    delivery_amount:
+                        0
+                }
+            )
+            .eq(
+                "id",
+                shipment.id
+            )
+            .eq(
+                "driver_id",
+                currentProfile.id
+            );
+
+
+    if (
+        error
+    ) {
+
+        console.error(
+            "Failed marking shipment failed:",
+            error
+        );
+
+
+        alert(
+            "לא ניתן היה לעדכן את המשלוח."
+        );
+
+
+        return;
+
+    }
+
+
+    shipment.status =
+        "לא נמסר";
+
+    shipment.failed_at =
+        failedAt;
+
+    shipment.failed_reason =
+        cleanReason
+            ? cleanReason
+            : null;
+
+    shipment.delivered_at =
+        null;
+
+    shipment.delivery_amount =
+        0;
+
+
+    await completeShipmentInActiveRoute(
+        shipment.id,
+        "FAILED",
+        failedAt
+    );
+
+
+    closeFailedReasonSheet();
+
+
+    closeShipmentDetails();
+
+
+    renderDriverShipments();
+
+
+    await loadActiveRouteFromDatabase();
+
+
+    showDriverToast(
+        cleanReason
+            ? `לא נמסר • ${cleanReason}`
+            : "המשלוח סומן כלא נמסר"
+    );
+
+
+    await openNextRouteStopIfAvailable();
+
+}
+
+
 if (
     markFailedButton
 ) {
@@ -6628,139 +6826,105 @@ if (
 
         "click",
 
-        async function () {
+        openFailedReasonSheet
 
-            const shipment =
-                getSelectedShipment();
+    );
 
-
-            if (
-                !shipment
-            ) {
-
-                return;
-
-            }
+}
 
 
-            const reason =
-                prompt(
-                    "למה המשלוח לא נמסר?"
-                );
+if (
+    closeFailedReasonButton
+) {
+
+    closeFailedReasonButton.addEventListener(
+
+        "click",
+
+        closeFailedReasonSheet
+
+    );
+
+}
 
 
-            if (
-                reason ===
-                null
-            ) {
+if (
+    failedReasonOverlay
+) {
 
-                return;
+    failedReasonOverlay.addEventListener(
 
-            }
+        "click",
 
-
-            const failedAt =
-                new Date()
-                    .toISOString();
-
-
-            const {
-                error
-            } =
-                await supabaseClient
-                    .from(
-                        "shipments"
-                    )
-                    .update(
-                        {
-                            status:
-                                "לא נמסר",
-
-                            failed_at:
-                                failedAt,
-
-                            failed_reason:
-                                reason.trim(),
-
-                            delivered_at:
-                                null,
-
-                            delivery_amount:
-                                0
-                        }
-                    )
-                    .eq(
-                        "id",
-                        shipment.id
-                    )
-                    .eq(
-                        "driver_id",
-                        currentProfile.id
-                    );
-
+        function (
+            event
+        ) {
 
             if (
-                error
+                event.target ===
+                failedReasonOverlay
             ) {
 
-                console.error(
-                    "Failed marking shipment failed:",
-                    error
-                );
-
-                alert(
-                    "לא ניתן היה לעדכן את המשלוח."
-                );
-
-                return;
+                closeFailedReasonSheet();
 
             }
-
-
-            shipment.status =
-                "לא נמסר";
-
-            shipment.failed_at =
-                failedAt;
-
-            shipment.failed_reason =
-                reason.trim();
-
-            shipment.delivered_at =
-                null;
-
-            shipment.delivery_amount =
-                0;
-
-
-            await completeShipmentInActiveRoute(
-                shipment.id,
-                "FAILED",
-                failedAt
-            );
-
-
-            closeShipmentDetails();
-
-
-            renderDriverShipments();
-
-
-            await loadActiveRouteFromDatabase();
-
-
-            showDriverToast(
-                "המשלוח סומן כלא נמסר"
-            );
-
-
-            await openNextRouteStopIfAvailable();
 
         }
 
     );
 
 }
+
+
+failedReasonButtons.forEach(
+
+    button => {
+
+        button.addEventListener(
+
+            "click",
+
+            async function () {
+
+                const reason =
+                    button.dataset.failedReason
+                    ||
+                    "";
+
+
+                await markSelectedShipmentFailed(
+                    reason
+                );
+
+            }
+
+        );
+
+    }
+
+);
+
+
+if (
+    failedWithoutReasonButton
+) {
+
+    failedWithoutReasonButton.addEventListener(
+
+        "click",
+
+        async function () {
+
+            await markSelectedShipmentFailed(
+                ""
+            );
+
+        }
+
+    );
+
+}
+
 
 // =========================================================
 // ROUTE RESULT STATE
