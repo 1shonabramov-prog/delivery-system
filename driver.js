@@ -395,6 +395,376 @@ const driverReportsButton =
 
 
 // =========================================================
+// YB GO V2 - SAFE WORK MODE VISUAL LAYER
+// =========================================================
+
+function injectDriverV2Styles() {
+
+    if (
+        document.getElementById(
+            "ybDriverV2Styles"
+        )
+    ) {
+        return;
+    }
+
+    const style =
+        document.createElement(
+            "style"
+        );
+
+    style.id =
+        "ybDriverV2Styles";
+
+    style.textContent = `
+        :root {
+            color-scheme: dark;
+            --yb-bg: #070b12;
+            --yb-panel: #0f1623;
+            --yb-panel-2: #151e2d;
+            --yb-border: rgba(255,255,255,.09);
+            --yb-text: #f7f9fc;
+            --yb-muted: #93a1b5;
+            --yb-accent: #4d8dff;
+            --yb-accent-2: #2f6df6;
+            --yb-success: #27c86f;
+            --yb-danger: #ff5f6d;
+        }
+
+        html,
+        body {
+            background: var(--yb-bg) !important;
+            color: var(--yb-text) !important;
+        }
+
+        body {
+            min-height: 100%;
+        }
+
+        .driver-app {
+            background:
+                radial-gradient(
+                    circle at top right,
+                    rgba(77,141,255,.10),
+                    transparent 38%
+                ),
+                var(--yb-bg) !important;
+            color: var(--yb-text) !important;
+        }
+
+        .driver-header,
+        .summary-card,
+        .route-planner,
+        .shipments-section,
+        .reports-section,
+        .delivery-info-card {
+            background: var(--yb-panel) !important;
+            border-color: var(--yb-border) !important;
+            color: var(--yb-text) !important;
+        }
+
+        .summary-card {
+            border: 1px solid var(--yb-border) !important;
+            box-shadow: none !important;
+        }
+
+        .summary-number,
+        .driver-header h1,
+        .section-heading h2,
+        .delivery-sheet-header h2 {
+            color: var(--yb-text) !important;
+        }
+
+        .summary-label,
+        .header-small,
+        .driver-date,
+        .section-heading p,
+        .info-label,
+        #shipmentListSubtitle {
+            color: var(--yb-muted) !important;
+        }
+
+        .primary-action-button,
+        .route-save-button,
+        .save-button {
+            background:
+                linear-gradient(
+                    135deg,
+                    var(--yb-accent),
+                    var(--yb-accent-2)
+                ) !important;
+            color: white !important;
+            border: 0 !important;
+            box-shadow: none !important;
+        }
+
+        .secondary-action-button,
+        .reports-button,
+        .cancel-button,
+        .delivery-action-button {
+            background: var(--yb-panel-2) !important;
+            color: var(--yb-text) !important;
+            border: 1px solid var(--yb-border) !important;
+            box-shadow: none !important;
+        }
+
+        .bottom-sheet-overlay {
+            background: rgba(0,0,0,.60) !important;
+            backdrop-filter: blur(8px);
+        }
+
+        .bottom-sheet {
+            background: #0b111b !important;
+            color: var(--yb-text) !important;
+            border: 1px solid var(--yb-border) !important;
+            border-bottom: 0 !important;
+            box-shadow: 0 -24px 60px rgba(0,0,0,.35) !important;
+        }
+
+        .bottom-sheet-handle {
+            background: rgba(255,255,255,.22) !important;
+        }
+
+        .delivery-info-card {
+            border: 1px solid var(--yb-border) !important;
+        }
+
+        #deliveryAddressButton,
+        #deliveryPhone,
+        #deliveryEta {
+            color: #7eacff !important;
+        }
+
+        .delivery-actions-grid {
+            gap: 10px !important;
+        }
+
+        #openWazeDirectButton {
+            background:
+                linear-gradient(
+                    135deg,
+                    #4d8dff,
+                    #2f6df6
+                ) !important;
+            border: 0 !important;
+            font-weight: 800 !important;
+            min-height: 58px;
+        }
+
+        #callCustomerButton {
+            min-height: 58px;
+            font-weight: 800 !important;
+        }
+
+        .delivery-status-actions {
+            display: grid !important;
+            grid-template-columns: 1fr !important;
+            gap: 12px !important;
+            margin-top: 16px !important;
+        }
+
+        .yb-delivery-slider {
+            position: relative !important;
+            width: 100% !important;
+            height: 66px !important;
+            padding: 0 !important;
+            overflow: hidden !important;
+            border: 1px solid rgba(39,200,111,.38) !important;
+            border-radius: 20px !important;
+            background:
+                linear-gradient(
+                    180deg,
+                    rgba(39,200,111,.14),
+                    rgba(39,200,111,.07)
+                ) !important;
+            color: var(--yb-text) !important;
+            touch-action: pan-y !important;
+            user-select: none !important;
+            -webkit-user-select: none !important;
+            cursor: grab !important;
+            box-shadow: none !important;
+        }
+
+        .yb-delivery-slider:active {
+            cursor: grabbing !important;
+        }
+
+        .yb-slide-label {
+            position: absolute;
+            inset: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding-inline: 78px 22px;
+            font-size: 17px;
+            font-weight: 800;
+            letter-spacing: .1px;
+            pointer-events: none;
+        }
+
+        .yb-slide-thumb {
+            position: absolute;
+            top: 7px;
+            right: 7px;
+            width: 52px;
+            height: 52px;
+            display: grid;
+            place-items: center;
+            border-radius: 16px;
+            background: var(--yb-success);
+            color: #04130a;
+            font-size: 25px;
+            font-weight: 900;
+            transform: translateX(0);
+            transition: transform .18s ease;
+            pointer-events: none;
+            box-shadow: 0 8px 18px rgba(39,200,111,.20);
+        }
+
+        .yb-delivery-slider.yb-slide-dragging .yb-slide-thumb {
+            transition: none;
+        }
+
+        .yb-delivery-slider.yb-slide-complete {
+            background: rgba(39,200,111,.22) !important;
+        }
+
+        .failed-button {
+            background: transparent !important;
+            color: #ff8a94 !important;
+            border: 1px solid rgba(255,95,109,.28) !important;
+            min-height: 52px !important;
+            border-radius: 16px !important;
+            font-weight: 800 !important;
+            box-shadow: none !important;
+        }
+
+        .yb-driver-toast {
+            position: fixed;
+            left: 16px;
+            right: 16px;
+            bottom: 24px;
+            z-index: 99999;
+            max-width: 520px;
+            margin-inline: auto;
+            padding: 14px 18px;
+            border-radius: 16px;
+            background: #152235;
+            color: #fff;
+            border: 1px solid rgba(255,255,255,.12);
+            box-shadow: 0 16px 40px rgba(0,0,0,.35);
+            font-weight: 800;
+            text-align: center;
+            opacity: 0;
+            transform: translateY(14px);
+            transition: .22s ease;
+            pointer-events: none;
+        }
+
+        .yb-driver-toast.show {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        @media (max-width: 640px) {
+            .driver-app {
+                padding-bottom: 28px !important;
+            }
+
+            .bottom-sheet {
+                border-radius: 28px 28px 0 0 !important;
+            }
+
+            .delivery-info-row {
+                gap: 8px !important;
+            }
+        }
+    `;
+
+    document.head.appendChild(
+        style
+    );
+
+}
+
+
+injectDriverV2Styles();
+
+
+let ybDriverToastTimer =
+    null;
+
+
+function showDriverToast(
+    message
+) {
+
+    let toast =
+        document.getElementById(
+            "ybDriverToast"
+        );
+
+
+    if (
+        !toast
+    ) {
+
+        toast =
+            document.createElement(
+                "div"
+            );
+
+        toast.id =
+            "ybDriverToast";
+
+        toast.className =
+            "yb-driver-toast";
+
+        document.body.appendChild(
+            toast
+        );
+
+    }
+
+
+    toast.textContent =
+        message;
+
+
+    toast.classList
+        .add(
+            "show"
+        );
+
+
+    if (
+        ybDriverToastTimer
+    ) {
+
+        clearTimeout(
+            ybDriverToastTimer
+        );
+
+    }
+
+
+    ybDriverToastTimer =
+        setTimeout(
+            () => {
+
+                toast.classList
+                    .remove(
+                        "show"
+                    );
+
+            },
+            2200
+        );
+
+}
+
+
+// =========================================================
 // BASIC HELPERS
 // =========================================================
 
@@ -3825,6 +4195,9 @@ function openShipmentDetails(
 
     }
 
+
+    resetDeliverySlider();
+
 }
 
 
@@ -3945,12 +4318,53 @@ function openShipmentInWaze(
     }
 
 
-    const url =
-        "https://waze.com/ul?q=" +
-        encodeURIComponent(
-            address
-        ) +
-        "&navigate=yes";
+    const latitude =
+        Number(
+            shipment.latitude
+        );
+
+    const longitude =
+        Number(
+            shipment.longitude
+        );
+
+
+    let url =
+        "";
+
+
+    if (
+        Number.isFinite(
+            latitude
+        ) &&
+        Number.isFinite(
+            longitude
+        ) &&
+        latitude !==
+            0 &&
+        longitude !==
+            0
+    ) {
+
+        url =
+            "https://waze.com/ul?ll=" +
+            encodeURIComponent(
+                `${latitude},${longitude}`
+            ) +
+            "&navigate=yes";
+
+    }
+
+    else {
+
+        url =
+            "https://waze.com/ul?q=" +
+            encodeURIComponent(
+                address
+            ) +
+            "&navigate=yes";
+
+    }
 
 
     window.open(
@@ -4341,141 +4755,526 @@ async function completeShipmentInActiveRoute(
 
 
 // =========================================================
-// MARK DELIVERED
+// MARK DELIVERED - SLIDE TO CONFIRM
 // =========================================================
 
-if (
-    markDeliveredButton
-) {
+let deliverySlideBusy =
+    false;
 
-    markDeliveredButton.addEventListener(
+let deliverySlidePointerId =
+    null;
 
-        "click",
+let deliverySlideStartX =
+    0;
 
-        async function () {
-
-            const shipment =
-                getSelectedShipment();
-
-
-            if (
-                !shipment
-            ) {
-
-                return;
-
-            }
+let deliverySlideProgress =
+    0;
 
 
-            const rate =
-                Number(
-                    currentProfile.driver_rate ||
-                    shipment.delivery_rate ||
-                    0
-                );
+function prepareDeliverySliderUI() {
+
+    if (
+        !markDeliveredButton
+    ) {
+
+        return;
+
+    }
 
 
-            const deliveredAt =
-                new Date()
-                    .toISOString();
+    markDeliveredButton.classList
+        .add(
+            "yb-delivery-slider"
+        );
 
 
-            const {
-                error
-            } =
-                await supabaseClient
-                    .from(
-                        "shipments"
-                    )
-                    .update(
-                        {
-                            status:
-                                "נמסר",
+    markDeliveredButton.innerHTML =
+        `
+            <span class="yb-slide-label">
+                החלק לאישור מסירה
+            </span>
 
-                            delivered_at:
-                                deliveredAt,
-
-                            failed_at:
-                                null,
-
-                            failed_reason:
-                                null,
-
-                            delivery_rate:
-                                rate,
-
-                            delivery_amount:
-                                rate
-                        }
-                    )
-                    .eq(
-                        "id",
-                        shipment.id
-                    )
-                    .eq(
-                        "driver_id",
-                        currentProfile.id
-                    );
+            <span class="yb-slide-thumb">
+                ✓
+            </span>
+        `;
 
 
-            if (
-                error
-            ) {
-
-                console.error(
-                    "Failed marking shipment delivered:",
-                    error
-                );
-
-                alert(
-                    "לא ניתן היה לעדכן את המשלוח."
-                );
-
-                return;
-
-            }
-
-
-            shipment.status =
-                "נמסר";
-
-            shipment.delivered_at =
-                deliveredAt;
-
-            shipment.failed_at =
-                null;
-
-            shipment.failed_reason =
-                null;
-
-            shipment.delivery_rate =
-                rate;
-
-            shipment.delivery_amount =
-                rate;
-
-
-            await completeShipmentInActiveRoute(
-                shipment.id,
-                "DELIVERED",
-                deliveredAt
-            );
-
-
-            closeShipmentDetails();
-
-
-            renderDriverShipments();
-
-
-            await loadActiveRouteFromDatabase();
-
-        }
-
+    markDeliveredButton.setAttribute(
+        "aria-label",
+        "החלק שמאלה כדי לאשר שהמשלוח נמסר"
     );
 
 }
 
+
+function resetDeliverySlider() {
+
+    if (
+        !markDeliveredButton
+    ) {
+
+        return;
+
+    }
+
+
+    const thumb =
+        markDeliveredButton.querySelector(
+            ".yb-slide-thumb"
+        );
+
+
+    markDeliveredButton.classList
+        .remove(
+            "yb-slide-dragging",
+            "yb-slide-complete"
+        );
+
+
+    if (
+        thumb
+    ) {
+
+        thumb.style.transform =
+            "translateX(0px)";
+
+    }
+
+
+    deliverySlidePointerId =
+        null;
+
+    deliverySlideStartX =
+        0;
+
+    deliverySlideProgress =
+        0;
+
+}
+
+
+async function openNextRouteStopIfAvailable() {
+
+    if (
+        !optimizedRouteResult ||
+        !Array.isArray(
+            optimizedRouteResult.stops
+        ) ||
+        optimizedRouteResult.stops.length ===
+            0
+    ) {
+
+        return;
+
+    }
+
+
+    const nextStop =
+        optimizedRouteResult.stops[0];
+
+
+    if (
+        !nextStop ||
+        !nextStop.shipment_id
+    ) {
+
+        return;
+
+    }
+
+
+    await new Promise(
+        resolve =>
+            setTimeout(
+                resolve,
+                180
+            )
+    );
+
+
+    openShipmentDetails(
+        nextStop.shipment_id
+    );
+
+}
+
+
+async function markSelectedShipmentDelivered() {
+
+    if (
+        deliverySlideBusy
+    ) {
+
+        return;
+
+    }
+
+
+    const shipment =
+        getSelectedShipment();
+
+
+    if (
+        !shipment
+    ) {
+
+        resetDeliverySlider();
+
+        return;
+
+    }
+
+
+    deliverySlideBusy =
+        true;
+
+
+    try {
+
+        const rate =
+            Number(
+                currentProfile.driver_rate ||
+                shipment.delivery_rate ||
+                0
+            );
+
+
+        const deliveredAt =
+            new Date()
+                .toISOString();
+
+
+        const {
+            error
+        } =
+            await supabaseClient
+                .from(
+                    "shipments"
+                )
+                .update(
+                    {
+                        status:
+                            "נמסר",
+
+                        delivered_at:
+                            deliveredAt,
+
+                        failed_at:
+                            null,
+
+                        failed_reason:
+                            null,
+
+                        delivery_rate:
+                            rate,
+
+                        delivery_amount:
+                            rate
+                    }
+                )
+                .eq(
+                    "id",
+                    shipment.id
+                )
+                .eq(
+                    "driver_id",
+                    currentProfile.id
+                );
+
+
+        if (
+            error
+        ) {
+
+            console.error(
+                "Failed marking shipment delivered:",
+                error
+            );
+
+            alert(
+                "לא ניתן היה לעדכן את המשלוח."
+            );
+
+            resetDeliverySlider();
+
+            return;
+
+        }
+
+
+        shipment.status =
+            "נמסר";
+
+        shipment.delivered_at =
+            deliveredAt;
+
+        shipment.failed_at =
+            null;
+
+        shipment.failed_reason =
+            null;
+
+        shipment.delivery_rate =
+            rate;
+
+        shipment.delivery_amount =
+            rate;
+
+
+        await completeShipmentInActiveRoute(
+            shipment.id,
+            "DELIVERED",
+            deliveredAt
+        );
+
+
+        closeShipmentDetails();
+
+
+        renderDriverShipments();
+
+
+        await loadActiveRouteFromDatabase();
+
+
+        showDriverToast(
+            "✓ המשלוח סומן כנמסר"
+        );
+
+
+        await openNextRouteStopIfAvailable();
+
+    }
+
+    finally {
+
+        deliverySlideBusy =
+            false;
+
+        resetDeliverySlider();
+
+    }
+
+}
+
+
+function setupDeliverySlider() {
+
+    if (
+        !markDeliveredButton
+    ) {
+
+        return;
+
+    }
+
+
+    prepareDeliverySliderUI();
+
+
+    markDeliveredButton.addEventListener(
+        "click",
+        function (
+            event
+        ) {
+
+            event.preventDefault();
+
+        }
+    );
+
+
+    markDeliveredButton.addEventListener(
+        "pointerdown",
+        function (
+            event
+        ) {
+
+            if (
+                deliverySlideBusy
+            ) {
+
+                return;
+
+            }
+
+
+            deliverySlidePointerId =
+                event.pointerId;
+
+            deliverySlideStartX =
+                event.clientX;
+
+            deliverySlideProgress =
+                0;
+
+
+            markDeliveredButton.classList
+                .add(
+                    "yb-slide-dragging"
+                );
+
+
+            try {
+
+                markDeliveredButton.setPointerCapture(
+                    event.pointerId
+                );
+
+            }
+
+            catch (
+                error
+            ) {
+
+                // Not all browsers require pointer capture.
+
+            }
+
+        }
+    );
+
+
+    markDeliveredButton.addEventListener(
+        "pointermove",
+        function (
+            event
+        ) {
+
+            if (
+                deliverySlidePointerId !==
+                    event.pointerId ||
+                deliverySlideBusy
+            ) {
+
+                return;
+
+            }
+
+
+            const thumb =
+                markDeliveredButton.querySelector(
+                    ".yb-slide-thumb"
+                );
+
+
+            if (
+                !thumb
+            ) {
+
+                return;
+
+            }
+
+
+            const maxDistance =
+                Math.max(
+                    1,
+                    markDeliveredButton.clientWidth -
+                    74
+                );
+
+
+            const movedLeft =
+                Math.max(
+                    0,
+                    deliverySlideStartX -
+                    event.clientX
+                );
+
+
+            const distance =
+                Math.min(
+                    maxDistance,
+                    movedLeft
+                );
+
+
+            deliverySlideProgress =
+                distance /
+                maxDistance;
+
+
+            thumb.style.transform =
+                `translateX(${-distance}px)`;
+
+        }
+    );
+
+
+    const finishSlide =
+        async function (
+            event
+        ) {
+
+            if (
+                deliverySlidePointerId !==
+                    event.pointerId
+            ) {
+
+                return;
+
+            }
+
+
+            const completed =
+                deliverySlideProgress >=
+                0.72;
+
+
+            deliverySlidePointerId =
+                null;
+
+
+            markDeliveredButton.classList
+                .remove(
+                    "yb-slide-dragging"
+                );
+
+
+            if (
+                completed
+            ) {
+
+                markDeliveredButton.classList
+                    .add(
+                        "yb-slide-complete"
+                    );
+
+
+                await markSelectedShipmentDelivered();
+
+            }
+
+            else {
+
+                resetDeliverySlider();
+
+            }
+
+        };
+
+
+    markDeliveredButton.addEventListener(
+        "pointerup",
+        finishSlide
+    );
+
+
+    markDeliveredButton.addEventListener(
+        "pointercancel",
+        function () {
+
+            resetDeliverySlider();
+
+        }
+    );
+
+}
+
+
+setupDeliverySlider();
 
 // =========================================================
 // MARK FAILED
@@ -4608,6 +5407,14 @@ if (
 
 
             await loadActiveRouteFromDatabase();
+
+
+            showDriverToast(
+                "המשלוח סומן כלא נמסר"
+            );
+
+
+            await openNextRouteStopIfAvailable();
 
         }
 
@@ -6588,3 +7395,4 @@ async function initializeDriverApp() {
 // =========================================================
 
 initializeDriverApp();
+                                
