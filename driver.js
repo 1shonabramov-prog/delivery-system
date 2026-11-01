@@ -221,12 +221,12 @@ const routeStartTime =
         "routeStartTime"
     );
 
-const routeStartAddress =
+let routeStartAddress =
     document.getElementById(
         "routeStartAddress"
     );
 
-const routeEndAddress =
+let routeEndAddress =
     document.getElementById(
         "routeEndAddress"
     );
@@ -2748,6 +2748,169 @@ async function initializeGooglePlacesAutocomplete() {
 
 
 
+
+// =========================================================
+// ROUTE START / END - GOOGLE PLACES
+// =========================================================
+
+async function createRoutePlaceAutocomplete(
+    inputElement,
+    placeholder
+) {
+
+    if (
+        !inputElement
+    ) {
+
+        return null;
+
+    }
+
+
+    await loadGoogleMapsPlacesLibrary();
+
+
+    const {
+        PlaceAutocompleteElement
+    } =
+        await google.maps.importLibrary(
+            "places"
+        );
+
+
+    const autocomplete =
+        new PlaceAutocompleteElement({
+            includedRegionCodes: [
+                "il"
+            ]
+        });
+
+
+    autocomplete.id =
+        inputElement.id;
+
+
+    autocomplete.placeholder =
+        placeholder;
+
+
+    autocomplete.style.width =
+        "100%";
+
+
+    autocomplete.style.display =
+        "block";
+
+
+    inputElement.replaceWith(
+        autocomplete
+    );
+
+
+    autocomplete.addEventListener(
+
+        "gmp-select",
+
+        async function (
+            event
+        ) {
+
+            try {
+
+                const prediction =
+                    event.placePrediction;
+
+
+                if (
+                    !prediction
+                ) {
+
+                    return;
+
+                }
+
+
+                const place =
+                    prediction.toPlace();
+
+
+                await place.fetchFields({
+                    fields: [
+                        "formattedAddress",
+                        "location"
+                    ]
+                });
+
+
+                autocomplete.value =
+                    place.formattedAddress
+                    ||
+                    prediction.text?.text
+                    ||
+                    "";
+
+            }
+
+            catch (
+                error
+            ) {
+
+                console.error(
+                    "Failed reading route place:",
+                    error
+                );
+
+            }
+
+        }
+
+    );
+
+
+    return autocomplete;
+
+}
+
+
+async function initializeRoutePlacesAutocomplete() {
+
+    try {
+
+        routeStartAddress =
+            await createRoutePlaceAutocomplete(
+                routeStartAddress,
+                "מאיפה יוצאים?"
+            );
+
+
+        routeEndAddress =
+            await createRoutePlaceAutocomplete(
+                routeEndAddress,
+                "איפה מסיימים?"
+            );
+
+
+        return true;
+
+    }
+
+    catch (
+        error
+    ) {
+
+        console.error(
+            "Route Google Places initialization failed:",
+            error
+        );
+
+
+        return false;
+
+    }
+
+}
+
+
 // =========================================================
 // RESET SHIPMENT FORM
 // =========================================================
@@ -3717,6 +3880,7 @@ if (
                 return;
 
             }
+
 
             // =================================================
             // CREATE NEW MANUAL SHIPMENT
@@ -5804,12 +5968,27 @@ function saveCurrentRouteSettings() {
     }
 
 
+    const settings = {
+
+        date:
+            routeDate
+                ? routeDate.value
+                : "",
+
+        startTime:
+            routeStartTime
+                ? routeStartTime.value
+                : ""
+
+    };
+
+
     localStorage.setItem(
 
         getRouteStorageKey(),
 
         JSON.stringify(
-            getCurrentRouteSettings()
+            settings
         )
 
     );
@@ -7422,6 +7601,9 @@ async function initializeDriverApp() {
 
 
     await initializeGooglePlacesAutocomplete();
+
+
+    await initializeRoutePlacesAutocomplete();
 
 
     await loadDriverShipments();
