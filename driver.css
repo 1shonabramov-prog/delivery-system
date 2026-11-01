@@ -2490,3 +2490,133 @@ gmp-place-autocomplete#routeEndAddress {
 .yb-delivery-slider.yb-slide-dragging .yb-slide-thumb {
     transition: none;
 }
+/* =========================================================
+   REMEMBER ROUTE SETTINGS
+   ========================================================= */
+
+.remember-route-settings {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+
+    margin: 14px 0;
+
+    padding: 14px 15px;
+
+    border: 1px solid rgba(71, 165, 255, .20);
+    border-radius: 18px;
+
+    background: rgba(16, 43, 72, .42);
+
+    cursor: pointer;
+}
+
+.remember-route-settings input {
+    position: absolute;
+    opacity: 0;
+    pointer-events: none;
+}
+
+.remember-route-check {
+    flex: 0 0 24px;
+
+    width: 24px;
+    height: 24px;
+
+    display: grid;
+    place-items: center;
+
+    border: 2px solid rgba(115, 180, 255, .45);
+    border-radius: 8px;
+
+    background: rgba(255,255,255,.03);
+
+    transition:
+        background .18s ease,
+        border-color .18s ease,
+        box-shadow .18s ease;
+}
+
+.remember-route-settings input:checked + .remember-route-check {
+    border-color: #38bfff;
+
+    background:
+        linear-gradient(
+            135deg,
+            #1ec9ff,
+            #286cff
+        );
+
+    box-shadow:
+        0 0 18px rgba(36, 141, 255, .30);
+}
+
+.remember-route-settings input:checked + .remember-route-check::after {
+    content: "✓";
+
+    color: #fff;
+
+    font-size: 15px;
+    font-weight: 900;
+}
+
+.remember-route-copy {
+    display: flex;
+    flex-direction: column;
+    gap: 3px;
+
+    text-align: right;
+}
+
+.remember-route-copy strong {
+    color: #fff;
+
+    font-size: 14px;
+    font-weight: 850;
+}
+
+.remember-route-copy small {
+    color: #829ab4;
+
+    font-size: 11px;
+}
+
+
+/* =========================================================
+   RECALCULATE ROUTE
+   ========================================================= */
+
+.recalculate-route-button {
+    border-color: rgba(255, 181, 70, .35) !important;
+
+    background:
+        linear-gradient(
+            145deg,
+            rgba(255, 156, 43, .13),
+            rgba(255, 120, 30, .06)
+        ) !important;
+
+    color: #ffc36b !important;
+
+    box-shadow:
+        0 0 22px rgba(255, 143, 39, .08);
+}
+
+.recalculate-route-button:not(.hidden) {
+    animation: routeRecalculatePulse 1.8s ease-in-out infinite;
+}
+
+@keyframes routeRecalculatePulse {
+
+    0%,
+    100% {
+        box-shadow:
+            0 0 0 rgba(255, 152, 44, 0);
+    }
+
+    50% {
+        box-shadow:
+            0 0 24px rgba(255, 152, 44, .13);
+    }
+
+}

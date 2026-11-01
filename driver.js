@@ -244,6 +244,11 @@ const saveRouteSettingsButton =
         "saveRouteSettingsButton"
     );
 
+const rememberRouteSettingsCheckbox =
+    document.getElementById(
+        "rememberRouteSettingsCheckbox"
+    );
+
 const calculateRouteButton =
     document.getElementById(
         "calculateRouteButton"
@@ -7449,11 +7454,80 @@ function loadRouteSettings() {
     }
 
 
+    if (
+        rememberRouteSettingsCheckbox
+    ) {
+
+        rememberRouteSettingsCheckbox.checked =
+            false;
+
+    }
+
+
     try {
 
-        localStorage.removeItem(
-            getRouteStorageKey()
-        );
+        const saved =
+            localStorage.getItem(
+                getRouteStorageKey()
+            );
+
+
+        if (
+            !saved
+        ) {
+
+            return;
+
+        }
+
+
+        const settings =
+            JSON.parse(
+                saved
+            );
+
+
+        const remember =
+            settings.rememberRouteAddresses ===
+            true;
+
+
+        if (
+            rememberRouteSettingsCheckbox
+        ) {
+
+            rememberRouteSettingsCheckbox.checked =
+                remember;
+
+        }
+
+
+        if (
+            remember
+            &&
+            routeStartAddress
+        ) {
+
+            routeStartAddress.value =
+                settings.startAddress
+                ||
+                "";
+
+        }
+
+
+        if (
+            remember
+            &&
+            routeEndAddress
+        ) {
+
+            routeEndAddress.value =
+                settings.endAddress
+                ||
+                "";
+
+        }
 
     }
 
@@ -7462,7 +7536,7 @@ function loadRouteSettings() {
     ) {
 
         console.warn(
-            "Could not clear old route settings:",
+            "Could not load remembered route addresses:",
             error
         );
 
@@ -7510,11 +7584,85 @@ function getCurrentRouteSettings() {
 
 function saveCurrentRouteSettings() {
 
+    if (
+        !currentProfile
+    ) {
+
+        return false;
+
+    }
+
+
+    const remember =
+        Boolean(
+            rememberRouteSettingsCheckbox
+            &&
+            rememberRouteSettingsCheckbox.checked
+        );
+
+
     try {
 
-        localStorage.removeItem(
-            getRouteStorageKey()
+        if (
+            !remember
+        ) {
+
+            localStorage.removeItem(
+                getRouteStorageKey()
+            );
+
+
+            return true;
+
+        }
+
+
+        const startAddress =
+            routeStartAddress
+                ? routeStartAddress.value.trim()
+                : "";
+
+
+        const endAddress =
+            routeEndAddress
+                ? routeEndAddress.value.trim()
+                : "";
+
+
+        if (
+            !startAddress
+            ||
+            !endAddress
+        ) {
+
+            alert(
+                "כדי לזכור את ההגדרות יש להזין נקודת התחלה ונקודת סיום."
+            );
+
+
+            return false;
+
+        }
+
+
+        localStorage.setItem(
+            getRouteStorageKey(),
+            JSON.stringify(
+                {
+                    rememberRouteAddresses:
+                        true,
+
+                    startAddress:
+                        startAddress,
+
+                    endAddress:
+                        endAddress
+                }
+            )
         );
+
+
+        return true;
 
     }
 
@@ -7523,9 +7671,12 @@ function saveCurrentRouteSettings() {
     ) {
 
         console.warn(
-            "Could not clear old route settings:",
+            "Could not save remembered route addresses:",
             error
         );
+
+
+        return false;
 
     }
 
@@ -7640,14 +7791,20 @@ if (
 
         function () {
 
-            const settings =
-                getCurrentRouteSettings();
+            const remember =
+                Boolean(
+                    rememberRouteSettingsCheckbox
+                    &&
+                    rememberRouteSettingsCheckbox.checked
+                );
+
+
+            const savedSuccessfully =
+                saveCurrentRouteSettings();
 
 
             if (
-                !validateRouteSettings(
-                    settings
-                )
+                !savedSuccessfully
             ) {
 
                 return;
@@ -7655,15 +7812,72 @@ if (
             }
 
 
-            saveCurrentRouteSettings();
+            if (
+                routePlannerMessage
+            ) {
 
+                routePlannerMessage.textContent =
+                    remember
+                        ? "נקודת ההתחלה והסיום יישמרו לפעם הבאה."
+                        : "השמירה בוטלה. נקודות ההתחלה והסיום לא יישמרו.";
+
+            }
+
+        }
+
+    );
+
+}
+
+
+// =========================================================
+// REMEMBER ROUTE SETTINGS CHECKBOX
+// =========================================================
+
+if (
+    rememberRouteSettingsCheckbox
+) {
+
+    rememberRouteSettingsCheckbox.addEventListener(
+
+        "change",
+
+        function () {
 
             if (
                 routePlannerMessage
             ) {
 
                 routePlannerMessage.textContent =
-                    "הגדרות המסלול נשמרו.";
+                    rememberRouteSettingsCheckbox.checked
+                        ? "לחץ על שמור הגדרות כדי לזכור את נקודת ההתחלה והסיום."
+                        : "נקודת ההתחלה והסיום לא יישמרו לפעם הבאה.";
+
+            }
+
+
+            if (
+                !rememberRouteSettingsCheckbox.checked
+            ) {
+
+                try {
+
+                    localStorage.removeItem(
+                        getRouteStorageKey()
+                    );
+
+                }
+
+                catch (
+                    error
+                ) {
+
+                    console.warn(
+                        "Could not clear remembered route addresses:",
+                        error
+                    );
+
+                }
 
             }
 
@@ -7997,6 +8211,106 @@ async function loadActiveRouteFromDatabase() {
     setDriverWorkView(
         true
     );
+
+
+    // Restore the active/planned route settings after refresh.
+    // While a route exists, the database route is the source of truth.
+
+    if (
+        routeDate
+    ) {
+
+        routeDate.value =
+            route.route_date
+            ||
+            (
+                route.planned_start_at
+                    ? getLocalDateValue(
+                        new Date(
+                            route.planned_start_at
+                        )
+                    )
+                    : getLocalDateValue()
+            );
+
+    }
+
+
+    if (
+        routeStartTime
+    ) {
+
+        if (
+            route.planned_start_at
+        ) {
+
+            const plannedStart =
+                new Date(
+                    route.planned_start_at
+                );
+
+
+            routeStartTime.value =
+                Number.isNaN(
+                    plannedStart.getTime()
+                )
+                    ? ""
+                    : getLocalTimeValue(
+                        plannedStart
+                    );
+
+        }
+
+        else {
+
+            routeStartTime.value =
+                "";
+
+        }
+
+    }
+
+
+    if (
+        routeStartAddress
+    ) {
+
+        routeStartAddress.value =
+            route.start_address
+            ||
+            "";
+
+        routeStartAddress.dispatchEvent(
+            new Event(
+                "change",
+                {
+                    bubbles: true
+                }
+            )
+        );
+
+    }
+
+
+    if (
+        routeEndAddress
+    ) {
+
+        routeEndAddress.value =
+            route.end_address
+            ||
+            "";
+
+        routeEndAddress.dispatchEvent(
+            new Event(
+                "change",
+                {
+                    bubbles: true
+                }
+            )
+        );
+
+    }
 
 
     const {
