@@ -419,170 +419,585 @@ function injectDriverV2Styles() {
     style.textContent = `
         :root {
             color-scheme: dark;
-            --yb-bg: #070b12;
-            --yb-panel: #0f1623;
-            --yb-panel-2: #151e2d;
-            --yb-border: rgba(255,255,255,.09);
-            --yb-text: #f7f9fc;
-            --yb-muted: #93a1b5;
-            --yb-accent: #4d8dff;
-            --yb-accent-2: #2f6df6;
-            --yb-success: #27c86f;
-            --yb-danger: #ff5f6d;
+            --yb-bg: #050a12;
+            --yb-bg-2: #07111f;
+            --yb-panel: rgba(13, 25, 43, .84);
+            --yb-panel-strong: #0c1728;
+            --yb-panel-soft: rgba(20, 38, 63, .68);
+            --yb-border: rgba(119, 174, 255, .22);
+            --yb-border-strong: rgba(91, 168, 255, .46);
+            --yb-text: #f7faff;
+            --yb-muted: #8fa4bf;
+            --yb-blue: #1387ff;
+            --yb-blue-2: #225dff;
+            --yb-cyan: #28cfff;
+            --yb-success: #25d783;
+            --yb-danger: #ff5b69;
+            --yb-shadow: 0 20px 55px rgba(0, 0, 0, .36);
+        }
+
+        * {
+            box-sizing: border-box;
         }
 
         html,
         body {
-            background: var(--yb-bg) !important;
+            background:
+                radial-gradient(circle at 50% -10%, rgba(25, 116, 255, .20), transparent 34%),
+                linear-gradient(180deg, #06101d 0%, #050a12 55%, #04070d 100%) !important;
             color: var(--yb-text) !important;
         }
 
         body {
-            min-height: 100%;
+            min-height: 100vh;
+            font-family:
+                -apple-system,
+                BlinkMacSystemFont,
+                "Segoe UI",
+                Arial,
+                sans-serif !important;
+        }
+
+        body::before {
+            content: "";
+            position: fixed;
+            inset: 0;
+            pointer-events: none;
+            background:
+                linear-gradient(115deg, transparent 0 52%, rgba(23, 119, 255, .035) 52% 53%, transparent 53%),
+                radial-gradient(circle at 85% 22%, rgba(20, 165, 255, .08), transparent 24%);
+            z-index: 0;
         }
 
         .driver-app {
-            background:
-                radial-gradient(
-                    circle at top right,
-                    rgba(77,141,255,.10),
-                    transparent 38%
-                ),
-                var(--yb-bg) !important;
+            position: relative;
+            z-index: 1;
+            width: min(100%, 560px) !important;
+            margin-inline: auto !important;
+            min-height: 100vh;
+            padding: 18px 16px 34px !important;
+            background: transparent !important;
             color: var(--yb-text) !important;
         }
 
-        .driver-header,
-        .summary-card,
-        .route-planner,
-        .shipments-section,
-        .reports-section,
-        .delivery-info-card {
-            background: var(--yb-panel) !important;
-            border-color: var(--yb-border) !important;
+        .driver-header {
+            position: relative;
+            overflow: hidden;
+            background:
+                linear-gradient(145deg, rgba(15, 34, 59, .92), rgba(8, 18, 32, .82)) !important;
+            border: 1px solid var(--yb-border) !important;
+            border-radius: 26px !important;
+            padding: 20px 18px !important;
+            box-shadow: var(--yb-shadow) !important;
+            backdrop-filter: blur(18px);
+        }
+
+        .driver-header::before {
+            content: "YB GO";
+            position: absolute;
+            left: 18px;
+            top: 17px;
+            font-size: 19px;
+            font-weight: 900;
+            letter-spacing: .5px;
+            background: linear-gradient(90deg, #fff, #46a6ff);
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+        }
+
+        .driver-header::after {
+            content: "";
+            position: absolute;
+            width: 190px;
+            height: 70px;
+            left: -42px;
+            bottom: -42px;
+            border-radius: 50%;
+            background: rgba(22, 117, 255, .18);
+            filter: blur(22px);
+        }
+
+        .driver-header h1 {
+            margin: 2px 0 4px !important;
             color: var(--yb-text) !important;
+            font-size: clamp(24px, 6vw, 31px) !important;
+            line-height: 1.1 !important;
+            letter-spacing: -.5px;
+        }
+
+        .header-small,
+        .driver-date {
+            color: var(--yb-muted) !important;
+        }
+
+        .logout-button,
+        .modal-close-button {
+            border: 1px solid rgba(255,255,255,.12) !important;
+            background: rgba(255,255,255,.07) !important;
+            color: #e8f1ff !important;
+            border-radius: 15px !important;
+            min-width: 44px;
+            min-height: 44px;
+            box-shadow: none !important;
+            backdrop-filter: blur(12px);
+        }
+
+        .summary-grid {
+            gap: 10px !important;
+            margin-top: 14px !important;
         }
 
         .summary-card {
+            min-height: 90px !important;
+            padding: 15px !important;
+            border-radius: 21px !important;
+            background:
+                linear-gradient(145deg, rgba(20, 37, 61, .88), rgba(10, 20, 35, .92)) !important;
             border: 1px solid var(--yb-border) !important;
-            box-shadow: none !important;
+            box-shadow: 0 10px 28px rgba(0,0,0,.22) !important;
         }
 
-        .summary-number,
-        .driver-header h1,
-        .section-heading h2,
-        .delivery-sheet-header h2 {
+        .summary-number {
             color: var(--yb-text) !important;
+            font-size: 28px !important;
+            line-height: 1 !important;
+            font-weight: 900 !important;
         }
 
-        .summary-label,
-        .header-small,
-        .driver-date,
-        .section-heading p,
-        .info-label,
-        #shipmentListSubtitle {
+        .summary-label {
+            margin-top: 7px !important;
             color: var(--yb-muted) !important;
+            font-size: 12px !important;
+        }
+
+        .main-actions {
+            gap: 10px !important;
+            margin-top: 14px !important;
         }
 
         .primary-action-button,
         .route-save-button,
         .save-button {
+            min-height: 58px !important;
+            border: 0 !important;
+            border-radius: 18px !important;
             background:
                 linear-gradient(
                     135deg,
-                    var(--yb-accent),
-                    var(--yb-accent-2)
+                    var(--yb-blue),
+                    var(--yb-blue-2)
                 ) !important;
             color: white !important;
-            border: 0 !important;
-            box-shadow: none !important;
+            font-weight: 850 !important;
+            box-shadow:
+                0 12px 30px rgba(18, 104, 255, .23),
+                inset 0 1px 0 rgba(255,255,255,.16) !important;
         }
 
         .secondary-action-button,
         .reports-button,
-        .cancel-button,
-        .delivery-action-button {
-            background: var(--yb-panel-2) !important;
-            color: var(--yb-text) !important;
+        .cancel-button {
+            min-height: 54px !important;
             border: 1px solid var(--yb-border) !important;
+            border-radius: 18px !important;
+            background:
+                linear-gradient(145deg, rgba(21, 38, 62, .82), rgba(10, 20, 34, .90)) !important;
+            color: var(--yb-text) !important;
             box-shadow: none !important;
+            font-weight: 760 !important;
         }
 
+        .route-planner,
+        .shipments-section,
+        .reports-section {
+            margin-top: 16px !important;
+            padding: 16px !important;
+            border-radius: 24px !important;
+            background:
+                linear-gradient(145deg, rgba(14, 27, 46, .88), rgba(8, 17, 30, .92)) !important;
+            border: 1px solid var(--yb-border) !important;
+            box-shadow: 0 12px 34px rgba(0,0,0,.20) !important;
+        }
+
+        .section-heading h2 {
+            color: var(--yb-text) !important;
+            font-size: 22px !important;
+            font-weight: 900 !important;
+            letter-spacing: -.3px;
+        }
+
+        .section-heading p,
+        #shipmentListSubtitle {
+            color: var(--yb-muted) !important;
+        }
+
+        .shipment-count-badge {
+            background: linear-gradient(135deg, #178cff, #315cff) !important;
+            color: #fff !important;
+            border: 0 !important;
+            box-shadow: 0 8px 20px rgba(30, 110, 255, .28);
+        }
+
+        .driver-shipment-card {
+            width: 100%;
+            margin-bottom: 10px !important;
+            padding: 16px !important;
+            text-align: right !important;
+            border-radius: 22px !important;
+            background:
+                linear-gradient(145deg, rgba(22, 39, 64, .94), rgba(9, 19, 33, .96)) !important;
+            border: 1px solid var(--yb-border) !important;
+            color: var(--yb-text) !important;
+            box-shadow:
+                0 14px 34px rgba(0,0,0,.22),
+                inset 0 1px 0 rgba(255,255,255,.04) !important;
+        }
+
+        .shipment-card-customer,
+        .shipment-card-address,
+        .shipment-card-phone,
+        .shipment-card-footer {
+            color: var(--yb-text) !important;
+        }
+
+        .shipment-card-customer {
+            font-size: 18px !important;
+            font-weight: 850 !important;
+        }
+
+        .shipment-card-address {
+            margin-top: 12px !important;
+            font-size: 16px !important;
+            font-weight: 720 !important;
+            color: #d9e9ff !important;
+        }
+
+        .shipment-card-phone {
+            margin-top: 8px !important;
+            color: #9fc8ff !important;
+        }
+
+        .shipment-open-text {
+            color: #69b6ff !important;
+            font-weight: 800 !important;
+        }
+
+        .driver-empty-state {
+            border-radius: 20px !important;
+            background: rgba(255,255,255,.035) !important;
+            border: 1px dashed rgba(112, 172, 255, .22) !important;
+            color: var(--yb-muted) !important;
+        }
+
+        /* ===================== */
+        /* ADD / EDIT SHIPMENT   */
+        /* ===================== */
+
+        .modal-overlay {
+            background: rgba(2, 6, 12, .78) !important;
+            backdrop-filter: blur(14px);
+        }
+
+        .modal-card {
+            width: min(94vw, 540px) !important;
+            max-height: 94vh !important;
+            overflow-y: auto !important;
+            border-radius: 30px !important;
+            padding: 18px !important;
+            background:
+                radial-gradient(circle at 20% 0%, rgba(30, 126, 255, .14), transparent 28%),
+                linear-gradient(180deg, #0b1729, #08111f) !important;
+            border: 1px solid var(--yb-border-strong) !important;
+            box-shadow: 0 28px 80px rgba(0,0,0,.52) !important;
+            color: var(--yb-text) !important;
+        }
+
+        .modal-header {
+            position: sticky;
+            top: -18px;
+            z-index: 8;
+            margin: -18px -18px 16px !important;
+            padding: 20px 18px 14px !important;
+            background:
+                linear-gradient(180deg, rgba(8,17,31,.98), rgba(8,17,31,.93)) !important;
+            backdrop-filter: blur(16px);
+            border-bottom: 1px solid rgba(109, 171, 255, .12);
+        }
+
+        .modal-header h2 {
+            color: #fff !important;
+            font-size: 25px !important;
+            font-weight: 900 !important;
+            margin-bottom: 4px !important;
+        }
+
+        .modal-header p {
+            color: var(--yb-muted) !important;
+        }
+
+        #driverAddShipmentForm {
+            display: grid;
+            gap: 10px;
+        }
+
+        #driverAddShipmentForm .form-group {
+            margin: 0 !important;
+        }
+
+        #driverAddShipmentForm label {
+            display: block;
+            margin: 0 3px 7px !important;
+            color: #b7cae3 !important;
+            font-size: 12px !important;
+            font-weight: 760 !important;
+        }
+
+        #driverAddShipmentForm input,
+        #driverAddShipmentForm textarea,
+        #routePlannerSection input,
+        gmp-place-autocomplete {
+            width: 100% !important;
+            min-height: 54px !important;
+            padding: 14px 15px !important;
+            border-radius: 17px !important;
+            border: 1px solid rgba(108, 168, 255, .22) !important;
+            background: rgba(19, 35, 58, .82) !important;
+            color: #f7fbff !important;
+            box-shadow:
+                inset 0 1px 0 rgba(255,255,255,.035) !important;
+            outline: none !important;
+            font: inherit !important;
+        }
+
+        #driverAddShipmentForm textarea {
+            min-height: 74px !important;
+            resize: vertical;
+        }
+
+        #driverAddShipmentForm input:focus,
+        #driverAddShipmentForm textarea:focus,
+        #routePlannerSection input:focus {
+            border-color: rgba(40, 169, 255, .82) !important;
+            box-shadow:
+                0 0 0 3px rgba(27, 139, 255, .12),
+                0 0 26px rgba(26, 119, 255, .10) !important;
+        }
+
+        #driverAddShipmentForm input::placeholder,
+        #driverAddShipmentForm textarea::placeholder,
+        #routePlannerSection input::placeholder {
+            color: #6f829d !important;
+        }
+
+        .address-row,
+        .address-details-row {
+            gap: 10px !important;
+        }
+
+        .modal-actions {
+            position: sticky;
+            bottom: -18px;
+            z-index: 8;
+            margin: 8px -18px -18px !important;
+            padding: 12px 18px 18px !important;
+            background:
+                linear-gradient(0deg, rgba(8,17,31,.99) 65%, rgba(8,17,31,.78), transparent) !important;
+        }
+
+        #driverShipmentAddressSelected {
+            border-radius: 15px !important;
+            padding: 10px 12px !important;
+            color: #8ed2ff !important;
+            background: rgba(19, 125, 255, .10) !important;
+            border: 1px solid rgba(68, 171, 255, .20) !important;
+        }
+
+        /* ===================== */
+        /* DELIVERY WORK SHEET   */
+        /* ===================== */
+
         .bottom-sheet-overlay {
-            background: rgba(0,0,0,.60) !important;
-            backdrop-filter: blur(8px);
+            background: rgba(0,0,0,.66) !important;
+            backdrop-filter: blur(12px);
         }
 
         .bottom-sheet {
-            background: #0b111b !important;
+            position: relative;
+            overflow: hidden;
+            background:
+                radial-gradient(circle at 78% 0%, rgba(23, 126, 255, .13), transparent 25%),
+                linear-gradient(180deg, #0a1525, #07101d) !important;
             color: var(--yb-text) !important;
-            border: 1px solid var(--yb-border) !important;
+            border: 1px solid var(--yb-border-strong) !important;
             border-bottom: 0 !important;
-            box-shadow: 0 -24px 60px rgba(0,0,0,.35) !important;
+            border-radius: 30px 30px 0 0 !important;
+            box-shadow: 0 -30px 80px rgba(0,0,0,.50) !important;
+        }
+
+        .bottom-sheet::before {
+            content: "YB GO";
+            position: absolute;
+            left: 22px;
+            top: 18px;
+            font-size: 15px;
+            font-weight: 900;
+            letter-spacing: .4px;
+            color: #5eb4ff;
+            opacity: .90;
         }
 
         .bottom-sheet-handle {
-            background: rgba(255,255,255,.22) !important;
+            background: rgba(255,255,255,.20) !important;
+            width: 46px !important;
+            height: 5px !important;
+            border-radius: 999px !important;
+        }
+
+        .delivery-sheet-header {
+            padding-top: 6px;
+        }
+
+        .delivery-sheet-header h2 {
+            color: #fff !important;
+            font-size: 27px !important;
+            font-weight: 900 !important;
+            letter-spacing: -.4px;
+        }
+
+        .delivery-number {
+            color: #6daeff !important;
+            font-weight: 750 !important;
         }
 
         .delivery-info-card {
-            border: 1px solid var(--yb-border) !important;
+            position: relative;
+            overflow: hidden;
+            padding: 15px !important;
+            border-radius: 24px !important;
+            background:
+                linear-gradient(145deg, rgba(22, 42, 69, .86), rgba(10, 22, 39, .90)) !important;
+            border: 1px solid rgba(92, 167, 255, .28) !important;
+            box-shadow:
+                inset 0 1px 0 rgba(255,255,255,.035),
+                0 15px 36px rgba(0,0,0,.20) !important;
+        }
+
+        .delivery-info-card::after {
+            content: "";
+            position: absolute;
+            width: 120px;
+            height: 120px;
+            left: -50px;
+            top: -50px;
+            border-radius: 50%;
+            background: rgba(25, 123, 255, .12);
+            filter: blur(22px);
+            pointer-events: none;
+        }
+
+        .delivery-info-row {
+            padding: 9px 0 !important;
+            border-bottom: 1px solid rgba(157, 196, 246, .09) !important;
+        }
+
+        .delivery-info-row:last-child {
+            border-bottom: 0 !important;
+        }
+
+        .info-label {
+            color: var(--yb-muted) !important;
+            font-size: 11px !important;
         }
 
         #deliveryAddressButton,
         #deliveryPhone,
         #deliveryEta {
-            color: #7eacff !important;
+            color: #65b2ff !important;
+            font-weight: 850 !important;
         }
 
         .delivery-actions-grid {
             gap: 10px !important;
+            margin-top: 12px !important;
+        }
+
+        .delivery-action-button {
+            min-height: 58px !important;
+            border-radius: 18px !important;
+            border: 1px solid var(--yb-border) !important;
+            background:
+                linear-gradient(145deg, rgba(23, 42, 67, .90), rgba(9, 19, 33, .94)) !important;
+            color: #f7fbff !important;
+            font-weight: 850 !important;
+            box-shadow: none !important;
         }
 
         #openWazeDirectButton {
             background:
                 linear-gradient(
                     135deg,
-                    #4d8dff,
-                    #2f6df6
+                    #18a9ff,
+                    #235cff
                 ) !important;
-            border: 0 !important;
-            font-weight: 800 !important;
-            min-height: 58px;
+            border-color: rgba(50, 174, 255, .72) !important;
+            box-shadow:
+                0 12px 30px rgba(22, 108, 255, .25),
+                inset 0 1px 0 rgba(255,255,255,.18) !important;
         }
 
         #callCustomerButton {
-            min-height: 58px;
-            font-weight: 800 !important;
+            box-shadow:
+                inset 0 1px 0 rgba(255,255,255,.04) !important;
         }
 
         .delivery-status-actions {
             display: grid !important;
             grid-template-columns: 1fr !important;
             gap: 12px !important;
-            margin-top: 16px !important;
+            margin-top: 12px !important;
         }
 
         .yb-delivery-slider {
             position: relative !important;
             width: 100% !important;
-            height: 66px !important;
+            height: 70px !important;
             padding: 0 !important;
             overflow: hidden !important;
-            border: 1px solid rgba(39,200,111,.38) !important;
-            border-radius: 20px !important;
+            border: 1px solid rgba(38, 186, 255, .78) !important;
+            border-radius: 24px !important;
             background:
                 linear-gradient(
-                    180deg,
-                    rgba(39,200,111,.14),
-                    rgba(39,200,111,.07)
+                    135deg,
+                    rgba(9, 64, 140, .76),
+                    rgba(18, 82, 214, .74)
                 ) !important;
-            color: var(--yb-text) !important;
+            color: #fff !important;
             touch-action: pan-y !important;
             user-select: none !important;
             -webkit-user-select: none !important;
             cursor: grab !important;
-            box-shadow: none !important;
+            box-shadow:
+                0 0 0 1px rgba(37, 156, 255, .10),
+                0 0 30px rgba(21, 126, 255, .23),
+                inset 0 0 24px rgba(42, 168, 255, .10) !important;
+        }
+
+        .yb-delivery-slider::after {
+            content: "";
+            position: absolute;
+            left: 18%;
+            right: 18%;
+            bottom: 6px;
+            height: 2px;
+            background:
+                linear-gradient(
+                    90deg,
+                    transparent,
+                    rgba(62, 202, 255, .85),
+                    transparent
+                );
+            filter: blur(.2px);
         }
 
         .yb-delivery-slider:active {
@@ -595,30 +1010,48 @@ function injectDriverV2Styles() {
             display: flex;
             align-items: center;
             justify-content: center;
-            padding-inline: 78px 22px;
-            font-size: 17px;
-            font-weight: 800;
-            letter-spacing: .1px;
+            padding-inline: 84px 24px;
+            font-size: 18px;
+            font-weight: 900;
+            letter-spacing: -.1px;
             pointer-events: none;
+            text-shadow: 0 2px 18px rgba(0,0,0,.26);
+        }
+
+        .yb-slide-label::after {
+            content: "›››";
+            margin-right: 10px;
+            color: #55d2ff;
+            letter-spacing: -4px;
+            font-size: 26px;
+            line-height: 1;
         }
 
         .yb-slide-thumb {
             position: absolute;
             top: 7px;
             right: 7px;
-            width: 52px;
-            height: 52px;
+            width: 56px;
+            height: 56px;
             display: grid;
             place-items: center;
-            border-radius: 16px;
-            background: var(--yb-success);
-            color: #04130a;
-            font-size: 25px;
-            font-weight: 900;
+            border-radius: 18px;
+            background:
+                linear-gradient(
+                    145deg,
+                    #53d5ff,
+                    #1788ff
+                );
+            color: #03234e;
+            font-size: 27px;
+            font-weight: 950;
             transform: translateX(0);
             transition: transform .18s ease;
             pointer-events: none;
-            box-shadow: 0 8px 18px rgba(39,200,111,.20);
+            border: 1px solid rgba(255,255,255,.62);
+            box-shadow:
+                0 0 24px rgba(42, 190, 255, .60),
+                inset 0 1px 0 rgba(255,255,255,.72);
         }
 
         .yb-delivery-slider.yb-slide-dragging .yb-slide-thumb {
@@ -626,17 +1059,27 @@ function injectDriverV2Styles() {
         }
 
         .yb-delivery-slider.yb-slide-complete {
-            background: rgba(39,200,111,.22) !important;
+            background:
+                linear-gradient(135deg, #0b72dd, #255bff) !important;
         }
 
         .failed-button {
-            background: transparent !important;
-            color: #ff8a94 !important;
-            border: 1px solid rgba(255,95,109,.28) !important;
             min-height: 52px !important;
-            border-radius: 16px !important;
-            font-weight: 800 !important;
+            border-radius: 18px !important;
+            background:
+                linear-gradient(145deg, rgba(74, 19, 29, .23), rgba(24, 11, 18, .58)) !important;
+            color: #ff6876 !important;
+            border: 1px solid rgba(255,91,105,.52) !important;
+            font-weight: 850 !important;
             box-shadow: none !important;
+        }
+
+        #editDriverShipmentButton {
+            border-radius: 18px !important;
+        }
+
+        .route-message {
+            border-radius: 16px !important;
         }
 
         .yb-driver-toast {
@@ -648,12 +1091,13 @@ function injectDriverV2Styles() {
             max-width: 520px;
             margin-inline: auto;
             padding: 14px 18px;
-            border-radius: 16px;
-            background: #152235;
+            border-radius: 17px;
+            background:
+                linear-gradient(145deg, #15365c, #0e1f36);
             color: #fff;
-            border: 1px solid rgba(255,255,255,.12);
-            box-shadow: 0 16px 40px rgba(0,0,0,.35);
-            font-weight: 800;
+            border: 1px solid rgba(85, 176, 255, .26);
+            box-shadow: 0 18px 50px rgba(0,0,0,.42);
+            font-weight: 850;
             text-align: center;
             opacity: 0;
             transform: translateY(14px);
@@ -668,28 +1112,92 @@ function injectDriverV2Styles() {
 
         @media (max-width: 640px) {
             .driver-app {
-                padding-bottom: 28px !important;
+                padding: 10px 10px 28px !important;
+            }
+
+            .driver-header {
+                border-radius: 22px !important;
+                padding: 17px 15px !important;
+            }
+
+            .summary-grid {
+                gap: 8px !important;
+            }
+
+            .summary-card {
+                min-height: 82px !important;
+                padding: 13px !important;
+                border-radius: 18px !important;
+            }
+
+            .main-actions {
+                gap: 8px !important;
+            }
+
+            .route-planner,
+            .shipments-section,
+            .reports-section {
+                margin-top: 12px !important;
+                padding: 13px !important;
+                border-radius: 21px !important;
+            }
+
+            .driver-shipment-card {
+                padding: 14px !important;
+                border-radius: 19px !important;
+            }
+
+            .modal-card {
+                width: 100vw !important;
+                max-width: none !important;
+                max-height: 100dvh !important;
+                min-height: 100dvh !important;
+                border-radius: 0 !important;
+                border-inline: 0 !important;
+                border-bottom: 0 !important;
+                padding: 15px !important;
+            }
+
+            .modal-header {
+                top: -15px;
+                margin: -15px -15px 14px !important;
+                padding: 18px 15px 13px !important;
+            }
+
+            #driverAddShipmentForm input,
+            #driverAddShipmentForm textarea,
+            #routePlannerSection input,
+            gmp-place-autocomplete {
+                min-height: 52px !important;
+                border-radius: 16px !important;
+            }
+
+            .modal-actions {
+                bottom: -15px;
+                margin: 8px -15px -15px !important;
+                padding: 12px 15px 15px !important;
             }
 
             .bottom-sheet {
-                border-radius: 28px 28px 0 0 !important;
-                max-height: 94vh !important;
+                max-height: 96dvh !important;
                 overflow-y: auto !important;
                 padding-bottom: 18px !important;
+                border-radius: 28px 28px 0 0 !important;
             }
 
             .delivery-sheet-header {
-                margin-bottom: 10px !important;
+                margin-bottom: 8px !important;
             }
 
             .delivery-info-card {
                 padding: 12px !important;
-                margin-bottom: 10px !important;
+                margin-bottom: 9px !important;
+                border-radius: 21px !important;
             }
 
             .delivery-info-row {
                 gap: 6px !important;
-                padding-block: 7px !important;
+                padding-block: 6px !important;
             }
 
             .delivery-actions-grid {
@@ -699,32 +1207,36 @@ function injectDriverV2Styles() {
 
             .delivery-status-actions {
                 margin-top: 8px !important;
-                margin-bottom: 10px !important;
+                margin-bottom: 9px !important;
             }
 
             #editDriverShipmentButton {
                 margin-top: 8px !important;
                 min-height: 46px !important;
                 font-size: 14px !important;
-                opacity: .86;
+                opacity: .92;
             }
 
             .yb-delivery-slider {
-                height: 62px !important;
-                border-radius: 18px !important;
+                height: 64px !important;
+                border-radius: 20px !important;
             }
 
             .yb-slide-thumb {
-                width: 48px;
-                height: 48px;
+                width: 50px;
+                height: 50px;
                 top: 6px;
                 right: 6px;
-                border-radius: 14px;
+                border-radius: 16px;
             }
 
             .yb-slide-label {
                 font-size: 16px;
-                padding-inline: 70px 18px;
+                padding-inline: 74px 18px;
+            }
+
+            .yb-slide-label::after {
+                font-size: 22px;
             }
 
             .failed-button {
@@ -790,6 +1302,180 @@ function arrangeDriverWorkActions() {
 
 
 arrangeDriverWorkActions();
+
+
+function enhanceDriverV2Structure() {
+
+    // Number-only keyboard where the task is numeric.
+    [
+        "driverShipmentHouseNumber",
+        "driverShipmentFloor",
+        "driverShipmentApartment"
+    ].forEach(
+        id => {
+
+            const input =
+                document.getElementById(
+                    id
+                );
+
+            if (
+                input
+            ) {
+
+                input.setAttribute(
+                    "inputmode",
+                    "numeric"
+                );
+
+                input.setAttribute(
+                    "pattern",
+                    "[0-9]*"
+                );
+
+            }
+
+        }
+    );
+
+
+    const buildingCode =
+        document.getElementById(
+            "driverShipmentBuildingCode"
+        );
+
+    if (
+        buildingCode
+    ) {
+
+        buildingCode.setAttribute(
+            "inputmode",
+            "numeric"
+        );
+
+    }
+
+
+    const phone =
+        document.getElementById(
+            "driverShipmentPhone"
+        );
+
+    if (
+        phone
+    ) {
+
+        phone.setAttribute(
+            "inputmode",
+            "tel"
+        );
+
+    }
+
+
+    // Make add-shipment form start with address search when available.
+    const form =
+        document.getElementById(
+            "driverAddShipmentForm"
+        );
+
+    const addressSearch =
+        document.getElementById(
+            "driverShipmentAddressSearch"
+        );
+
+
+    if (
+        form &&
+        addressSearch
+    ) {
+
+        const wrapper =
+            addressSearch.closest(
+                ".form-group"
+            )
+            ||
+            addressSearch.parentElement;
+
+
+        if (
+            wrapper &&
+            wrapper.parentElement ===
+                form
+        ) {
+
+            const firstVisibleChild =
+                Array.from(
+                    form.children
+                ).find(
+                    child =>
+                        child.tagName !==
+                            "INPUT"
+                        ||
+                        child.type !==
+                            "hidden"
+                );
+
+
+            if (
+                firstVisibleChild &&
+                firstVisibleChild !==
+                    wrapper
+            ) {
+
+                form.insertBefore(
+                    wrapper,
+                    firstVisibleChild
+                );
+
+            }
+
+        }
+
+    }
+
+
+    // Shorter, more app-like labels.
+    const modalTitle =
+        document.getElementById(
+            "driverShipmentModalTitle"
+        );
+
+    const modalSubtitle =
+        document.getElementById(
+            "driverShipmentModalSubtitle"
+        );
+
+
+    if (
+        modalTitle &&
+        !getInputValue(
+            "editingDriverShipmentId"
+        )
+    ) {
+
+        modalTitle.textContent =
+            "הוספת משלוח";
+
+    }
+
+
+    if (
+        modalSubtitle &&
+        !getInputValue(
+            "editingDriverShipmentId"
+        )
+    ) {
+
+        modalSubtitle.textContent =
+            "כתובת, טלפון ופרטי מסירה — וזהו";
+
+    }
+
+}
+
+
+enhanceDriverV2Structure();
 
 
 let ybDriverToastTimer =
@@ -950,7 +1636,6 @@ function getShipmentMainAddress(
         return (
             `${mainAddress}, ${shipment.city}`
         );
-
     }
 
 
@@ -2856,6 +3541,9 @@ async function initializeGooglePlacesAutocomplete() {
             true;
 
 
+        enhanceDriverV2Structure();
+
+
         return true;
 
     }
@@ -2960,6 +3648,8 @@ function openAddShipmentModal() {
 
 
     resetDriverShipmentForm();
+
+    enhanceDriverV2Structure();
 
 
     addShipmentModal.classList
