@@ -1964,3 +1964,69 @@ body {
         min-height: 63px;
     }
 }
+/* =========================================================
+   MOBILE ROUTE PLANNER FIX
+   ========================================================= */
+
+.route-grid > .form-group {
+    min-width: 0;
+}
+
+.route-grid input[type="date"],
+.route-grid input[type="time"] {
+    width: 100%;
+    min-width: 0;
+    height: 56px;
+    min-height: 56px;
+    padding: 10px 12px;
+    border-radius: 16px;
+    font-size: 16px;
+    -webkit-appearance: none;
+    appearance: none;
+}
+
+
+/* Google Places - keep the field visible above iPhone keyboard */
+
+#routeStartAddress,
+#routeEndAddress,
+gmp-place-autocomplete#routeStartAddress,
+gmp-place-autocomplete#routeEndAddress {
+    width: 100%;
+    min-height: 58px;
+    scroll-margin-top: 180px;
+    scroll-margin-bottom: 320px;
+}
+
+
+/* Mobile only */
+
+@media (max-width: 520px) {
+
+    .route-grid {
+        grid-template-columns: 1fr 1fr;
+        gap: 10px;
+    }
+
+    .route-grid > .form-group {
+        width: 100%;
+        min-width: 0;
+    }
+
+    .route-grid input[type="date"],
+    .route-grid input[type="time"] {
+        height: 54px;
+        min-height: 54px;
+        font-size: 15px;
+        padding: 8px 10px;
+    }
+
+    #routeStartAddress,
+    #routeEndAddress,
+    gmp-place-autocomplete#routeStartAddress,
+    gmp-place-autocomplete#routeEndAddress {
+        scroll-margin-top: 130px;
+        scroll-margin-bottom: 380px;
+    }
+
+}
