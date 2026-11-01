@@ -2477,3 +2477,16 @@ gmp-place-autocomplete#routeEndAddress {
 
     color: #a9bad0;
 }
+.yb-delivery-slider {
+    touch-action: none;
+    user-select: none;
+    -webkit-user-select: none;
+}
+
+.yb-slide-thumb {
+    transition: transform 0.14s ease;
+}
+
+.yb-delivery-slider.yb-slide-dragging .yb-slide-thumb {
+    transition: none;
+}

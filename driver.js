@@ -6736,11 +6736,24 @@ function setupDeliverySlider() {
             }
 
 
+            const buttonRect =
+                markDeliveredButton.getBoundingClientRect();
+
+
+            const thumbRect =
+                thumb.getBoundingClientRect();
+
+
+            const horizontalPadding =
+                12;
+
+
             const maxDistance =
                 Math.max(
                     1,
-                    markDeliveredButton.clientWidth -
-                    74
+                    buttonRect.width -
+                    thumbRect.width -
+                    horizontalPadding * 2
                 );
 
 
@@ -6752,10 +6765,15 @@ function setupDeliverySlider() {
                 );
 
 
+            const movementGain =
+                1.28;
+
+
             const distance =
                 Math.min(
                     maxDistance,
-                    movedLeft
+                    movedLeft *
+                    movementGain
                 );
 
 
@@ -6788,7 +6806,7 @@ function setupDeliverySlider() {
 
             const completed =
                 deliverySlideProgress >=
-                0.72;
+                0.97;
 
 
             deliverySlidePointerId =
@@ -6805,10 +6823,60 @@ function setupDeliverySlider() {
                 completed
             ) {
 
+                const thumb =
+                    markDeliveredButton.querySelector(
+                        ".yb-slide-thumb"
+                    );
+
+
+                if (
+                    thumb
+                ) {
+
+                    const buttonRect =
+                        markDeliveredButton.getBoundingClientRect();
+
+
+                    const thumbRect =
+                        thumb.getBoundingClientRect();
+
+
+                    const horizontalPadding =
+                        12;
+
+
+                    const maxDistance =
+                        Math.max(
+                            1,
+                            buttonRect.width -
+                            thumbRect.width -
+                            horizontalPadding * 2
+                        );
+
+
+                    thumb.style.transform =
+                        `translateX(${-maxDistance}px)`;
+
+                }
+
+
+                deliverySlideProgress =
+                    1;
+
+
                 markDeliveredButton.classList
                     .add(
                         "yb-slide-complete"
                     );
+
+
+                await new Promise(
+                    resolve =>
+                        setTimeout(
+                            resolve,
+                            120
+                        )
+                );
 
 
                 await markSelectedShipmentDelivered();
