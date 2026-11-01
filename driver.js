@@ -673,10 +673,62 @@ function injectDriverV2Styles() {
 
             .bottom-sheet {
                 border-radius: 28px 28px 0 0 !important;
+                max-height: 94vh !important;
+                overflow-y: auto !important;
+                padding-bottom: 18px !important;
+            }
+
+            .delivery-sheet-header {
+                margin-bottom: 10px !important;
+            }
+
+            .delivery-info-card {
+                padding: 12px !important;
+                margin-bottom: 10px !important;
             }
 
             .delivery-info-row {
-                gap: 8px !important;
+                gap: 6px !important;
+                padding-block: 7px !important;
+            }
+
+            .delivery-actions-grid {
+                margin-top: 8px !important;
+                margin-bottom: 8px !important;
+            }
+
+            .delivery-status-actions {
+                margin-top: 8px !important;
+                margin-bottom: 10px !important;
+            }
+
+            #editDriverShipmentButton {
+                margin-top: 8px !important;
+                min-height: 46px !important;
+                font-size: 14px !important;
+                opacity: .86;
+            }
+
+            .yb-delivery-slider {
+                height: 62px !important;
+                border-radius: 18px !important;
+            }
+
+            .yb-slide-thumb {
+                width: 48px;
+                height: 48px;
+                top: 6px;
+                right: 6px;
+                border-radius: 14px;
+            }
+
+            .yb-slide-label {
+                font-size: 16px;
+                padding-inline: 70px 18px;
+            }
+
+            .failed-button {
+                min-height: 48px !important;
             }
         }
     `;
@@ -689,6 +741,55 @@ function injectDriverV2Styles() {
 
 
 injectDriverV2Styles();
+
+
+function arrangeDriverWorkActions() {
+
+    const actionGrid =
+        document.querySelector(
+            ".delivery-actions-grid"
+        );
+
+    const statusActions =
+        document.querySelector(
+            ".delivery-status-actions"
+        );
+
+    const editButton =
+        document.getElementById(
+            "editDriverShipmentButton"
+        );
+
+
+    if (
+        actionGrid &&
+        statusActions
+    ) {
+
+        actionGrid.insertAdjacentElement(
+            "afterend",
+            statusActions
+        );
+
+    }
+
+
+    if (
+        statusActions &&
+        editButton
+    ) {
+
+        statusActions.insertAdjacentElement(
+            "afterend",
+            editButton
+        );
+
+    }
+
+}
+
+
+arrangeDriverWorkActions();
 
 
 let ybDriverToastTimer =
@@ -4196,6 +4297,8 @@ function openShipmentDetails(
     }
 
 
+    arrangeDriverWorkActions();
+
     resetDeliverySlider();
 
 }
@@ -7395,4 +7498,3 @@ async function initializeDriverApp() {
 // =========================================================
 
 initializeDriverApp();
-                                
