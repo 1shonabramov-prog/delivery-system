@@ -21,7 +21,7 @@
 
     <link
         rel="stylesheet"
-        href="driver.css?v=20261101-v9"
+        href="driver.css?v=20261101-v10"
     >
 
 </head>
@@ -89,7 +89,6 @@
     <!-- ===================================================== -->
 
     <main class="driver-app">
-
 
 
         <!-- ================================================= -->
@@ -1706,6 +1705,120 @@
 
 
 <!-- ===================================================== -->
+<!-- ROUTE COMPLETE -->
+<!-- ===================================================== -->
+
+<div
+    id="routeCompleteOverlay"
+    class="bottom-sheet-overlay hidden"
+>
+
+
+    <section class="route-complete-sheet">
+
+
+        <div class="bottom-sheet-handle"></div>
+
+
+        <button
+            id="closeRouteCompleteButton"
+            class="icon-button modal-close-button"
+            type="button"
+            aria-label="סגור"
+        >
+            ✕
+        </button>
+
+
+        <div
+            class="route-complete-icon"
+            aria-hidden="true"
+        >
+            ✓
+        </div>
+
+
+        <p class="eyebrow">
+            Route complete
+        </p>
+
+
+        <h2>
+            המסלול הושלם
+        </h2>
+
+
+        <p class="route-complete-subtitle">
+            סיימת את כל התחנות במסלול
+        </p>
+
+
+
+        <div class="route-complete-stats">
+
+
+            <div class="route-complete-stat">
+
+                <strong id="routeCompleteDeliveredCount">
+                    0
+                </strong>
+
+                <span>
+                    נמסרו
+                </span>
+
+            </div>
+
+
+            <div class="route-complete-stat">
+
+                <strong id="routeCompleteFailedCount">
+                    0
+                </strong>
+
+                <span>
+                    לא נמסרו
+                </span>
+
+            </div>
+
+
+        </div>
+
+
+
+        <div class="route-complete-actions">
+
+
+            <button
+                id="routeCompleteHomeButton"
+                class="route-complete-primary"
+                type="button"
+            >
+                חזרה למסך הראשי
+            </button>
+
+
+            <button
+                id="routeCompleteReportsButton"
+                class="route-complete-secondary"
+                type="button"
+            >
+                דוחות והכנסות
+            </button>
+
+
+        </div>
+
+
+    </section>
+
+
+</div>
+
+
+
+<!-- ===================================================== -->
 <!-- SCRIPTS -->
 <!-- ===================================================== -->
 
@@ -1717,7 +1830,7 @@
 
 <script src="google-maps-config.js?v=20261101-v3"></script>
 
-<script src="driver.js?v=20261101-v9"></script>
+<script src="driver.js?v=20261101-v10"></script>
 
 
 </body>

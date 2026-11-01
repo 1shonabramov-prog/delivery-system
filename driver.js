@@ -425,6 +425,36 @@ const failedWithoutReasonButton =
         "failedWithoutReasonButton"
     );
 
+const routeCompleteOverlay =
+    document.getElementById(
+        "routeCompleteOverlay"
+    );
+
+const closeRouteCompleteButton =
+    document.getElementById(
+        "closeRouteCompleteButton"
+    );
+
+const routeCompleteDeliveredCount =
+    document.getElementById(
+        "routeCompleteDeliveredCount"
+    );
+
+const routeCompleteFailedCount =
+    document.getElementById(
+        "routeCompleteFailedCount"
+    );
+
+const routeCompleteHomeButton =
+    document.getElementById(
+        "routeCompleteHomeButton"
+    );
+
+const routeCompleteReportsButton =
+    document.getElementById(
+        "routeCompleteReportsButton"
+    );
+
 
 const driverReportsButton =
     document.getElementById(
@@ -5898,7 +5928,7 @@ async function completeShipmentInActiveRoute(
             !route
         ) {
 
-            return true;
+            return null;
 
         }
 
@@ -6094,7 +6124,7 @@ async function completeShipmentInActiveRoute(
         }
 
 
-        return true;
+        return remaining;
 
     }
 
@@ -6110,6 +6140,161 @@ async function completeShipmentInActiveRoute(
         return false;
 
     }
+
+}
+
+
+// =========================================================
+// ROUTE COMPLETE SHEET
+// =========================================================
+
+function openRouteCompleteSheet() {
+
+    if (
+        !routeCompleteOverlay
+    ) {
+
+        return;
+
+    }
+
+
+    if (
+        routeCompleteDeliveredCount
+    ) {
+
+        routeCompleteDeliveredCount.textContent =
+            deliveredShipmentsElement
+                ? deliveredShipmentsElement.textContent || "0"
+                : "0";
+
+    }
+
+
+    if (
+        routeCompleteFailedCount
+    ) {
+
+        routeCompleteFailedCount.textContent =
+            failedShipmentsElement
+                ? failedShipmentsElement.textContent || "0"
+                : "0";
+
+    }
+
+
+    routeCompleteOverlay.classList
+        .remove(
+            "hidden"
+        );
+
+}
+
+
+function closeRouteCompleteSheet() {
+
+    if (
+        !routeCompleteOverlay
+    ) {
+
+        return;
+
+    }
+
+
+    routeCompleteOverlay.classList
+        .add(
+            "hidden"
+        );
+
+}
+
+
+if (
+    closeRouteCompleteButton
+) {
+
+    closeRouteCompleteButton.addEventListener(
+
+        "click",
+
+        closeRouteCompleteSheet
+
+    );
+
+}
+
+
+if (
+    routeCompleteHomeButton
+) {
+
+    routeCompleteHomeButton.addEventListener(
+
+        "click",
+
+        function () {
+
+            closeRouteCompleteSheet();
+
+            window.scrollTo(
+                {
+                    top: 0,
+                    behavior: "smooth"
+                }
+            );
+
+        }
+
+    );
+
+}
+
+
+if (
+    routeCompleteReportsButton
+) {
+
+    routeCompleteReportsButton.addEventListener(
+
+        "click",
+
+        function () {
+
+            window.location.href =
+                "driver-history.html";
+
+        }
+
+    );
+
+}
+
+
+if (
+    routeCompleteOverlay
+) {
+
+    routeCompleteOverlay.addEventListener(
+
+        "click",
+
+        function (
+            event
+        ) {
+
+            if (
+                event.target ===
+                routeCompleteOverlay
+            ) {
+
+                closeRouteCompleteSheet();
+
+            }
+
+        }
+
+    );
 
 }
 
@@ -6382,11 +6567,12 @@ async function markSelectedShipmentDelivered() {
             rate;
 
 
-        await completeShipmentInActiveRoute(
-            shipment.id,
-            "DELIVERED",
-            deliveredAt
-        );
+        const remainingRouteStops =
+            await completeShipmentInActiveRoute(
+                shipment.id,
+                "DELIVERED",
+                deliveredAt
+            );
 
 
         closeShipmentDetails();
@@ -6403,7 +6589,29 @@ async function markSelectedShipmentDelivered() {
         );
 
 
-        await openNextRouteStopIfAvailable();
+        if (
+            remainingRouteStops ===
+            0
+        ) {
+
+            await new Promise(
+                resolve =>
+                    setTimeout(
+                        resolve,
+                        260
+                    )
+            );
+
+
+            openRouteCompleteSheet();
+
+        }
+
+        else {
+
+            await openNextRouteStopIfAvailable();
+
+        }
 
     }
 
@@ -6787,11 +6995,12 @@ async function markSelectedShipmentFailed(
         0;
 
 
-    await completeShipmentInActiveRoute(
-        shipment.id,
-        "FAILED",
-        failedAt
-    );
+    const remainingRouteStops =
+        await completeShipmentInActiveRoute(
+            shipment.id,
+            "FAILED",
+            failedAt
+        );
 
 
     closeFailedReasonSheet();
@@ -6813,7 +7022,29 @@ async function markSelectedShipmentFailed(
     );
 
 
-    await openNextRouteStopIfAvailable();
+    if (
+        remainingRouteStops ===
+        0
+    ) {
+
+        await new Promise(
+            resolve =>
+                setTimeout(
+                    resolve,
+                    260
+                )
+        );
+
+
+        openRouteCompleteSheet();
+
+    }
+
+    else {
+
+        await openNextRouteStopIfAvailable();
+
+    }
 
 }
 
