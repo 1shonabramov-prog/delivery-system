@@ -2416,8 +2416,491 @@ function showGooglePlaceSelection(
 
 
 // =========================================================
-// GOOGLE PLACES AUTOCOMPLETE
+// GOOGLE PLACES AUTOCOMPLETE - CUSTOM SHIPMENT SEARCH
 // =========================================================
+
+let shipmentPlacesSessionToken =
+    null;
+
+
+function closeShipmentSuggestions() {
+
+    const container =
+        document.getElementById(
+            "driverShipmentAddressSuggestions"
+        );
+
+
+    if (
+        container
+    ) {
+
+        container.innerHTML =
+            "";
+
+        container.classList
+            .add(
+                "hidden"
+            );
+
+    }
+
+}
+
+
+function createShipmentSuggestionsContainer(
+    input
+) {
+
+    let container =
+        document.getElementById(
+            "driverShipmentAddressSuggestions"
+        );
+
+
+    if (
+        container
+    ) {
+
+        return container;
+
+    }
+
+
+    container =
+        document.createElement(
+            "div"
+        );
+
+
+    container.id =
+        "driverShipmentAddressSuggestions";
+
+
+    container.className =
+        "yb-route-suggestions hidden";
+
+
+    input.insertAdjacentElement(
+        "afterend",
+        container
+    );
+
+
+    return container;
+
+}
+
+
+async function getShipmentPlaceSuggestions(
+    query
+) {
+
+    const text =
+        String(
+            query || ""
+        ).trim();
+
+
+    if (
+        text.length <
+        2
+    ) {
+
+        return [];
+
+    }
+
+
+    await loadGoogleMapsPlacesLibrary();
+
+
+    const {
+        AutocompleteSuggestion,
+        AutocompleteSessionToken
+    } =
+        await google.maps.importLibrary(
+            "places"
+        );
+
+
+    if (
+        !shipmentPlacesSessionToken
+    ) {
+
+        shipmentPlacesSessionToken =
+            new AutocompleteSessionToken();
+
+    }
+
+
+    const {
+        suggestions
+    } =
+        await AutocompleteSuggestion
+            .fetchAutocompleteSuggestions({
+                input:
+                    text,
+
+                includedRegionCodes: [
+                    "il"
+                ],
+
+                language:
+                    "he",
+
+                region:
+                    "IL",
+
+                sessionToken:
+                    shipmentPlacesSessionToken
+            });
+
+
+    return (
+        suggestions
+        ||
+        []
+    );
+
+}
+
+
+async function selectShipmentSuggestion(
+    suggestion,
+    input,
+    container
+) {
+
+    const prediction =
+        suggestion
+            ? suggestion.placePrediction
+            : null;
+
+
+    if (
+        !prediction
+    ) {
+
+        return;
+
+    }
+
+
+    try {
+
+        const place =
+            prediction.toPlace();
+
+
+        await place.fetchFields({
+            fields: [
+                "id",
+                "formattedAddress",
+                "location",
+                "addressComponents"
+            ]
+        });
+
+
+        const addressComponents =
+            place.addressComponents
+            ||
+            [];
+
+
+        const city =
+            getGoogleAddressComponent(
+                addressComponents,
+                [
+                    "locality",
+                    "postal_town"
+                ]
+            )
+            ||
+            getGoogleAddressComponent(
+                addressComponents,
+                [
+                    "administrative_area_level_2"
+                ]
+            );
+
+
+        const street =
+            getGoogleAddressComponent(
+                addressComponents,
+                [
+                    "route"
+                ]
+            );
+
+
+        const houseNumber =
+            getGoogleAddressComponent(
+                addressComponents,
+                [
+                    "street_number"
+                ]
+            );
+
+
+        const latitude =
+            place.location
+                ? place.location.lat()
+                : null;
+
+
+        const longitude =
+            place.location
+                ? place.location.lng()
+                : null;
+
+
+        setInputValue(
+            "driverShipmentCity",
+            city
+        );
+
+        setInputValue(
+            "driverShipmentStreet",
+            street
+        );
+
+        setInputValue(
+            "driverShipmentHouseNumber",
+            houseNumber
+        );
+
+        setInputValue(
+            "driverShipmentGooglePlaceId",
+            place.id
+            ||
+            ""
+        );
+
+        setInputValue(
+            "driverShipmentFormattedAddress",
+            place.formattedAddress
+            ||
+            ""
+        );
+
+        setInputValue(
+            "driverShipmentLatitude",
+            latitude !== null
+                ? String(
+                    latitude
+                )
+                : ""
+        );
+
+        setInputValue(
+            "driverShipmentLongitude",
+            longitude !== null
+                ? String(
+                    longitude
+                )
+                : ""
+        );
+
+
+        input.value =
+            place.formattedAddress
+            ||
+            prediction.text?.text
+            ||
+            "";
+
+
+        showGooglePlaceSelection(
+            place.formattedAddress
+            ||
+            ""
+        );
+
+
+        closeShipmentSuggestions();
+
+
+        shipmentPlacesSessionToken =
+            null;
+
+    }
+
+    catch (
+        error
+    ) {
+
+        console.error(
+            "Failed reading selected shipment place:",
+            error
+        );
+
+    }
+
+}
+
+
+function renderShipmentSuggestions(
+    suggestions,
+    input,
+    container
+) {
+
+    container.innerHTML =
+        "";
+
+
+    if (
+        !suggestions.length
+    ) {
+
+        closeShipmentSuggestions();
+
+        return;
+
+    }
+
+
+    suggestions
+        .slice(
+            0,
+            5
+        )
+        .forEach(
+            suggestion => {
+
+                const prediction =
+                    suggestion.placePrediction;
+
+
+                if (
+                    !prediction
+                ) {
+
+                    return;
+
+                }
+
+
+                const button =
+                    document.createElement(
+                        "button"
+                    );
+
+
+                button.type =
+                    "button";
+
+
+                button.className =
+                    "yb-route-suggestion";
+
+
+                const pin =
+                    document.createElement(
+                        "span"
+                    );
+
+
+                pin.className =
+                    "yb-route-suggestion-pin";
+
+
+                pin.textContent =
+                    "⌖";
+
+
+                const copy =
+                    document.createElement(
+                        "span"
+                    );
+
+
+                copy.className =
+                    "yb-route-suggestion-copy";
+
+
+                const title =
+                    document.createElement(
+                        "strong"
+                    );
+
+
+                title.textContent =
+                    prediction.mainText
+                        ? prediction.mainText.text
+                        : prediction.text?.text
+                        || "";
+
+
+                copy.appendChild(
+                    title
+                );
+
+
+                if (
+                    prediction.secondaryText
+                    &&
+                    prediction.secondaryText.text
+                ) {
+
+                    const subtitle =
+                        document.createElement(
+                            "small"
+                        );
+
+
+                    subtitle.textContent =
+                        prediction.secondaryText.text;
+
+
+                    copy.appendChild(
+                        subtitle
+                    );
+
+                }
+
+
+                button.appendChild(
+                    pin
+                );
+
+
+                button.appendChild(
+                    copy
+                );
+
+
+                button.addEventListener(
+                    "click",
+                    function () {
+
+                        selectShipmentSuggestion(
+                            suggestion,
+                            input,
+                            container
+                        );
+
+                    }
+                );
+
+
+                container.appendChild(
+                    button
+                );
+
+            }
+        );
+
+
+    container.classList
+        .remove(
+            "hidden"
+        );
+
+}
+
 
 async function initializeGooglePlacesAutocomplete() {
 
@@ -2430,14 +2913,14 @@ async function initializeGooglePlacesAutocomplete() {
     }
 
 
-    const originalInput =
+    const input =
         document.getElementById(
             "driverShipmentAddressSearch"
         );
 
 
     if (
-        !originalInput
+        !input
     ) {
 
         return false;
@@ -2450,223 +2933,127 @@ async function initializeGooglePlacesAutocomplete() {
         await loadGoogleMapsPlacesLibrary();
 
 
-        const {
-            PlaceAutocompleteElement
-        } =
-            await google.maps.importLibrary(
-                "places"
+        driverShipmentAddressSearch =
+            input;
+
+
+        input.autocomplete =
+            "off";
+
+
+        const container =
+            createShipmentSuggestionsContainer(
+                input
             );
 
 
-        const autocomplete =
-            new PlaceAutocompleteElement({
-                includedRegionCodes: [
-                    "il"
-                ]
-            });
+        let debounceTimer =
+            null;
 
 
-        autocomplete.id =
-            "driverShipmentAddressSearch";
+        input.addEventListener(
+            "input",
+
+            function () {
+
+                const query =
+                    input.value.trim();
 
 
-        autocomplete.placeholder =
-            "התחל להקליד רחוב ומספר...";
+                clearTimeout(
+                    debounceTimer
+                );
 
 
-        autocomplete.style.width =
-            "100%";
+                if (
+                    query.length <
+                    2
+                ) {
+
+                    closeShipmentSuggestions();
+
+                    return;
+
+                }
 
 
-        autocomplete.style.display =
-            "block";
+                debounceTimer =
+                    setTimeout(
+
+                        async function () {
+
+                            try {
+
+                                const suggestions =
+                                    await getShipmentPlaceSuggestions(
+                                        query
+                                    );
 
 
-        originalInput.replaceWith(
-            autocomplete
+                                if (
+                                    input.value.trim()
+                                    !==
+                                    query
+                                ) {
+
+                                    return;
+
+                                }
+
+
+                                renderShipmentSuggestions(
+                                    suggestions,
+                                    input,
+                                    container
+                                );
+
+                            }
+
+                            catch (
+                                error
+                            ) {
+
+                                console.error(
+                                    "Shipment suggestions failed:",
+                                    error
+                                );
+
+
+                                closeShipmentSuggestions();
+
+                            }
+
+                        },
+
+                        220
+
+                    );
+
+            }
         );
 
 
-        driverShipmentAddressSearch =
-            autocomplete;
+        input.addEventListener(
+            "focus",
 
+            function () {
 
-        googlePlaceAutocomplete =
-            autocomplete;
+                setTimeout(
+                    function () {
 
+                        input.scrollIntoView({
+                            behavior:
+                                "smooth",
 
-        autocomplete.addEventListener(
+                            block:
+                                "center"
+                        });
 
-            "gmp-select",
-
-            async function (
-                event
-            ) {
-
-                try {
-
-                    const prediction =
-                        event.placePrediction;
-
-
-                    if (
-                        !prediction
-                    ) {
-
-                        return;
-
-                    }
-
-
-                    const place =
-                        prediction.toPlace();
-
-
-                    await place.fetchFields({
-                        fields: [
-                            "id",
-                            "formattedAddress",
-                            "location",
-                            "addressComponents"
-                        ]
-                    });
-
-
-                    const addressComponents =
-                        place.addressComponents
-                        ||
-                        [];
-
-
-                    const city =
-                        getGoogleAddressComponent(
-                            addressComponents,
-                            [
-                                "locality",
-                                "postal_town"
-                            ]
-                        )
-                        ||
-                        getGoogleAddressComponent(
-                            addressComponents,
-                            [
-                                "administrative_area_level_2"
-                            ]
-                        );
-
-
-                    const street =
-                        getGoogleAddressComponent(
-                            addressComponents,
-                            [
-                                "route"
-                            ]
-                        );
-
-
-                    const houseNumber =
-                        getGoogleAddressComponent(
-                            addressComponents,
-                            [
-                                "street_number"
-                            ]
-                        );
-
-
-                    const latitude =
-                        place.location
-                            ? place.location.lat()
-                            : null;
-
-
-                    const longitude =
-                        place.location
-                            ? place.location.lng()
-                            : null;
-
-
-                    setInputValue(
-                        "driverShipmentCity",
-                        city
-                    );
-
-                    setInputValue(
-                        "driverShipmentStreet",
-                        street
-                    );
-
-                    setInputValue(
-                        "driverShipmentHouseNumber",
-                        houseNumber
-                    );
-
-                    setInputValue(
-                        "driverShipmentGooglePlaceId",
-                        place.id
-                        ||
-                        ""
-                    );
-
-                    setInputValue(
-                        "driverShipmentFormattedAddress",
-                        place.formattedAddress
-                        ||
-                        ""
-                    );
-
-                    setInputValue(
-                        "driverShipmentLatitude",
-                        latitude !== null
-                            ? String(
-                                latitude
-                            )
-                            : ""
-                    );
-
-                    setInputValue(
-                        "driverShipmentLongitude",
-                        longitude !== null
-                            ? String(
-                                longitude
-                            )
-                            : ""
-                    );
-
-
-                    autocomplete.value =
-                        place.formattedAddress
-                        ||
-                        prediction.text?.text
-                        ||
-                        "";
-
-
-                    showGooglePlaceSelection(
-                        place.formattedAddress
-                        ||
-                        ""
-                    );
-
-                }
-
-                catch (
-                    error
-                ) {
-
-                    console.error(
-                        "Failed reading selected Google place:",
-                        error
-                    );
-
-
-                    alert(
-                        "לא הצלחנו לקרוא את הכתובת שנבחרה מ-Google. אפשר לנסות לבחור אותה שוב או להזין את הכתובת ידנית."
-                    );
-
-                }
+                    },
+                    180
+                );
 
             }
-
         );
 
 
@@ -2681,14 +3068,14 @@ async function initializeGooglePlacesAutocomplete() {
 
             inputId => {
 
-                const input =
+                const manualInput =
                     document.getElementById(
                         inputId
                     );
 
 
                 if (
-                    !input
+                    !manualInput
                 ) {
 
                     return;
@@ -2696,7 +3083,7 @@ async function initializeGooglePlacesAutocomplete() {
                 }
 
 
-                input.addEventListener(
+                manualInput.addEventListener(
 
                     "input",
 
@@ -2715,11 +3102,35 @@ async function initializeGooglePlacesAutocomplete() {
         );
 
 
+        document.addEventListener(
+            "click",
+
+            function (
+                event
+            ) {
+
+                if (
+                    event.target ===
+                        input
+                    ||
+                    container.contains(
+                        event.target
+                    )
+                ) {
+
+                    return;
+
+                }
+
+
+                closeShipmentSuggestions();
+
+            }
+        );
+
+
         googlePlacesReady =
             true;
-
-
-        enhanceDriverV2Structure();
 
 
         return true;
@@ -3151,6 +3562,95 @@ function initializeSingleRouteSearch(
 
     input.autocomplete =
         "off";
+
+
+    const fieldShell =
+        input.parentElement;
+
+
+    if (
+        fieldShell
+        &&
+        !fieldShell.querySelector(
+            ".yb-route-clear"
+        )
+    ) {
+
+        const clearButton =
+            document.createElement(
+                "button"
+            );
+
+
+        clearButton.type =
+            "button";
+
+
+        clearButton.className =
+            "yb-route-clear hidden";
+
+
+        clearButton.setAttribute(
+            "aria-label",
+            "נקה כתובת"
+        );
+
+
+        clearButton.textContent =
+            "×";
+
+
+        fieldShell.style.position =
+            "relative";
+
+
+        fieldShell.appendChild(
+            clearButton
+        );
+
+
+        const syncClearButton =
+            function () {
+
+                clearButton.classList.toggle(
+                    "hidden",
+                    !input.value.trim()
+                );
+
+            };
+
+
+        input.addEventListener(
+            "input",
+            syncClearButton
+        );
+
+
+        clearButton.addEventListener(
+            "click",
+            function () {
+
+                input.value =
+                    "";
+
+
+                closeRouteSuggestions(
+                    container
+                );
+
+
+                syncClearButton();
+
+
+                input.focus();
+
+            }
+        );
+
+
+        syncClearButton();
+
+    }
 
 
     const container =
