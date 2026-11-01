@@ -2750,19 +2750,50 @@ async function initializeGooglePlacesAutocomplete() {
 
 
 // =========================================================
-// ROUTE START / END - GOOGLE PLACES
+// ROUTE START / END - CUSTOM GOOGLE PLACES SEARCH
 // =========================================================
 
-async function createRoutePlaceAutocomplete(
-    inputElement,
-    placeholder
+let routePlacesSessionToken =
+    null;
+
+
+function closeRouteSuggestions(
+    container
 ) {
 
     if (
-        !inputElement
+        container
     ) {
 
-        return null;
+        container.innerHTML =
+            "";
+
+        container.classList
+            .add(
+                "hidden"
+            );
+
+    }
+
+}
+
+
+async function getRoutePlaceSuggestions(
+    query
+) {
+
+    const text =
+        String(
+            query || ""
+        ).trim();
+
+
+    if (
+        text.length <
+        2
+    ) {
+
+        return [];
 
     }
 
@@ -2771,54 +2802,197 @@ async function createRoutePlaceAutocomplete(
 
 
     const {
-        PlaceAutocompleteElement
+        AutocompleteSuggestion,
+        AutocompleteSessionToken
     } =
         await google.maps.importLibrary(
             "places"
         );
 
 
-    const autocomplete =
-        new PlaceAutocompleteElement({
-            includedRegionCodes: [
-                "il"
+    if (
+        !routePlacesSessionToken
+    ) {
+
+        routePlacesSessionToken =
+            new AutocompleteSessionToken();
+
+    }
+
+
+    const request = {
+        input:
+            text,
+
+        includedRegionCodes: [
+            "il"
+        ],
+
+        language:
+            "he",
+
+        region:
+            "IL",
+
+        sessionToken:
+            routePlacesSessionToken
+    };
+
+
+    const {
+        suggestions
+    } =
+        await AutocompleteSuggestion
+            .fetchAutocompleteSuggestions(
+                request
+            );
+
+
+    return (
+        suggestions
+        ||
+        []
+    );
+
+}
+
+
+async function selectRouteSuggestion(
+    suggestion,
+    input,
+    container
+) {
+
+    const prediction =
+        suggestion
+            ? suggestion.placePrediction
+            : null;
+
+
+    if (
+        !prediction
+    ) {
+
+        return;
+
+    }
+
+
+    try {
+
+        const place =
+            prediction.toPlace();
+
+
+        await place.fetchFields({
+            fields: [
+                "formattedAddress",
+                "location"
             ]
         });
 
 
-    autocomplete.id =
-        inputElement.id;
+        input.value =
+            place.formattedAddress
+            ||
+            prediction.text?.text
+            ||
+            "";
 
 
-    autocomplete.placeholder =
-        placeholder;
+        closeRouteSuggestions(
+            container
+        );
 
 
-    autocomplete.style.width =
-        "100%";
+        routePlacesSessionToken =
+            null;
 
 
-    autocomplete.style.display =
-        "block";
+        input.dispatchEvent(
+            new Event(
+                "change",
+                {
+                    bubbles:
+                        true
+                }
+            )
+        );
+
+    }
+
+    catch (
+        error
+    ) {
+
+        console.error(
+            "Failed selecting route place:",
+            error
+        );
+
+    }
+
+}
 
 
-    inputElement.replaceWith(
-        autocomplete
+function createRouteSuggestionsContainer(
+    input
+) {
+
+    const wrapper =
+        document.createElement(
+            "div"
+        );
+
+
+    wrapper.className =
+        "yb-route-suggestions hidden";
+
+
+    input.insertAdjacentElement(
+        "afterend",
+        wrapper
     );
 
 
-    autocomplete.addEventListener(
+    return wrapper;
 
-        "gmp-select",
+}
 
-        async function (
-            event
-        ) {
 
-            try {
+function renderRouteSuggestions(
+    suggestions,
+    input,
+    container
+) {
+
+    container.innerHTML =
+        "";
+
+
+    if (
+        !suggestions.length
+    ) {
+
+        closeRouteSuggestions(
+            container
+        );
+
+        return;
+
+    }
+
+
+    suggestions
+        .slice(
+            0,
+            5
+        )
+        .forEach(
+            suggestion => {
 
                 const prediction =
-                    event.placePrediction;
+                    suggestion.placePrediction;
 
 
                 if (
@@ -2830,44 +3004,302 @@ async function createRoutePlaceAutocomplete(
                 }
 
 
-                const place =
-                    prediction.toPlace();
+                const button =
+                    document.createElement(
+                        "button"
+                    );
 
 
-                await place.fetchFields({
-                    fields: [
-                        "formattedAddress",
-                        "location"
-                    ]
-                });
+                button.type =
+                    "button";
 
 
-                autocomplete.value =
-                    place.formattedAddress
-                    ||
-                    prediction.text?.text
-                    ||
-                    "";
+                button.className =
+                    "yb-route-suggestion";
 
-            }
 
-            catch (
-                error
-            ) {
+                const mainText =
+                    prediction.mainText
+                        ? prediction.mainText.text
+                        : prediction.text?.text
+                        || "";
 
-                console.error(
-                    "Failed reading route place:",
-                    error
+
+                const secondaryText =
+                    prediction.secondaryText
+                        ? prediction.secondaryText.text
+                        : "";
+
+
+                const pin =
+                    document.createElement(
+                        "span"
+                    );
+
+
+                pin.className =
+                    "yb-route-suggestion-pin";
+
+
+                pin.textContent =
+                    "⌖";
+
+
+                const copy =
+                    document.createElement(
+                        "span"
+                    );
+
+
+                copy.className =
+                    "yb-route-suggestion-copy";
+
+
+                const title =
+                    document.createElement(
+                        "strong"
+                    );
+
+
+                title.textContent =
+                    mainText;
+
+
+                copy.appendChild(
+                    title
+                );
+
+
+                if (
+                    secondaryText
+                ) {
+
+                    const subtitle =
+                        document.createElement(
+                            "small"
+                        );
+
+
+                    subtitle.textContent =
+                        secondaryText;
+
+
+                    copy.appendChild(
+                        subtitle
+                    );
+
+                }
+
+
+                button.appendChild(
+                    pin
+                );
+
+
+                button.appendChild(
+                    copy
+                );
+
+
+                button.addEventListener(
+                    "click",
+                    function () {
+
+                        selectRouteSuggestion(
+                            suggestion,
+                            input,
+                            container
+                        );
+
+                    }
+                );
+
+
+                container.appendChild(
+                    button
                 );
 
             }
+        );
+
+
+    container.classList
+        .remove(
+            "hidden"
+        );
+
+}
+
+
+function initializeSingleRouteSearch(
+    input,
+    placeholder
+) {
+
+    if (
+        !input
+    ) {
+
+        return;
+
+    }
+
+
+    input.placeholder =
+        placeholder;
+
+
+    input.autocomplete =
+        "off";
+
+
+    const container =
+        createRouteSuggestionsContainer(
+            input
+        );
+
+
+    let debounceTimer =
+        null;
+
+
+    input.addEventListener(
+        "input",
+
+        function () {
+
+            const query =
+                input.value.trim();
+
+
+            clearTimeout(
+                debounceTimer
+            );
+
+
+            if (
+                query.length <
+                2
+            ) {
+
+                closeRouteSuggestions(
+                    container
+                );
+
+                return;
+
+            }
+
+
+            debounceTimer =
+                setTimeout(
+
+                    async function () {
+
+                        try {
+
+                            const suggestions =
+                                await getRoutePlaceSuggestions(
+                                    query
+                                );
+
+
+                            if (
+                                input.value.trim()
+                                !==
+                                query
+                            ) {
+
+                                return;
+
+                            }
+
+
+                            renderRouteSuggestions(
+                                suggestions,
+                                input,
+                                container
+                            );
+
+                        }
+
+                        catch (
+                            error
+                        ) {
+
+                            console.error(
+                                "Route suggestions failed:",
+                                error
+                            );
+
+
+                            closeRouteSuggestions(
+                                container
+                            );
+
+                        }
+
+                    },
+
+                    220
+
+                );
 
         }
-
     );
 
 
-    return autocomplete;
+    input.addEventListener(
+        "focus",
+
+        function () {
+
+            setTimeout(
+                function () {
+
+                    input.scrollIntoView({
+                        behavior:
+                            "smooth",
+
+                        block:
+                            "center"
+                    });
+
+                },
+                180
+            );
+
+        }
+    );
+
+
+    document.addEventListener(
+        "click",
+
+        function (
+            event
+        ) {
+
+            if (
+                event.target ===
+                    input
+                ||
+                container.contains(
+                    event.target
+                )
+            ) {
+
+                return;
+
+            }
+
+
+            closeRouteSuggestions(
+                container
+            );
+
+        }
+    );
 
 }
 
@@ -2876,18 +3308,19 @@ async function initializeRoutePlacesAutocomplete() {
 
     try {
 
-        routeStartAddress =
-            await createRoutePlaceAutocomplete(
-                routeStartAddress,
-                "מאיפה יוצאים?"
-            );
+        await loadGoogleMapsPlacesLibrary();
 
 
-        routeEndAddress =
-            await createRoutePlaceAutocomplete(
-                routeEndAddress,
-                "איפה מסיימים?"
-            );
+        initializeSingleRouteSearch(
+            routeStartAddress,
+            "מאיפה יוצאים?"
+        );
+
+
+        initializeSingleRouteSearch(
+            routeEndAddress,
+            "איפה מסיימים?"
+        );
 
 
         return true;
