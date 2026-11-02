@@ -2620,3 +2620,54 @@ gmp-place-autocomplete#routeEndAddress {
     }
 
 }
+/* =========================================================
+   ROUTE - UNPLANNED SHIPMENT
+   ========================================================= */
+
+.route-unplanned-card {
+    border-color: rgba(255, 193, 77, .45) !important;
+
+    background:
+        linear-gradient(
+            145deg,
+            rgba(255, 183, 60, .10),
+            rgba(10, 30, 52, .92)
+        ) !important;
+
+    box-shadow:
+        0 0 22px rgba(255, 174, 46, .07);
+}
+
+.route-unplanned-label {
+    margin-bottom: 5px;
+
+    color: #ffc45f;
+
+    font-size: 12px;
+    font-weight: 800;
+}
+
+.route-unplanned-badge {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+
+    padding: 7px 10px;
+
+    border: 1px solid rgba(255, 193, 77, .35);
+    border-radius: 999px;
+
+    background: rgba(255, 180, 50, .10);
+
+    color: #ffc45f;
+
+    font-size: 11px;
+    font-weight: 800;
+}
+
+.route-unplanned-hint {
+    color: #ffc45f;
+
+    font-size: 12px;
+    font-weight: 700;
+}

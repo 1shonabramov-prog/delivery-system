@@ -4952,6 +4952,17 @@ if (
 
                     showRouteRecalculationWarning();
 
+
+                    if (
+                        optimizedRouteResult
+                    ) {
+
+                        renderOptimizedRoute(
+                            optimizedRouteResult
+                        );
+
+                    }
+
                 }
 
 
@@ -5243,6 +5254,17 @@ if (
 
 
             showRouteRecalculationWarning();
+
+
+            if (
+                optimizedRouteResult
+            ) {
+
+                renderOptimizedRoute(
+                    optimizedRouteResult
+                );
+
+            }
 
 
             if (
@@ -8689,19 +8711,76 @@ function renderOptimizedRoute(
 
 
     const stops =
-        result.stops
-        ||
-        [];
+        Array.isArray(
+            result.stops
+        )
+            ? result.stops
+            : [];
 
 
-    // כאשר יש מסלול פעיל, כרטיס "נשארו" צריך לשקף
-    // את מספר התחנות שנותרו במסלול ולא את כל המשלוחים הפעילים.
+    const routeShipmentIds =
+        new Set(
+            stops
+                .map(
+                    stop =>
+                        String(
+                            stop.shipment_id
+                            ||
+                            ""
+                        )
+                )
+                .filter(
+                    Boolean
+                )
+        );
+
+
+    const unplannedShipments =
+        driverShipments.filter(
+
+            shipment => {
+
+                const active =
+                    shipment.status !==
+                        "נמסר"
+
+                    &&
+
+                    shipment.status !==
+                        "לא נמסר";
+
+
+                const alreadyInRoute =
+                    routeShipmentIds.has(
+                        String(
+                            shipment.id
+                            ||
+                            ""
+                        )
+                    );
+
+
+                return (
+                    active
+                    &&
+                    !alreadyInRoute
+                );
+
+            }
+
+        );
+
+
+    // "נשארו" צריך לשקף את כל המשלוחים הפעילים:
+    // תחנות שכבר שובצו + משלוחים חדשים שממתינים לחישוב מחדש.
     if (
         remainingShipmentsElement
     ) {
 
         remainingShipmentsElement.textContent =
-            stops.length;
+            stops.length
+            +
+            unplannedShipments.length;
 
     }
 
@@ -8840,6 +8919,129 @@ function renderOptimizedRoute(
         }
 
     );
+
+
+    unplannedShipments.forEach(
+
+        shipment => {
+
+            const item =
+                document.createElement(
+                    "button"
+                );
+
+
+            item.type =
+                "button";
+
+
+            item.className =
+                "driver-shipment-card route-unplanned-card";
+
+
+            item.addEventListener(
+
+                "click",
+
+                function () {
+
+                    openShipmentDetails(
+                        shipment.id
+                    );
+
+                }
+
+            );
+
+
+            const address =
+                [
+                    shipment.street || "",
+                    shipment.house_number || "",
+                    shipment.city || ""
+                ]
+                    .filter(
+                        Boolean
+                    )
+                    .join(
+                        " "
+                    );
+
+
+            item.innerHTML = `
+
+                <div class="shipment-card-top">
+
+                    <div>
+
+                        <div class="route-unplanned-label">
+                            ⚠ ממתין לסידור מחדש
+                        </div>
+
+                        <h3 class="shipment-card-customer">
+                            ${shipment.customer || "לקוח"}
+                        </h3>
+
+                    </div>
+
+
+                    <span class="route-unplanned-badge">
+                        לא שובץ
+                    </span>
+
+                </div>
+
+
+                <div class="shipment-card-address">
+
+                    📍
+                    ${address || "ללא כתובת"}
+
+                </div>
+
+
+                <div class="shipment-card-phone">
+
+                    📞
+                    ${shipment.phone || "ללא טלפון"}
+
+                </div>
+
+
+                <div class="shipment-card-footer">
+
+                    <span class="route-unplanned-hint">
+                        יש לחשב מסלול מחדש
+                    </span>
+
+
+                    <span class="shipment-open-text">
+                        פרטים >
+                    </span>
+
+                </div>
+
+            `;
+
+
+            optimizedRouteList
+                .appendChild(
+                    item
+                );
+
+        }
+
+    );
+
+
+    if (
+        unplannedShipments.length >
+        0
+    ) {
+
+        showRouteRecalculationWarning();
+
+    }
 
 
     if (
