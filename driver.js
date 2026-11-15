@@ -5314,9 +5314,6 @@ if (
                     showRouteRecalculationWarning();
 
 
-                    await prepareRouteRecalculationFromCurrentLocation();
-
-
                     if (
                         optimizedRouteResult
                     ) {
@@ -8303,8 +8300,16 @@ async function prepareRouteRecalculationFromCurrentLocation() {
         await loadGoogleMapsPlacesLibrary();
 
 
+        const {
+            Geocoder
+        } =
+            await google.maps.importLibrary(
+                "geocoding"
+            );
+
+
         const geocoder =
-            new google.maps.Geocoder();
+            new Geocoder();
 
 
         const response =
@@ -10395,7 +10400,48 @@ if (
 
         "click",
 
-        calculateDriverRoute
+        async function () {
+
+            if (
+                recalculateRouteButton
+            ) {
+
+                recalculateRouteButton.disabled =
+                    true;
+
+                recalculateRouteButton.textContent =
+                    "מעדכן מיקום...";
+            }
+
+
+            const locationReady =
+                await prepareRouteRecalculationFromCurrentLocation();
+
+
+            if (
+                !locationReady
+            ) {
+
+                if (
+                    recalculateRouteButton
+                ) {
+
+                    recalculateRouteButton.disabled =
+                        false;
+
+                    recalculateRouteButton.textContent =
+                        "חשב מסלול מחדש";
+                }
+
+
+                return;
+
+            }
+
+
+            await calculateDriverRoute();
+
+        }
 
     );
 
