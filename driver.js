@@ -5715,70 +5715,99 @@ function openShipmentDetails(
         ||
         deliveryProgressFill
     ) {
+const routeStops =
+    optimizedRouteResult &&
+    Array.isArray(
+        optimizedRouteResult.stops
+    )
+        ? optimizedRouteResult.stops
+        : [];
 
-        const routeStops =
-            optimizedRouteResult &&
-            Array.isArray(
-                optimizedRouteResult.stops
+
+const currentIndex =
+    routeStops.findIndex(
+        stop =>
+            stop.shipment_id ===
+            shipment.id
+    );
+
+
+const totalStops =
+    Number(
+        optimizedRouteResult &&
+        optimizedRouteResult.stop_count
+            ? optimizedRouteResult.stop_count
+            : routeStops.length
+    );
+
+
+const remainingStops =
+    Number(
+        optimizedRouteResult &&
+        optimizedRouteResult.remaining_stop_count !==
+            undefined
+            ? optimizedRouteResult.remaining_stop_count
+            : routeStops.length
+    );
+
+
+const completedStops =
+    Math.max(
+        0,
+        totalStops -
+        remainingStops
+    );
+
+
+const currentStopNumber =
+    totalStops > 0
+        ? Math.min(
+            totalStops,
+            completedStops +
+            (
+                currentIndex >= 0
+                    ? currentIndex + 1
+                    : 1
             )
-                ? optimizedRouteResult.stops
-                : [];
+        )
+        : 1;
 
 
-        const currentIndex =
-            routeStops.findIndex(
-                stop =>
-                    stop.shipment_id ===
-                    shipment.id
-            );
+if (
+    deliveryProgressText
+) {
+
+    deliveryProgressText.textContent =
+        totalStops > 0
+            ? `${currentStopNumber} מתוך ${totalStops}`
+            : "משלוח פעיל";
+
+}
 
 
-        const totalStops =
-            routeStops.length;
+if (
+    deliveryProgressFill
+) {
+
+    const percent =
+        totalStops > 0
+            ? Math.max(
+                4,
+                Math.min(
+                    100,
+                    (
+                        currentStopNumber /
+                        totalStops
+                    ) * 100
+                )
+            )
+            : 100;
 
 
-        const currentStopNumber =
-            currentIndex >= 0
-                ? currentIndex + 1
-                : 1;
+    deliveryProgressFill.style.width =
+        `${percent}%`;
 
-
-        if (
-            deliveryProgressText
-        ) {
-
-            deliveryProgressText.textContent =
-                totalStops > 0
-                    ? `עצירה ${currentStopNumber} מתוך ${totalStops}`
-                    : "משלוח פעיל";
-
-        }
-
-
-        if (
-            deliveryProgressFill
-        ) {
-
-            const percent =
-                totalStops > 0
-                    ? Math.max(
-                        8,
-                        Math.min(
-                            100,
-                            (
-                                currentStopNumber /
-                                totalStops
-                            ) * 100
-                        )
-                    )
-                    : 100;
-
-
-            deliveryProgressFill.style.width =
-                `${percent}%`;
-
-        }
-
+}
     }
 
 
