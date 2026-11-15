@@ -5314,6 +5314,9 @@ if (
                     showRouteRecalculationWarning();
 
 
+                    await prepareRouteRecalculationFromCurrentLocation();
+
+
                     if (
                         optimizedRouteResult
                     ) {
@@ -8205,6 +8208,174 @@ function loadRouteSettings() {
             "Could not load remembered route addresses:",
             error
         );
+
+    }
+
+}
+
+
+
+// =========================================================
+// PREPARE RECALCULATION FROM CURRENT LOCATION
+// =========================================================
+
+async function prepareRouteRecalculationFromCurrentLocation() {
+
+    const now =
+        new Date();
+
+
+    if (
+        routeDate
+    ) {
+
+        routeDate.value =
+            getLocalDateValue(
+                now
+            );
+
+    }
+
+
+    if (
+        routeStartTime
+    ) {
+
+        routeStartTime.value =
+            getLocalTimeValue(
+                now
+            );
+
+    }
+
+
+    if (
+        !navigator.geolocation
+    ) {
+
+        showDriverToast(
+            "השעה עודכנה. לא ניתן לקבל מיקום מהמכשיר."
+        );
+
+
+        return false;
+
+    }
+
+
+    try {
+
+        const position =
+            await new Promise(
+
+                (
+                    resolve,
+                    reject
+                ) => {
+
+                    navigator.geolocation.getCurrentPosition(
+                        resolve,
+                        reject,
+                        {
+                            enableHighAccuracy:
+                                true,
+
+                            timeout:
+                                10000,
+
+                            maximumAge:
+                                30000
+                        }
+                    );
+
+                }
+
+            );
+
+
+        const latitude =
+            position.coords.latitude;
+
+        const longitude =
+            position.coords.longitude;
+
+
+        await loadGoogleMapsPlacesLibrary();
+
+
+        const geocoder =
+            new google.maps.Geocoder();
+
+
+        const response =
+            await geocoder.geocode(
+                {
+                    location: {
+                        lat:
+                            latitude,
+
+                        lng:
+                            longitude
+                    }
+                }
+            );
+
+
+        const currentAddress =
+            response.results &&
+            response.results.length > 0
+
+                ? response.results[0].formatted_address
+
+                : `${latitude}, ${longitude}`;
+
+
+        if (
+            routeStartAddress
+        ) {
+
+            routeStartAddress.value =
+                currentAddress;
+
+
+            routeStartAddress.dispatchEvent(
+                new Event(
+                    "change",
+                    {
+                        bubbles:
+                            true
+                    }
+                )
+            );
+
+        }
+
+
+        showDriverToast(
+            "📍 נקודת ההתחלה והשעה עודכנו למיקום הנוכחי"
+        );
+
+
+        return true;
+
+    }
+
+    catch (
+        error
+    ) {
+
+        console.warn(
+            "Could not get current driver location:",
+            error
+        );
+
+
+        showDriverToast(
+            "השעה עודכנה. לא הצלחנו לקבל את המיקום הנוכחי."
+        );
+
+
+        return false;
 
     }
 
