@@ -791,6 +791,367 @@ function showDriverToast(
 }
 
 
+
+// =========================================================
+// FAILED TODAY - QUICK ACCESS
+// =========================================================
+
+let failedTodayOverlay =
+    null;
+
+
+function ensureFailedTodayOverlay() {
+
+    if (
+        failedTodayOverlay
+    ) {
+
+        return failedTodayOverlay;
+
+    }
+
+
+    failedTodayOverlay =
+        document.createElement(
+            "div"
+        );
+
+
+    failedTodayOverlay.id =
+        "failedTodayOverlay";
+
+    failedTodayOverlay.className =
+        "bottom-sheet-overlay hidden";
+
+
+    failedTodayOverlay.innerHTML = `
+        <section class="failed-today-sheet">
+
+            <div class="bottom-sheet-handle"></div>
+
+            <div class="failed-today-header">
+
+                <div>
+                    <p class="eyebrow">
+                        Delivery corrections
+                    </p>
+
+                    <h2>
+                        לא נמסרו היום
+                    </h2>
+
+                    <p>
+                        בחר משלוח כדי לעדכן אותו במקרה שנמסר לאחר מכן.
+                    </p>
+                </div>
+
+                <button
+                    id="closeFailedTodayButton"
+                    class="icon-button modal-close-button"
+                    type="button"
+                    aria-label="סגור"
+                >
+                    ✕
+                </button>
+
+            </div>
+
+            <div
+                id="failedTodayList"
+                class="failed-today-list"
+            ></div>
+
+        </section>
+    `;
+
+
+    document.body.appendChild(
+        failedTodayOverlay
+    );
+
+
+    const closeButton =
+        failedTodayOverlay.querySelector(
+            "#closeFailedTodayButton"
+        );
+
+
+    if (
+        closeButton
+    ) {
+
+        closeButton.addEventListener(
+            "click",
+            closeFailedTodaySheet
+        );
+
+    }
+
+
+    failedTodayOverlay.addEventListener(
+        "click",
+        function (
+            event
+        ) {
+
+            if (
+                event.target ===
+                failedTodayOverlay
+            ) {
+
+                closeFailedTodaySheet();
+
+            }
+
+        }
+    );
+
+
+    return failedTodayOverlay;
+
+}
+
+
+function closeFailedTodaySheet() {
+
+    if (
+        !failedTodayOverlay
+    ) {
+
+        return;
+
+    }
+
+
+    failedTodayOverlay.classList
+        .add(
+            "hidden"
+        );
+
+}
+
+
+function openFailedTodaySheet() {
+
+    const overlay =
+        ensureFailedTodayOverlay();
+
+
+    const list =
+        overlay.querySelector(
+            "#failedTodayList"
+        );
+
+
+    if (
+        !list
+    ) {
+
+        return;
+
+    }
+
+
+    const failedToday =
+        getCompletedTodayShipments()
+            .filter(
+                shipment =>
+                    shipment.status ===
+                    "לא נמסר"
+            );
+
+
+    list.innerHTML =
+        "";
+
+
+    if (
+        failedToday.length ===
+        0
+    ) {
+
+        list.innerHTML = `
+            <div class="driver-empty-state">
+                <strong>
+                    אין משלוחים שסומנו כלא נמסר היום
+                </strong>
+            </div>
+        `;
+
+    }
+
+    else {
+
+        failedToday.forEach(
+
+            shipment => {
+
+                const button =
+                    document.createElement(
+                        "button"
+                    );
+
+
+                button.type =
+                    "button";
+
+                button.className =
+                    "failed-today-card";
+
+
+                button.innerHTML = `
+                    <div class="failed-today-card-top">
+
+                        <div>
+                            <strong>
+                                ${shipment.customer || "לקוח"}
+                            </strong>
+
+                            <span>
+                                ${getShipmentMainAddress(
+                                    shipment
+                                )}
+                            </span>
+                        </div>
+
+                        <span class="failed-today-badge">
+                            לא נמסר
+                        </span>
+
+                    </div>
+
+                    ${
+                        shipment.failed_reason
+                            ? `
+                                <small>
+                                    סיבה: ${shipment.failed_reason}
+                                </small>
+                            `
+                            : ""
+                    }
+
+                    <div class="failed-today-card-action">
+                        פתח ועדכן לנמסר ›
+                    </div>
+                `;
+
+
+                button.addEventListener(
+                    "click",
+                    function () {
+
+                        closeFailedTodaySheet();
+
+                        openShipmentDetails(
+                            shipment.id
+                        );
+
+                    }
+                );
+
+
+                list.appendChild(
+                    button
+                );
+
+            }
+
+        );
+
+    }
+
+
+    overlay.classList
+        .remove(
+            "hidden"
+        );
+
+}
+
+
+function setupFailedTodayQuickAccess() {
+
+    if (
+        !failedShipmentsElement
+    ) {
+
+        return;
+
+    }
+
+
+    const failedSummaryCard =
+        failedShipmentsElement.closest(
+            ".summary-card"
+        );
+
+
+    if (
+        !failedSummaryCard
+    ) {
+
+        return;
+
+    }
+
+
+    failedSummaryCard.classList
+        .add(
+            "failed-summary-clickable"
+        );
+
+
+    failedSummaryCard.setAttribute(
+        "role",
+        "button"
+    );
+
+    failedSummaryCard.setAttribute(
+        "tabindex",
+        "0"
+    );
+
+    failedSummaryCard.setAttribute(
+        "aria-label",
+        "פתח משלוחים שלא נמסרו היום"
+    );
+
+
+    failedSummaryCard.addEventListener(
+        "click",
+        openFailedTodaySheet
+    );
+
+
+    failedSummaryCard.addEventListener(
+        "keydown",
+        function (
+            event
+        ) {
+
+            if (
+                event.key ===
+                    "Enter"
+                ||
+                event.key ===
+                    " "
+            ) {
+
+                event.preventDefault();
+
+                openFailedTodaySheet();
+
+            }
+
+        }
+    );
+
+}
+
+
+setupFailedTodayQuickAccess();
+
+
 // =========================================================
 // BASIC HELPERS
 // =========================================================
@@ -5613,6 +5974,101 @@ function openShipmentDetails(
 
     arrangeDriverWorkActions();
 
+
+    if (
+        shipment.status ===
+        "לא נמסר"
+    ) {
+
+        const slideLabel =
+            markDeliveredButton
+                ? markDeliveredButton.querySelector(
+                    ".yb-slide-label"
+                )
+                : null;
+
+
+        if (
+            slideLabel
+        ) {
+
+            slideLabel.textContent =
+                "החלק לשינוי לנמסר";
+
+        }
+
+
+        if (
+            markDeliveredButton
+        ) {
+
+            markDeliveredButton.setAttribute(
+                "aria-label",
+                "החלק שמאלה כדי לשנות את המשלוח מלא נמסר לנמסר"
+            );
+
+        }
+
+
+        if (
+            markFailedButton
+        ) {
+
+            markFailedButton.classList
+                .add(
+                    "hidden"
+                );
+
+        }
+
+    }
+
+    else {
+
+        const slideLabel =
+            markDeliveredButton
+                ? markDeliveredButton.querySelector(
+                    ".yb-slide-label"
+                )
+                : null;
+
+
+        if (
+            slideLabel
+        ) {
+
+            slideLabel.textContent =
+                "החלק לאישור מסירה";
+
+        }
+
+
+        if (
+            markDeliveredButton
+        ) {
+
+            markDeliveredButton.setAttribute(
+                "aria-label",
+                "החלק שמאלה כדי לאשר שהמשלוח נמסר"
+            );
+
+        }
+
+
+        if (
+            markFailedButton
+        ) {
+
+            markFailedButton.classList
+                .remove(
+                    "hidden"
+                );
+
+        }
+
+    }
+
+
     resetDeliverySlider();
 
 }
@@ -6171,6 +6627,132 @@ async function completeShipmentInActiveRoute(
 }
 
 
+
+// =========================================================
+// CORRECT FAILED ROUTE STOP -> DELIVERED
+// =========================================================
+
+async function correctFailedRouteStopToDelivered(
+    shipmentId,
+    deliveredAt
+) {
+
+    try {
+
+        const {
+            data: routeStop,
+            error: stopLoadError
+        } =
+            await supabaseClient
+                .from(
+                    "driver_route_stops"
+                )
+                .select(
+                    `
+                    id,
+                    route_id,
+                    shipment_id,
+                    completed_at,
+                    completion_status,
+                    created_at
+                    `
+                )
+                .eq(
+                    "shipment_id",
+                    shipmentId
+                )
+                .order(
+                    "created_at",
+                    {
+                        ascending:
+                            false
+                    }
+                )
+                .limit(
+                    1
+                )
+                .maybeSingle();
+
+
+        if (
+            stopLoadError
+        ) {
+
+            console.error(
+                "Failed loading completed route stop for correction:",
+                stopLoadError
+            );
+
+            return false;
+
+        }
+
+
+        if (
+            !routeStop
+        ) {
+
+            return true;
+
+        }
+
+
+        const {
+            error: stopUpdateError
+        } =
+            await supabaseClient
+                .from(
+                    "driver_route_stops"
+                )
+                .update(
+                    {
+                        completed_at:
+                            deliveredAt,
+
+                        completion_status:
+                            "DELIVERED"
+                    }
+                )
+                .eq(
+                    "id",
+                    routeStop.id
+                );
+
+
+        if (
+            stopUpdateError
+        ) {
+
+            console.error(
+                "Failed correcting route stop to delivered:",
+                stopUpdateError
+            );
+
+            return false;
+
+        }
+
+
+        return true;
+
+    }
+
+    catch (
+        error
+    ) {
+
+        console.error(
+            "correctFailedRouteStopToDelivered failed:",
+            error
+        );
+
+        return false;
+
+    }
+
+}
+
+
 // =========================================================
 // ROUTE COMPLETE SHEET
 // =========================================================
@@ -6498,6 +7080,11 @@ async function markSelectedShipmentDelivered() {
     }
 
 
+    const wasPreviouslyFailed =
+        shipment.status ===
+            "לא נמסר";
+
+
     deliverySlideBusy =
         true;
 
@@ -6594,12 +7181,31 @@ async function markSelectedShipmentDelivered() {
             rate;
 
 
-        const remainingRouteStops =
-            await completeShipmentInActiveRoute(
+        let remainingRouteStops =
+            null;
+
+
+        if (
+            wasPreviouslyFailed
+        ) {
+
+            await correctFailedRouteStopToDelivered(
                 shipment.id,
-                "DELIVERED",
                 deliveredAt
             );
+
+        }
+
+        else {
+
+            remainingRouteStops =
+                await completeShipmentInActiveRoute(
+                    shipment.id,
+                    "DELIVERED",
+                    deliveredAt
+                );
+
+        }
 
 
         closeShipmentDetails();
@@ -6617,6 +7223,15 @@ async function markSelectedShipmentDelivered() {
 
 
         if (
+            wasPreviouslyFailed
+        ) {
+
+            // Status correction only.
+            // This stop was already completed, so do not advance the route.
+
+        }
+
+        else if (
             remainingRouteStops ===
             0
         ) {

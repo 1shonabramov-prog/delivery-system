@@ -2671,3 +2671,126 @@ gmp-place-autocomplete#routeEndAddress {
     font-size: 12px;
     font-weight: 700;
 }
+/* =========================================================
+   V17 - FAILED DELIVERY CORRECTION
+   ========================================================= */
+
+.failed-summary-clickable {
+    cursor: pointer;
+    border-color: rgba(255, 97, 112, .30);
+    transition:
+        transform .16s ease,
+        border-color .16s ease,
+        box-shadow .16s ease;
+}
+
+.failed-summary-clickable:active {
+    transform: scale(.98);
+}
+
+.failed-summary-clickable::after {
+    content: "פתח";
+    margin-top: 5px;
+    color: rgba(255, 132, 143, .78);
+    font-size: 9px;
+    font-weight: 800;
+}
+
+.failed-today-sheet {
+    width: min(100%, 580px);
+    max-height: 86dvh;
+    overflow-y: auto;
+    margin: 0 auto;
+    padding:
+        10px 15px
+        max(22px, env(safe-area-inset-bottom));
+    border-radius: 30px 30px 0 0;
+    background:
+        radial-gradient(circle at 86% 0%, rgba(255, 74, 93, .10), transparent 24%),
+        linear-gradient(180deg, #101521, #070b12 84%);
+    border: 1px solid rgba(255, 97, 112, .24);
+    border-bottom: 0;
+    box-shadow: 0 -30px 80px rgba(0,0,0,.52);
+}
+
+.failed-today-header {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 14px;
+    margin: 8px 0 14px;
+}
+
+.failed-today-header h2 {
+    margin: 0;
+    font-size: 27px;
+}
+
+.failed-today-header p:not(.eyebrow) {
+    margin: 5px 0 0;
+    color: var(--muted);
+    font-size: 12px;
+}
+
+.failed-today-list {
+    display: grid;
+    gap: 10px;
+}
+
+.failed-today-card {
+    width: 100%;
+    padding: 15px;
+    border-radius: 20px;
+    border: 1px solid rgba(255, 97, 112, .25);
+    background:
+        radial-gradient(circle at 95% 0%, rgba(255, 83, 99, .08), transparent 28%),
+        linear-gradient(145deg, rgba(41, 22, 30, .96), rgba(14, 12, 18, .98));
+    color: #fff;
+    text-align: right;
+}
+
+.failed-today-card-top {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 12px;
+}
+
+.failed-today-card-top strong {
+    display: block;
+    font-size: 16px;
+}
+
+.failed-today-card-top div > span {
+    display: block;
+    margin-top: 5px;
+    color: #cbd8e7;
+    font-size: 13px;
+}
+
+.failed-today-badge {
+    flex: 0 0 auto;
+    padding: 6px 9px;
+    border-radius: 999px;
+    border: 1px solid rgba(255, 97, 112, .30);
+    background: rgba(255, 97, 112, .10);
+    color: #ff8d98;
+    font-size: 10px;
+    font-weight: 850;
+}
+
+.failed-today-card small {
+    display: block;
+    margin-top: 10px;
+    color: #9facbd;
+    font-size: 11px;
+}
+
+.failed-today-card-action {
+    margin-top: 12px;
+    padding-top: 10px;
+    border-top: 1px solid rgba(255,255,255,.07);
+    color: #73c5ff;
+    font-size: 12px;
+    font-weight: 850;
+}
