@@ -10742,6 +10742,9 @@ async function calculateDriverRoute() {
             recalculateRouteButton.disabled =
                 false;
 
+            recalculateRouteButton.textContent =
+                "חשב מסלול מחדש";
+
         }
 
     }
@@ -10816,6 +10819,15 @@ if (
 
                 return;
 
+            }
+
+
+            if (
+                recalculateRouteButton
+            ) {
+
+                recalculateRouteButton.textContent =
+                    "מחשב מסלול...";
             }
 
 
