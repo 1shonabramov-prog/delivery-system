@@ -2126,10 +2126,31 @@ function clearRouteRecalculationWarning() {
         recalculateRouteButton
     ) {
 
-        recalculateRouteButton.classList
-            .add(
-                "hidden"
-            );
+        if (
+            optimizedRouteResult
+        ) {
+
+            recalculateRouteButton.classList
+                .remove(
+                    "hidden"
+                );
+
+            recalculateRouteButton.style.display =
+                "";
+
+        }
+
+        else {
+
+            recalculateRouteButton.classList
+                .add(
+                    "hidden"
+                );
+
+            recalculateRouteButton.style.display =
+                "none";
+
+        }
 
     }
 
@@ -6278,6 +6299,156 @@ function openShipmentInWaze(
 
 
 // =========================================================
+// MARK ROUTE STARTED FROM NAVIGATION
+// =========================================================
+
+async function markRouteStartedFromNavigation() {
+
+    try {
+
+        const route =
+            await getCurrentDatabaseRoute();
+
+
+        if (
+            !route
+            ||
+            String(
+                route.status ||
+                ""
+            ).toUpperCase() ===
+                "ACTIVE"
+        ) {
+
+            if (
+                route
+            ) {
+
+                updateRouteActionButtons(
+                    route
+                );
+
+            }
+
+
+            return;
+
+        }
+
+
+        const startedAt =
+            new Date()
+                .toISOString();
+
+
+        const {
+            error
+        } =
+            await supabaseClient
+                .from(
+                    "driver_routes"
+                )
+                .update(
+                    {
+                        status:
+                            "ACTIVE",
+
+                        started_at:
+                            route.started_at
+                            ||
+                            startedAt
+                    }
+                )
+                .eq(
+                    "id",
+                    route.id
+                )
+                .eq(
+                    "driver_id",
+                    currentProfile.id
+                );
+
+
+        if (
+            error
+        ) {
+
+            console.error(
+                "Failed marking route active from navigation:",
+                error
+            );
+
+
+            return;
+
+        }
+
+
+        await saveActualRouteStartTime(
+            route.started_at
+            ||
+            startedAt
+        );
+
+
+        if (
+            optimizedRouteResult
+        ) {
+
+            optimizedRouteResult.route_status =
+                "ACTIVE";
+
+            optimizedRouteResult.vehicle_start_time =
+                route.started_at
+                ||
+                startedAt;
+
+        }
+
+
+        if (
+            routeSummaryStartTime
+        ) {
+
+            routeSummaryStartTime.textContent =
+                formatRouteTime(
+                    route.started_at
+                    ||
+                    startedAt
+                );
+
+        }
+
+
+        updateRouteActionButtons(
+            {
+                status:
+                    "ACTIVE",
+
+                started_at:
+                    route.started_at
+                    ||
+                    startedAt
+            }
+        );
+
+    }
+
+    catch (
+        error
+    ) {
+
+        console.error(
+            "markRouteStartedFromNavigation failed:",
+            error
+        );
+
+    }
+
+}
+
+
+// =========================================================
 // ADDRESS CLICK -> WAZE
 // =========================================================
 
@@ -6298,6 +6469,9 @@ if (
             openShipmentInWaze(
                 shipment
             );
+
+
+            markRouteStartedFromNavigation();
 
         }
 
@@ -6327,6 +6501,9 @@ if (
             openShipmentInWaze(
                 shipment
             );
+
+
+            markRouteStartedFromNavigation();
 
         }
 
@@ -7955,6 +8132,10 @@ function createStartRouteNowButton() {
         "100%";
 
 
+    startRouteNowButton.style.display =
+        "none";
+
+
     calculateRouteButton.insertAdjacentElement(
         "afterend",
         startRouteNowButton
@@ -7968,6 +8149,117 @@ function createStartRouteNowButton() {
         startRouteNow
 
     );
+
+}
+
+
+// =========================================================
+// ROUTE ACTION BUTTON STATE
+// =========================================================
+
+function updateRouteActionButtons(
+    routeInfo = null
+) {
+
+    const hasRoute =
+        Boolean(
+            routeInfo
+        );
+
+
+    const routeStatus =
+        routeInfo
+            ? String(
+                routeInfo.route_status
+                ||
+                routeInfo.status
+                ||
+                ""
+            ).toUpperCase()
+            : "";
+
+
+    const shipmentRouteStarted =
+        driverShipments.some(
+
+            shipment =>
+                shipment.status !==
+                    "נמסר"
+
+                &&
+
+                shipment.status !==
+                    "לא נמסר"
+
+                &&
+
+                Boolean(
+                    shipment.route_started_at
+                )
+
+        );
+
+
+    const hasStarted =
+        hasRoute
+        &&
+        (
+            routeStatus ===
+                "ACTIVE"
+
+            ||
+
+            Boolean(
+                routeInfo.started_at
+            )
+
+            ||
+
+            shipmentRouteStarted
+        );
+
+
+    if (
+        calculateRouteButton
+    ) {
+
+        calculateRouteButton.style.display =
+            hasRoute
+                ? "none"
+                : "";
+
+    }
+
+
+    if (
+        startRouteNowButton
+    ) {
+
+        startRouteNowButton.style.display =
+            hasRoute
+            &&
+            !hasStarted
+                ? ""
+                : "none";
+
+    }
+
+
+    if (
+        recalculateRouteButton
+    ) {
+
+        recalculateRouteButton.classList.toggle(
+            "hidden",
+            !hasRoute
+        );
+
+        recalculateRouteButton.style.display =
+            hasRoute
+                ? ""
+                : "none";
+
+    }
 
 }
 
@@ -9023,6 +9315,11 @@ async function loadActiveRouteFromDatabase() {
             null;
 
 
+        updateRouteActionButtons(
+            null
+        );
+
+
         if (
             optimizedRouteList
         ) {
@@ -9180,10 +9477,6 @@ async function loadActiveRouteFromDatabase() {
                 "route_id",
                 route.id
             )
-            .is(
-                "completed_at",
-                null
-            )
             .order(
                 "stop_order",
                 {
@@ -9207,8 +9500,17 @@ async function loadActiveRouteFromDatabase() {
     }
 
 
-    const activeStops =
+    const allRouteStops =
         routeStops || [];
+
+
+    const activeStops =
+        allRouteStops.filter(
+
+            stop =>
+                !stop.completed_at
+
+        );
 
 
     const shipmentIds =
@@ -9427,8 +9729,13 @@ async function loadActiveRouteFromDatabase() {
             0,
 
         stop_count:
-            route.stop_count ||
-            stops.length,
+            Math.max(
+                Number(
+                    route.stop_count ||
+                    0
+                ),
+                allRouteStops.length
+            ),
 
         remaining_stop_count:
             stops.length,
@@ -9469,6 +9776,11 @@ function renderOptimizedRoute(
 
     setDriverWorkView(
         true
+    );
+
+
+    updateRouteActionButtons(
+        result
     );
 
 
@@ -9994,6 +10306,45 @@ async function saveActualRouteStartTime(
 
 async function startRouteNow() {
 
+    if (
+        startRouteNowButton
+    ) {
+
+        startRouteNowButton.disabled =
+            true;
+
+        startRouteNowButton.textContent =
+            "מעדכן מיקום...";
+
+    }
+
+
+    const locationReady =
+        await prepareRouteRecalculationFromCurrentLocation();
+
+
+    if (
+        !locationReady
+    ) {
+
+        if (
+            startRouteNowButton
+        ) {
+
+            startRouteNowButton.disabled =
+                false;
+
+            startRouteNowButton.textContent =
+                "▶ התחל עכשיו";
+
+        }
+
+
+        return;
+
+    }
+
+
     const now =
         new Date();
 
@@ -10032,6 +10383,19 @@ async function startRouteNow() {
         !settings.endAddress
     ) {
 
+        if (
+            startRouteNowButton
+        ) {
+
+            startRouteNowButton.disabled =
+                false;
+
+            startRouteNowButton.textContent =
+                "▶ התחל עכשיו";
+
+        }
+
+
         alert(
             "לפני התחלת המסלול יש להזין כתובת התחלה וכתובת סיום."
         );
@@ -10048,20 +10412,20 @@ async function startRouteNow() {
         )
     ) {
 
+        if (
+            startRouteNowButton
+        ) {
+
+            startRouteNowButton.disabled =
+                false;
+
+            startRouteNowButton.textContent =
+                "▶ התחל עכשיו";
+
+        }
+
+
         return;
-
-    }
-
-
-    if (
-        startRouteNowButton
-    ) {
-
-        startRouteNowButton.disabled =
-            true;
-
-        startRouteNowButton.textContent =
-            "מתחיל מסלול...";
 
     }
 
@@ -10071,7 +10435,7 @@ async function startRouteNow() {
     ) {
 
         routePlannerMessage.textContent =
-            "שומר את שעת ההתחלה בפועל ומחשב מסלול מחדש...";
+            "מעדכן מיקום ושעת התחלה ומחשב מסלול מחדש...";
 
     }
 
@@ -10117,6 +10481,17 @@ async function startRouteNow() {
 
 
     await calculateDriverRoute();
+
+
+    updateRouteActionButtons(
+        {
+            status:
+                "ACTIVE",
+
+            started_at:
+                startedAt
+        }
+    );
 
 
     if (
@@ -10307,6 +10682,11 @@ async function calculateDriverRoute() {
 
 
         clearRouteRecalculationWarning();
+
+
+        updateRouteActionButtons(
+            data
+        );
 
 
         if (
@@ -10508,6 +10888,11 @@ async function initializeDriverApp() {
 
 
     createStartRouteNowButton();
+
+
+    updateRouteActionButtons(
+        null
+    );
 
 
     loadRouteSettings();
