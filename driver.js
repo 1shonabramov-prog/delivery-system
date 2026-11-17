@@ -7420,6 +7420,15 @@ async function markSelectedShipmentDelivered() {
         renderDriverShipments();
 
 
+        if (
+            !wasPreviouslyFailed
+        ) {
+
+            await refreshRemainingRouteEta();
+
+        }
+
+
         await loadActiveRouteFromDatabase();
 
 
@@ -7926,6 +7935,9 @@ async function markSelectedShipmentFailed(
 
 
     renderDriverShipments();
+
+
+    await refreshRemainingRouteEta();
 
 
     await loadActiveRouteFromDatabase();
@@ -8669,6 +8681,231 @@ async function prepareRouteRecalculationFromCurrentLocation() {
 
         showDriverToast(
             "השעה עודכנה. לא הצלחנו לקבל את המיקום הנוכחי."
+        );
+
+
+        return false;
+
+    }
+
+}
+
+
+// =========================================================
+// CURRENT DRIVER COORDINATES
+// =========================================================
+
+async function getCurrentDriverCoordinates() {
+
+    if (
+        !navigator.geolocation
+    ) {
+
+        return null;
+
+    }
+
+
+    try {
+
+        const position =
+            await new Promise(
+
+                (
+                    resolve,
+                    reject
+                ) => {
+
+                    navigator.geolocation.getCurrentPosition(
+                        resolve,
+                        reject,
+                        {
+                            enableHighAccuracy:
+                                true,
+
+                            timeout:
+                                10000,
+
+                            maximumAge:
+                                30000
+                        }
+                    );
+
+                }
+
+            );
+
+
+        return {
+            latitude:
+                position.coords.latitude,
+
+            longitude:
+                position.coords.longitude
+        };
+
+    }
+
+    catch (
+        error
+    ) {
+
+        console.warn(
+            "Could not get current driver coordinates:",
+            error
+        );
+
+
+        return null;
+
+    }
+
+}
+
+
+// =========================================================
+// REFRESH REMAINING ROUTE ETA
+// =========================================================
+
+async function refreshRemainingRouteEta() {
+
+    try {
+
+        const coordinates =
+            await getCurrentDriverCoordinates();
+
+
+        if (
+            !coordinates
+        ) {
+
+            console.warn(
+                "Skipping ETA refresh because current location is unavailable."
+            );
+
+
+            return false;
+
+        }
+
+
+        const currentTime =
+            new Date()
+                .toISOString();
+
+
+        const {
+            data,
+            error
+        } =
+            await supabaseClient
+                .functions
+                .invoke(
+                    "refresh-driver-route-eta",
+                    {
+                        body: {
+                            current_latitude:
+                                coordinates.latitude,
+
+                            current_longitude:
+                                coordinates.longitude,
+
+                            current_time:
+                                currentTime
+                        }
+                    }
+                );
+
+
+        if (
+            error
+        ) {
+
+            console.error(
+                "ETA refresh invoke failed:",
+                error
+            );
+
+
+            return false;
+
+        }
+
+
+        if (
+            !data
+            ||
+            data.success !==
+                true
+        ) {
+
+            console.error(
+                "ETA refresh response:",
+                data
+            );
+
+
+            return false;
+
+        }
+
+
+        if (
+            data.route_finished
+        ) {
+
+            return true;
+
+        }
+
+
+        if (
+            routeSummaryEndTime
+        ) {
+
+            routeSummaryEndTime.textContent =
+                formatRouteTime(
+                    data.estimated_end_at
+                );
+
+        }
+
+
+        if (
+            routeSummaryDuration
+        ) {
+
+            routeSummaryDuration.textContent =
+                formatRouteDuration(
+                    data.total_duration_seconds
+                );
+
+        }
+
+
+        if (
+            routeSummaryDistance
+        ) {
+
+            routeSummaryDistance.textContent =
+                formatRouteDistance(
+                    data.total_distance_meters
+                );
+
+        }
+
+
+        return true;
+
+    }
+
+    catch (
+        error
+    ) {
+
+        console.error(
+            "refreshRemainingRouteEta failed:",
+            error
         );
 
 
