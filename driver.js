@@ -2126,31 +2126,10 @@ function clearRouteRecalculationWarning() {
         recalculateRouteButton
     ) {
 
-        if (
-            optimizedRouteResult
-        ) {
-
-            recalculateRouteButton.classList
-                .remove(
-                    "hidden"
-                );
-
-            recalculateRouteButton.style.display =
-                "";
-
-        }
-
-        else {
-
-            recalculateRouteButton.classList
-                .add(
-                    "hidden"
-                );
-
-            recalculateRouteButton.style.display =
-                "none";
-
-        }
+        recalculateRouteButton.classList
+            .add(
+                "hidden"
+            );
 
     }
 
@@ -6299,156 +6278,6 @@ function openShipmentInWaze(
 
 
 // =========================================================
-// MARK ROUTE STARTED FROM NAVIGATION
-// =========================================================
-
-async function markRouteStartedFromNavigation() {
-
-    try {
-
-        const route =
-            await getCurrentDatabaseRoute();
-
-
-        if (
-            !route
-            ||
-            String(
-                route.status ||
-                ""
-            ).toUpperCase() ===
-                "ACTIVE"
-        ) {
-
-            if (
-                route
-            ) {
-
-                updateRouteActionButtons(
-                    route
-                );
-
-            }
-
-
-            return;
-
-        }
-
-
-        const startedAt =
-            new Date()
-                .toISOString();
-
-
-        const {
-            error
-        } =
-            await supabaseClient
-                .from(
-                    "driver_routes"
-                )
-                .update(
-                    {
-                        status:
-                            "ACTIVE",
-
-                        started_at:
-                            route.started_at
-                            ||
-                            startedAt
-                    }
-                )
-                .eq(
-                    "id",
-                    route.id
-                )
-                .eq(
-                    "driver_id",
-                    currentProfile.id
-                );
-
-
-        if (
-            error
-        ) {
-
-            console.error(
-                "Failed marking route active from navigation:",
-                error
-            );
-
-
-            return;
-
-        }
-
-
-        await saveActualRouteStartTime(
-            route.started_at
-            ||
-            startedAt
-        );
-
-
-        if (
-            optimizedRouteResult
-        ) {
-
-            optimizedRouteResult.route_status =
-                "ACTIVE";
-
-            optimizedRouteResult.vehicle_start_time =
-                route.started_at
-                ||
-                startedAt;
-
-        }
-
-
-        if (
-            routeSummaryStartTime
-        ) {
-
-            routeSummaryStartTime.textContent =
-                formatRouteTime(
-                    route.started_at
-                    ||
-                    startedAt
-                );
-
-        }
-
-
-        updateRouteActionButtons(
-            {
-                status:
-                    "ACTIVE",
-
-                started_at:
-                    route.started_at
-                    ||
-                    startedAt
-            }
-        );
-
-    }
-
-    catch (
-        error
-    ) {
-
-        console.error(
-            "markRouteStartedFromNavigation failed:",
-            error
-        );
-
-    }
-
-}
-
-
-// =========================================================
 // ADDRESS CLICK -> WAZE
 // =========================================================
 
@@ -6469,9 +6298,6 @@ if (
             openShipmentInWaze(
                 shipment
             );
-
-
-            markRouteStartedFromNavigation();
 
         }
 
@@ -6501,9 +6327,6 @@ if (
             openShipmentInWaze(
                 shipment
             );
-
-
-            markRouteStartedFromNavigation();
 
         }
 
@@ -7420,15 +7243,6 @@ async function markSelectedShipmentDelivered() {
         renderDriverShipments();
 
 
-        if (
-            !wasPreviouslyFailed
-        ) {
-
-            await refreshRemainingRouteEta();
-
-        }
-
-
         await loadActiveRouteFromDatabase();
 
 
@@ -7937,9 +7751,6 @@ async function markSelectedShipmentFailed(
     renderDriverShipments();
 
 
-    await refreshRemainingRouteEta();
-
-
     await loadActiveRouteFromDatabase();
 
 
@@ -8144,10 +7955,6 @@ function createStartRouteNowButton() {
         "100%";
 
 
-    startRouteNowButton.style.display =
-        "none";
-
-
     calculateRouteButton.insertAdjacentElement(
         "afterend",
         startRouteNowButton
@@ -8161,117 +7968,6 @@ function createStartRouteNowButton() {
         startRouteNow
 
     );
-
-}
-
-
-// =========================================================
-// ROUTE ACTION BUTTON STATE
-// =========================================================
-
-function updateRouteActionButtons(
-    routeInfo = null
-) {
-
-    const hasRoute =
-        Boolean(
-            routeInfo
-        );
-
-
-    const routeStatus =
-        routeInfo
-            ? String(
-                routeInfo.route_status
-                ||
-                routeInfo.status
-                ||
-                ""
-            ).toUpperCase()
-            : "";
-
-
-    const shipmentRouteStarted =
-        driverShipments.some(
-
-            shipment =>
-                shipment.status !==
-                    "נמסר"
-
-                &&
-
-                shipment.status !==
-                    "לא נמסר"
-
-                &&
-
-                Boolean(
-                    shipment.route_started_at
-                )
-
-        );
-
-
-    const hasStarted =
-        hasRoute
-        &&
-        (
-            routeStatus ===
-                "ACTIVE"
-
-            ||
-
-            Boolean(
-                routeInfo.started_at
-            )
-
-            ||
-
-            shipmentRouteStarted
-        );
-
-
-    if (
-        calculateRouteButton
-    ) {
-
-        calculateRouteButton.style.display =
-            hasRoute
-                ? "none"
-                : "";
-
-    }
-
-
-    if (
-        startRouteNowButton
-    ) {
-
-        startRouteNowButton.style.display =
-            hasRoute
-            &&
-            !hasStarted
-                ? ""
-                : "none";
-
-    }
-
-
-    if (
-        recalculateRouteButton
-    ) {
-
-        recalculateRouteButton.classList.toggle(
-            "hidden",
-            !hasRoute
-        );
-
-        recalculateRouteButton.style.display =
-            hasRoute
-                ? ""
-                : "none";
-
-    }
 
 }
 
@@ -8681,231 +8377,6 @@ async function prepareRouteRecalculationFromCurrentLocation() {
 
         showDriverToast(
             "השעה עודכנה. לא הצלחנו לקבל את המיקום הנוכחי."
-        );
-
-
-        return false;
-
-    }
-
-}
-
-
-// =========================================================
-// CURRENT DRIVER COORDINATES
-// =========================================================
-
-async function getCurrentDriverCoordinates() {
-
-    if (
-        !navigator.geolocation
-    ) {
-
-        return null;
-
-    }
-
-
-    try {
-
-        const position =
-            await new Promise(
-
-                (
-                    resolve,
-                    reject
-                ) => {
-
-                    navigator.geolocation.getCurrentPosition(
-                        resolve,
-                        reject,
-                        {
-                            enableHighAccuracy:
-                                true,
-
-                            timeout:
-                                10000,
-
-                            maximumAge:
-                                30000
-                        }
-                    );
-
-                }
-
-            );
-
-
-        return {
-            latitude:
-                position.coords.latitude,
-
-            longitude:
-                position.coords.longitude
-        };
-
-    }
-
-    catch (
-        error
-    ) {
-
-        console.warn(
-            "Could not get current driver coordinates:",
-            error
-        );
-
-
-        return null;
-
-    }
-
-}
-
-
-// =========================================================
-// REFRESH REMAINING ROUTE ETA
-// =========================================================
-
-async function refreshRemainingRouteEta() {
-
-    try {
-
-        const coordinates =
-            await getCurrentDriverCoordinates();
-
-
-        if (
-            !coordinates
-        ) {
-
-            console.warn(
-                "Skipping ETA refresh because current location is unavailable."
-            );
-
-
-            return false;
-
-        }
-
-
-        const currentTime =
-            new Date()
-                .toISOString();
-
-
-        const {
-            data,
-            error
-        } =
-            await supabaseClient
-                .functions
-                .invoke(
-                    "refresh-driver-route-eta",
-                    {
-                        body: {
-                            current_latitude:
-                                coordinates.latitude,
-
-                            current_longitude:
-                                coordinates.longitude,
-
-                            current_time:
-                                currentTime
-                        }
-                    }
-                );
-
-
-        if (
-            error
-        ) {
-
-            console.error(
-                "ETA refresh invoke failed:",
-                error
-            );
-
-
-            return false;
-
-        }
-
-
-        if (
-            !data
-            ||
-            data.success !==
-                true
-        ) {
-
-            console.error(
-                "ETA refresh response:",
-                data
-            );
-
-
-            return false;
-
-        }
-
-
-        if (
-            data.route_finished
-        ) {
-
-            return true;
-
-        }
-
-
-        if (
-            routeSummaryEndTime
-        ) {
-
-            routeSummaryEndTime.textContent =
-                formatRouteTime(
-                    data.estimated_end_at
-                );
-
-        }
-
-
-        if (
-            routeSummaryDuration
-        ) {
-
-            routeSummaryDuration.textContent =
-                formatRouteDuration(
-                    data.total_duration_seconds
-                );
-
-        }
-
-
-        if (
-            routeSummaryDistance
-        ) {
-
-            routeSummaryDistance.textContent =
-                formatRouteDistance(
-                    data.total_distance_meters
-                );
-
-        }
-
-
-        return true;
-
-    }
-
-    catch (
-        error
-    ) {
-
-        console.error(
-            "refreshRemainingRouteEta failed:",
-            error
         );
 
 
@@ -9552,11 +9023,6 @@ async function loadActiveRouteFromDatabase() {
             null;
 
 
-        updateRouteActionButtons(
-            null
-        );
-
-
         if (
             optimizedRouteList
         ) {
@@ -9714,6 +9180,10 @@ async function loadActiveRouteFromDatabase() {
                 "route_id",
                 route.id
             )
+            .is(
+                "completed_at",
+                null
+            )
             .order(
                 "stop_order",
                 {
@@ -9737,17 +9207,8 @@ async function loadActiveRouteFromDatabase() {
     }
 
 
-    const allRouteStops =
-        routeStops || [];
-
-
     const activeStops =
-        allRouteStops.filter(
-
-            stop =>
-                !stop.completed_at
-
-        );
+        routeStops || [];
 
 
     const shipmentIds =
@@ -9966,13 +9427,8 @@ async function loadActiveRouteFromDatabase() {
             0,
 
         stop_count:
-            Math.max(
-                Number(
-                    route.stop_count ||
-                    0
-                ),
-                allRouteStops.length
-            ),
+            route.stop_count ||
+            stops.length,
 
         remaining_stop_count:
             stops.length,
@@ -10013,11 +9469,6 @@ function renderOptimizedRoute(
 
     setDriverWorkView(
         true
-    );
-
-
-    updateRouteActionButtons(
-        result
     );
 
 
@@ -10543,45 +9994,6 @@ async function saveActualRouteStartTime(
 
 async function startRouteNow() {
 
-    if (
-        startRouteNowButton
-    ) {
-
-        startRouteNowButton.disabled =
-            true;
-
-        startRouteNowButton.textContent =
-            "מעדכן מיקום...";
-
-    }
-
-
-    const locationReady =
-        await prepareRouteRecalculationFromCurrentLocation();
-
-
-    if (
-        !locationReady
-    ) {
-
-        if (
-            startRouteNowButton
-        ) {
-
-            startRouteNowButton.disabled =
-                false;
-
-            startRouteNowButton.textContent =
-                "▶ התחל עכשיו";
-
-        }
-
-
-        return;
-
-    }
-
-
     const now =
         new Date();
 
@@ -10620,19 +10032,6 @@ async function startRouteNow() {
         !settings.endAddress
     ) {
 
-        if (
-            startRouteNowButton
-        ) {
-
-            startRouteNowButton.disabled =
-                false;
-
-            startRouteNowButton.textContent =
-                "▶ התחל עכשיו";
-
-        }
-
-
         alert(
             "לפני התחלת המסלול יש להזין כתובת התחלה וכתובת סיום."
         );
@@ -10649,20 +10048,20 @@ async function startRouteNow() {
         )
     ) {
 
-        if (
-            startRouteNowButton
-        ) {
-
-            startRouteNowButton.disabled =
-                false;
-
-            startRouteNowButton.textContent =
-                "▶ התחל עכשיו";
-
-        }
-
-
         return;
+
+    }
+
+
+    if (
+        startRouteNowButton
+    ) {
+
+        startRouteNowButton.disabled =
+            true;
+
+        startRouteNowButton.textContent =
+            "מתחיל מסלול...";
 
     }
 
@@ -10672,7 +10071,7 @@ async function startRouteNow() {
     ) {
 
         routePlannerMessage.textContent =
-            "מעדכן מיקום ושעת התחלה ומחשב מסלול מחדש...";
+            "שומר את שעת ההתחלה בפועל ומחשב מסלול מחדש...";
 
     }
 
@@ -10718,17 +10117,6 @@ async function startRouteNow() {
 
 
     await calculateDriverRoute();
-
-
-    updateRouteActionButtons(
-        {
-            status:
-                "ACTIVE",
-
-            started_at:
-                startedAt
-        }
-    );
 
 
     if (
@@ -10921,11 +10309,6 @@ async function calculateDriverRoute() {
         clearRouteRecalculationWarning();
 
 
-        updateRouteActionButtons(
-            data
-        );
-
-
         if (
             routePlannerMessage
         ) {
@@ -10978,9 +10361,6 @@ async function calculateDriverRoute() {
 
             recalculateRouteButton.disabled =
                 false;
-
-            recalculateRouteButton.textContent =
-                "חשב מסלול מחדש";
 
         }
 
@@ -11059,15 +10439,6 @@ if (
             }
 
 
-            if (
-                recalculateRouteButton
-            ) {
-
-                recalculateRouteButton.textContent =
-                    "מחשב מסלול...";
-            }
-
-
             await calculateDriverRoute();
 
         }
@@ -11137,11 +10508,6 @@ async function initializeDriverApp() {
 
 
     createStartRouteNowButton();
-
-
-    updateRouteActionButtons(
-        null
-    );
 
 
     loadRouteSettings();
