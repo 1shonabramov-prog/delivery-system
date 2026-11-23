@@ -7911,6 +7911,31 @@ let optimizedRouteResult =
 let startRouteNowButton =
     null;
 
+let finishRouteRoundButton =
+    null;
+
+
+function setFinishRouteRoundButtonVisible(
+    visible
+) {
+
+    if (
+        !finishRouteRoundButton
+    ) {
+
+        return;
+
+    }
+
+
+    finishRouteRoundButton.classList
+        .toggle(
+            "hidden",
+            !visible
+        );
+
+}
+
 
 function createStartRouteNowButton() {
 
@@ -7968,6 +7993,414 @@ function createStartRouteNowButton() {
         startRouteNow
 
     );
+
+}
+
+
+// =========================================================
+// CREATE "FINISH ROUND" BUTTON
+// =========================================================
+
+function createFinishRouteRoundButton() {
+
+    if (
+        finishRouteRoundButton
+        ||
+        !startRouteNowButton
+    ) {
+
+        return;
+
+    }
+
+
+    finishRouteRoundButton =
+        document.createElement(
+            "button"
+        );
+
+
+    finishRouteRoundButton.type =
+        "button";
+
+
+    finishRouteRoundButton.id =
+        "finishRouteRoundButton";
+
+
+    finishRouteRoundButton.className =
+        "secondary-action-button hidden";
+
+
+    finishRouteRoundButton.textContent =
+        "סיים סבב";
+
+
+    finishRouteRoundButton.style.marginTop =
+        "10px";
+
+
+    finishRouteRoundButton.style.width =
+        "100%";
+
+
+    startRouteNowButton.insertAdjacentElement(
+        "afterend",
+        finishRouteRoundButton
+    );
+
+
+    finishRouteRoundButton.addEventListener(
+
+        "click",
+
+        finishCurrentRouteRound
+
+    );
+
+}
+
+
+// =========================================================
+// RESET PLANNER FOR A NEW ROUND
+// =========================================================
+
+function resetPlannerForNewRound() {
+
+    const now =
+        new Date();
+
+
+    if (
+        routeDate
+    ) {
+
+        routeDate.value =
+            getLocalDateValue(
+                now
+            );
+
+    }
+
+
+    if (
+        routeStartTime
+    ) {
+
+        routeStartTime.value =
+            "";
+
+    }
+
+
+    if (
+        routeStartAddress
+    ) {
+
+        routeStartAddress.value =
+            "";
+
+    }
+
+
+    if (
+        routeEndAddress
+    ) {
+
+        routeEndAddress.value =
+            "";
+
+    }
+
+
+    if (
+        routePlannerMessage
+    ) {
+
+        routePlannerMessage.textContent =
+            "הסבב הקודם הסתיים. אפשר להגדיר סבב חדש.";
+
+    }
+
+
+    if (
+        routePlannerSection
+    ) {
+
+        routePlannerSection.classList
+            .remove(
+                "hidden"
+            );
+
+    }
+
+}
+
+
+// =========================================================
+// FINISH CURRENT ROUTE ROUND
+// =========================================================
+
+async function finishCurrentRouteRound() {
+
+    if (
+        !currentProfile
+    ) {
+
+        return;
+
+    }
+
+
+    const route =
+        await getCurrentDatabaseRoute();
+
+
+    if (
+        !route
+    ) {
+
+        setFinishRouteRoundButtonVisible(
+            false
+        );
+
+
+        resetPlannerForNewRound();
+
+
+        return;
+
+    }
+
+
+    const confirmed =
+        window.confirm(
+            "לסיים את הסבב הנוכחי? המשלוחים שלא סיימת יישארו פתוחים לסבב הבא."
+        );
+
+
+    if (
+        !confirmed
+    ) {
+
+        return;
+
+    }
+
+
+    if (
+        finishRouteRoundButton
+    ) {
+
+        finishRouteRoundButton.disabled =
+            true;
+
+        finishRouteRoundButton.textContent =
+            "מסיים סבב...";
+
+    }
+
+
+    try {
+
+        const activeShipmentIds =
+            driverShipments
+                .filter(
+
+                    shipment =>
+                        shipment.status !==
+                            "נמסר"
+
+                        &&
+
+                        shipment.status !==
+                            "לא נמסר"
+
+                )
+                .map(
+                    shipment =>
+                        shipment.id
+                );
+
+
+        const {
+            error: routeError
+        } =
+            await supabaseClient
+                .from(
+                    "driver_routes"
+                )
+                .update(
+                    {
+                        status:
+                            "CANCELLED"
+                    }
+                )
+                .eq(
+                    "id",
+                    route.id
+                )
+                .eq(
+                    "driver_id",
+                    currentProfile.id
+                );
+
+
+        if (
+            routeError
+        ) {
+
+            throw routeError;
+
+        }
+
+
+        if (
+            activeShipmentIds.length >
+            0
+        ) {
+
+            const {
+                error: shipmentsError
+            } =
+                await supabaseClient
+                    .from(
+                        "shipments"
+                    )
+                    .update(
+                        {
+                            route_started_at:
+                                null
+                        }
+                    )
+                    .eq(
+                        "driver_id",
+                        currentProfile.id
+                    )
+                    .in(
+                        "id",
+                        activeShipmentIds
+                    );
+
+
+            if (
+                shipmentsError
+            ) {
+
+                throw shipmentsError;
+
+            }
+
+
+            driverShipments.forEach(
+
+                shipment => {
+
+                    if (
+                        activeShipmentIds.includes(
+                            shipment.id
+                        )
+                    ) {
+
+                        shipment.route_started_at =
+                            null;
+
+                    }
+
+                }
+
+            );
+
+        }
+
+
+        optimizedRouteResult =
+            null;
+
+
+        setFinishRouteRoundButtonVisible(
+            false
+        );
+
+
+        if (
+            optimizedRouteList
+        ) {
+
+            optimizedRouteList.innerHTML =
+                "";
+
+        }
+
+
+        if (
+            routeSummarySection
+        ) {
+
+            routeSummarySection.classList
+                .add(
+                    "hidden"
+                );
+
+        }
+
+
+        clearRouteRecalculationWarning();
+
+
+        setDriverWorkView(
+            false
+        );
+
+
+        setFinishRouteRoundButtonVisible(
+            false
+        );
+
+
+        resetPlannerForNewRound();
+
+
+        renderDriverShipments();
+
+
+        showDriverToast(
+            "הסבב הסתיים. המשלוחים הפתוחים נשמרו לסבב הבא."
+        );
+
+    }
+
+    catch (
+        error
+    ) {
+
+        console.error(
+            "finishCurrentRouteRound failed:",
+            error
+        );
+
+
+        alert(
+            "לא הצלחנו לסיים את הסבב. לא בוצע שינוי במשלוחים."
+        );
+
+    }
+
+    finally {
+
+        if (
+            finishRouteRoundButton
+        ) {
+
+            finishRouteRoundButton.disabled =
+                false;
+
+            finishRouteRoundButton.textContent =
+                "סיים סבב";
+
+        }
+
+    }
 
 }
 
@@ -9051,6 +9484,11 @@ async function loadActiveRouteFromDatabase() {
 
 
     setDriverWorkView(
+        true
+    );
+
+
+    setFinishRouteRoundButtonVisible(
         true
     );
 
@@ -10508,6 +10946,9 @@ async function initializeDriverApp() {
 
 
     createStartRouteNowButton();
+
+
+    createFinishRouteRoundButton();
 
 
     loadRouteSettings();
