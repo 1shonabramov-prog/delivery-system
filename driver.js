@@ -3585,6 +3585,136 @@ async function initializeGooglePlacesAutocomplete() {
 
 
 // =========================================================
+// REFRESH ROUTE ETA AFTER DELIVERY
+// =========================================================
+
+async function refreshRouteEtaAfterDelivery() {
+
+    try {
+
+        if (
+            !navigator.geolocation
+        ) {
+
+            console.warn(
+                "ETA refresh skipped: geolocation is not available."
+            );
+
+            return false;
+
+        }
+
+
+        const position =
+            await new Promise(
+
+                (
+                    resolve,
+                    reject
+                ) => {
+
+                    navigator.geolocation.getCurrentPosition(
+                        resolve,
+                        reject,
+                        {
+                            enableHighAccuracy:
+                                true,
+
+                            timeout:
+                                10000,
+
+                            maximumAge:
+                                30000
+                        }
+                    );
+
+                }
+
+            );
+
+
+        const {
+            data,
+            error
+        } =
+            await supabaseClient
+                .functions
+                .invoke(
+                    "refresh-driver-route-eta",
+                    {
+                        body: {
+                            current_latitude:
+                                position.coords.latitude,
+
+                            current_longitude:
+                                position.coords.longitude,
+
+                            current_time:
+                                new Date()
+                                    .toISOString()
+                        }
+                    }
+                );
+
+
+        if (
+            error
+        ) {
+
+            console.error(
+                "refresh-driver-route-eta invoke failed:",
+                error
+            );
+
+            return false;
+
+        }
+
+
+        if (
+            !data
+            ||
+            data.success !==
+                true
+        ) {
+
+            console.error(
+                "refresh-driver-route-eta returned an invalid response:",
+                data
+            );
+
+            return false;
+
+        }
+
+
+        console.log(
+            "Route ETA refreshed successfully:",
+            data
+        );
+
+
+        return true;
+
+    }
+
+    catch (
+        error
+    ) {
+
+        console.error(
+            "refreshRouteEtaAfterDelivery failed:",
+            error
+        );
+
+        return false;
+
+    }
+
+}
+
+
+// =========================================================
 // ROUTE START / END - CUSTOM GOOGLE PLACES SEARCH
 // =========================================================
 
@@ -7243,6 +7373,15 @@ async function markSelectedShipmentDelivered() {
         renderDriverShipments();
 
 
+        if (
+            !wasPreviouslyFailed
+        ) {
+
+            await refreshRouteEtaAfterDelivery();
+
+        }
+
+
         await loadActiveRouteFromDatabase();
 
 
@@ -7749,6 +7888,9 @@ async function markSelectedShipmentFailed(
 
 
     renderDriverShipments();
+
+
+    await refreshRouteEtaAfterDelivery();
 
 
     await loadActiveRouteFromDatabase();
